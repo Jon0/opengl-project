@@ -5,12 +5,16 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
+#include <GL/glut.h>
+#include "window/MainWindow.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	cout << "sfd" << endl;
+	glutInit(&argc, argv);
+
+	new MainWindow();
+
 	return 0;
 }
 
