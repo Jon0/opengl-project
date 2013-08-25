@@ -16,11 +16,11 @@ namespace std {
 
 class Camera: public ViewInterface {
 public:
-	Camera(SceneInterface *);
+	Camera(SceneInterface *, float);
 	virtual void display();
 	virtual ~Camera();
 protected:
-	float viewzoom, angletilt, angleflat;
+	float viewzoom, angletilt, angleflat, cam_aspect;
 	Vec3D *focus;
 	SceneInterface *scene;
 	void setCamera();

@@ -13,9 +13,9 @@ using namespace std;
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 
-	new MainWindow();
+	new MainWindow(800, 600);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 

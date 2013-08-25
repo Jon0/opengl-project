@@ -9,20 +9,29 @@
 #define MAINWINDOW_H_
 
 #include <vector>
+#include "KeyListener.h"
+#include "MouseListener.h"
 #include "../view/ViewInterface.h"
 
 namespace std {
 
 class MainWindow {
 public:
-	MainWindow();
-	void display();
+	MainWindow(int, int);
 	virtual ~MainWindow();
 protected:
-	vector<ViewInterface *> g_view;
 	GLuint g_mainWnd;
+	int wnd_width, wnd_height;
+	vector<ViewInterface *> g_view;
+	KeyListener *key_focus;
+	MouseListener *mouse_focus;
+	void display();
+	void keyboard(unsigned char, int, int);
+	void mouse(int button, int state, int x, int y);
 private:
 	static void displayCallback();
+	static void keyboardCallback(unsigned char, int, int);
+	static void mouseCallback(int button, int state, int x, int y);
 };
 
 } /* namespace std */

@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../view/Camera.cpp 
+../view/Camera.cpp \
+../view/Ortho.cpp 
 
 OBJS += \
-./view/Camera.o 
+./view/Camera.o \
+./view/Ortho.o 
 
 CPP_DEPS += \
-./view/Camera.d 
+./view/Camera.d \
+./view/Ortho.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
