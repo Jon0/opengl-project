@@ -27,8 +27,8 @@ MainWindow::MainWindow() {
 
 void MainWindow::display() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	for(std::vector<ViewInterface *>::iterator view = g_view.begin(); view != g_view.end(); ++view) {
-		ViewInterface *i = (*view);
+	for (auto view: g_view) {
+		ViewInterface *i = view;
 		i->display();
 	}
 	glutSwapBuffers();
