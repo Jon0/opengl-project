@@ -13,7 +13,7 @@ namespace std {
 class ViewInterface {
 public:
 	virtual void display() = 0;
-	virtual ~ViewInterface();
+	virtual ~ViewInterface() {};
 };
 
 } /* namespace std */

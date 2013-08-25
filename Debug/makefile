@@ -9,6 +9,10 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include window/subdir.mk
+-include view/subdir.mk
+-include scene/subdir.mk
+-include math/subdir.mk
+-include geometry/subdir.mk
 -include subdir.mk
 -include objects.mk
 

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <GL/glut.h>
 #include "MainWindow.h"
+#include "../view/Camera.h"
+#include "../scene/Scene.h"
 
 namespace std {
 
@@ -20,6 +22,9 @@ MainWindow::MainWindow() {
 	glutInitWindowSize(800, 600);
 	g_mainWnd = glutCreateWindow("COMP308 Assignment2");
 	glutDisplayFunc(displayCallback);
+
+	// add some views
+	g_view.push_back( new Camera( new Scene() ) );
 
 	// start running
 	glutMainLoop();
