@@ -13,6 +13,10 @@ Vec3D::Vec3D() {
 	x = y = z = 0;
 }
 
+Vec3D::~Vec3D() {
+	// TODO Auto-generated destructor stub
+}
+
 Vec3D::Vec3D(float a, float b, float c) {
 	x = a;
 	y = b;
@@ -47,8 +51,19 @@ Vec3D Vec3D::crossProduct(Vec3D q) const {
 	return cross;
 }
 
-Vec3D::~Vec3D() {
-	// TODO Auto-generated destructor stub
+Vec3D operator+(const Vec3D &a, const Vec3D &b) {
+	Vec3D p(a.x+b.x, a.y+b.y, a.z+b.z);
+	return p;
+}
+
+Vec3D operator-(const Vec3D &a, const Vec3D &b) {
+	Vec3D p(a.x-b.x, a.y-b.y, a.z-b.z);
+	return p;
+}
+
+Vec3D operator*(const Vec3D &a, const float &f) {
+	Vec3D p(a.x*f, a.y*f, a.z*f);
+	return p;
 }
 
 } /* namespace std */
