@@ -13,13 +13,14 @@
 namespace std {
 
 Ortho::Ortho() {
+	spline = new Spline();
 	message = "> Skeleton";
 }
 
 void Ortho::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	glOrtho(0.0, 800.0, 0.0, 600.0, -1.0, 1.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -27,6 +28,11 @@ void Ortho::setView() {
 
 void Ortho::display() {
 	setView();
+
+	// draw spline
+	spline->display();
+
+	// draw text
 	glColor3f(1.0, 1.0, 1.0);
 	glRasterPos2f(0.0, 0.0);
 	const char *str = message.c_str();
@@ -35,7 +41,6 @@ void Ortho::display() {
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(font, str[i]);
 	}
-
 }
 
 void Ortho::keyPressed(unsigned char c) {
@@ -55,6 +60,7 @@ void Ortho::mouseClicked(int x, int y) {
 	message += to_string(x);
 	message += ", ";
 	message += to_string(y);
+	spline->append(*new Vec3D(x, y, 0));
 }
 
 Ortho::~Ortho() {

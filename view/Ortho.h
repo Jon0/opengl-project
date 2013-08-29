@@ -10,6 +10,7 @@
 
 #include <string>
 #include "ViewInterface.h"
+#include "../geometry/Spline.h"
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
 
@@ -24,6 +25,7 @@ public:
 	virtual void mouseClicked(int, int);
 	virtual ~Ortho();
 protected:
+	Spline *spline;
 	string message;
 };
 

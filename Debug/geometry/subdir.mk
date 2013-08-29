@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../geometry/Skeleton.cpp 
+../geometry/Skeleton.cpp \
+../geometry/Spline.cpp 
 
 OBJS += \
-./geometry/Skeleton.o 
+./geometry/Skeleton.o \
+./geometry/Spline.o 
 
 CPP_DEPS += \
-./geometry/Skeleton.d 
+./geometry/Skeleton.d \
+./geometry/Spline.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

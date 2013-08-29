@@ -58,7 +58,7 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 }
 
 void MainWindow::mouse(int button, int state, int x, int y) {
-	if (state) mouse_focus->mouseClicked(x, y);
+	if (state) mouse_focus->mouseClicked(x, wnd_height - y);
 	glutPostRedisplay();
 }
 
