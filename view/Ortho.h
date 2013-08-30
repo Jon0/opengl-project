@@ -16,17 +16,18 @@
 
 namespace std {
 
-class Ortho: public ViewInterface, public KeyListener, public MouseListener {
+class Ortho: public ViewInterface {
 public:
-	Ortho();
-	void setView();
-	virtual void display();
+	Ortho(int, int);
+	virtual void setView();
 	virtual void keyPressed(unsigned char);
-	virtual void mouseClicked(int, int, int, int);
+	virtual int mouseClicked(int, int, int, int) = 0;
 	virtual ~Ortho();
 protected:
-	Spline *spline;
+	int view_width, view_height;
 	string message;
+	virtual void display() = 0;
+	virtual void messageSent(string) = 0;
 };
 
 } /* namespace std */

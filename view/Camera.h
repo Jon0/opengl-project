@@ -12,16 +12,16 @@
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
 #include "../window/MouseListener.h"
-#include "../scene/SceneInterface.h"
 
 namespace std {
 
-class Camera: public ViewInterface, public MouseListener {
+class Camera: public ViewInterface {
 public:
-	Camera(SceneInterface *, float);
+	Camera(float);
 	virtual ~Camera();
-	virtual void display();
-	virtual void mouseClicked(int, int, int, int);
+	virtual void setView();
+	virtual void keyPressed(unsigned char);
+	virtual int mouseClicked(int, int, int, int);
 	void turn(int, int);
 
 protected:
@@ -29,9 +29,8 @@ protected:
 	Quaternion *cam_angle;
 	Vec3D *focus;
 	float viewzoom, cam_aspect;
-	SceneInterface *scene;
-	void setCamera();
 	Quaternion *getArc(int x, int y);
+	virtual void display() = 0;
 };
 
 } /* namespace std */

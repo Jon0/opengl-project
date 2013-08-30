@@ -7,9 +7,8 @@
 
 #include <GL/glut.h>
 #include "MainWindow.h"
-#include "../view/Camera.h"
-#include "../view/Ortho.h"
 #include "../scene/Scene.h"
+#include "../scene/ViewSpline.h"
 
 namespace std {
 
@@ -27,13 +26,14 @@ MainWindow::MainWindow(int width, int height) {
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseCallbackMotionFunc);
+	glutIdleFunc(idleFunc);
 
 	// add some views
-	Camera *c = new Camera( new Scene(), (double) width / (double) height );
+	Scene *c = new Scene( (double) width / (double) height );
 	mouse_focus = c;
 	g_view.push_back( c );
 
-	Ortho *o = new Ortho();
+	ViewSpline *o = new ViewSpline(width, height);
 	key_focus = o;
 	g_view.push_back( o );
 
@@ -49,7 +49,7 @@ void MainWindow::display() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	for (auto view: g_view) {
 		ViewInterface *i = view;
-		i->display();
+		i->setView();
 	}
 	glutSwapBuffers();
 }
@@ -60,7 +60,9 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 }
 
 void MainWindow::mouse(int button, int state, int x, int y) {
-	mouse_focus->mouseClicked(button, state, x, wnd_height - y);
+	for (auto view: g_view) {
+			if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;
+	}
 	glutPostRedisplay();
 }
 
@@ -78,6 +80,10 @@ void MainWindow::mouseCallback(int button, int state, int x, int y) {
 
 void MainWindow::mouseCallbackMotionFunc(int x, int y) {
 	ins->mouse(-1, -1, x, y);
+}
+
+void MainWindow::idleFunc() {
+	glutPostRedisplay();
 }
 
 } /* namespace std */

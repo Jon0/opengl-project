@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <math.h>
 #include <GL/glut.h>
 #include "Spline.h"
@@ -34,32 +35,36 @@ void Spline::display() {
 	}
 	glEnd();
 
-	for (int v = 3; v < points.size(); ++v) {
-		Vec3D i = points.at(v-3);
-		Vec3D j = points.at(v-2);
-		Vec3D k = points.at(v-1);
-		Vec3D l = points.at(v);
-		displayline(i, j, k, l);
+	for (unsigned int v = 3; v < points.size(); ++v) {
+		displayline((Vec3D)points.at(v-3), (Vec3D)points.at(v-2), (Vec3D)points.at(v-1), (Vec3D)points.at(v));
 	}
 }
 
 void Spline::displayline(Vec3D a, Vec3D b, Vec3D c, Vec3D d) {
 	glBegin(GL_LINE_STRIP);
 	for (float u = 0; u < 1.0; u += 0.01) {
-		//Vec3D v = b*(1-u) + c*u;
-		//Vec3D v = a*pow(1-u, 3) + b*3*u*pow(1-u, 2) + c*3*pow(u, 2)*(1-u) + d*pow(u, 3);
-		Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
+		Vec3D v = catmull_rom(a, b, c, d, u);
 		glVertex3f(v.x/2.0, v.y/2.0, v.z/2.0);
 	}
 	glEnd();
 
 }
 
-Vec3D Spline::getPoint(float f) {
-	float k = fmod(f, 1.0);
-	//Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
-	Vec3D g(0, 0, 0);
+Vec3D Spline::getPoint(float u) {
+	double part;
+	double frac = modf(u, &part);
+	int v = (int) part;
+	Vec3D g;
+	if (v+3 < points.size()) {
+		g = catmull_rom((Vec3D)points.at(v), (Vec3D)points.at(v+1), (Vec3D)points.at(v+2), (Vec3D)points.at(v+3), frac);
+	}
 	return g;
+
+}
+
+Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
+	Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
+	return v;
 }
 
 } /* namespace std */

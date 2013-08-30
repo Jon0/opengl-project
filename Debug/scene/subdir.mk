@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../scene/Scene.cpp 
+../scene/Scene.cpp \
+../scene/ViewSpline.cpp 
 
 OBJS += \
-./scene/Scene.o 
+./scene/Scene.o \
+./scene/ViewSpline.o 
 
 CPP_DEPS += \
-./scene/Scene.d 
+./scene/Scene.d \
+./scene/ViewSpline.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

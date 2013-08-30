@@ -12,9 +12,8 @@
 
 namespace std {
 
-Camera::Camera(SceneInterface *sc, float aspect) {
+Camera::Camera(float aspect) {
 	click = NULL;
-	scene = sc;
 	cam_aspect = aspect;
 	viewzoom = 100.0;
 	cam_angle = new Quaternion(0, 0, 0, 1);
@@ -26,18 +25,15 @@ Camera::~Camera() {
 }
 
 
-void Camera::setCamera() {
+void Camera::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(20.0, cam_aspect, 1.0, 1000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
 
-void Camera::display() {
-	setCamera();
-
+	// setup camera position
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
 
@@ -48,18 +44,25 @@ void Camera::display() {
 	float x = focus->getX(), y = focus->getY(), z = focus->getZ();
 	gluLookAt(x, y, z, x, y, z + viewzoom, 0.0, -1.0, 0.0);
 
-	scene->display();
+	display();
 	glPopMatrix();
 }
 
-void Camera::mouseClicked(int button, int state, int x, int y) {
+void Camera::keyPressed(unsigned char) {
+	// do nothing
+}
+
+int Camera::mouseClicked(int button, int state, int x, int y) {
 	if (button == -1) {
 		turn(x, y);
 		click = getArc(x, y);
+		return true;
 	}
 	else if (!state) {
 		click = getArc(x, y);
+		return true;
 	}
+	return false;
 }
 
 void Camera::turn(int tx, int ty) {

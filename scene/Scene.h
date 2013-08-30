@@ -8,14 +8,14 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
-#include "SceneInterface.h"
+#include "../view/Camera.h"
 #include "../geometry/Skeleton.h"
 
 namespace std {
 
-class Scene: public SceneInterface {
+class Scene: public Camera {
 public:
-	Scene();
+	Scene(float);
 	virtual void display();
 	virtual ~Scene();
 protected:

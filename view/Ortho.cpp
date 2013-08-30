@@ -12,9 +12,10 @@
 
 namespace std {
 
-Ortho::Ortho() {
-	spline = new Spline();
-	message = "> Skeleton";
+Ortho::Ortho(int width, int height) {
+	view_width = width;
+	view_height = height;
+	message = "Skeleton";
 }
 
 Ortho::~Ortho() {
@@ -24,17 +25,13 @@ Ortho::~Ortho() {
 void Ortho::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, 800.0, 0.0, 600.0, -1.0, 1.0);
+	glOrtho(0.0, view_width, 0.0, view_height, -100.0, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-}
 
-void Ortho::display() {
-	setView();
-
-	// draw spline
-	spline->display();
+	// draw scene
+	display();
 
 	// draw text
 	glColor3f(1.0, 1.0, 1.0);
@@ -42,6 +39,8 @@ void Ortho::display() {
 	const char *str = message.c_str();
 	int len = (int) strlen(str);
 	void *font = GLUT_BITMAP_HELVETICA_18;
+	glutBitmapCharacter(font, '>');
+	glutBitmapCharacter(font, ' ');
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(font, str[i]);
 	}
@@ -49,23 +48,12 @@ void Ortho::display() {
 
 void Ortho::keyPressed(unsigned char c) {
 	if (c == '\r') {
+		messageSent(message);
 		message.clear();
-		message += "> ";
+		//message += "> ";
 	}
 	else {
 		message += c;	// string append
-	}
-}
-
-void Ortho::mouseClicked(int button, int state, int x, int y) {
-	if (button >= 0 && state) {
-		cout << x << ", " << y << endl;
-		message.clear();
-		message += "> click ";
-		message += to_string(x);
-		message += ", ";
-		message += to_string(y);
-		spline->append(*new Vec3D(x, y, 0));
 	}
 }
 
