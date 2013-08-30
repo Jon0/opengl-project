@@ -32,6 +32,7 @@ private:
 	static void displayCallback();
 	static void keyboardCallback(unsigned char, int, int);
 	static void mouseCallback(int button, int state, int x, int y);
+	static void mouseCallbackMotionFunc(int x, int y);
 };
 
 } /* namespace std */

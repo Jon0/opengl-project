@@ -26,9 +26,12 @@ MainWindow::MainWindow(int width, int height) {
 	glutDisplayFunc(displayCallback);
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
+	glutMotionFunc(mouseCallbackMotionFunc);
 
 	// add some views
-	g_view.push_back( new Camera( new Scene(), (double) width / (double) height ) );
+	Camera *c = new Camera( new Scene(), (double) width / (double) height );
+	mouse_focus = c;
+	g_view.push_back( c );
 
 	Ortho *o = new Ortho();
 	key_focus = o;
@@ -58,7 +61,7 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 }
 
 void MainWindow::mouse(int button, int state, int x, int y) {
-	if (state) mouse_focus->mouseClicked(x, wnd_height - y);
+	mouse_focus->mouseClicked(button, state, x, wnd_height - y);
 	glutPostRedisplay();
 }
 
@@ -72,6 +75,10 @@ void MainWindow::keyboardCallback(unsigned char key, int x, int y) {
 
 void MainWindow::mouseCallback(int button, int state, int x, int y) {
 	ins->mouse(button, state, x, y);
+}
+
+void MainWindow::mouseCallbackMotionFunc(int x, int y) {
+	ins->mouse(-1, -1, x, y);
 }
 
 } /* namespace std */

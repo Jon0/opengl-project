@@ -17,6 +17,10 @@ Ortho::Ortho() {
 	message = "> Skeleton";
 }
 
+Ortho::~Ortho() {
+	// TODO Auto-generated destructor stub
+}
+
 void Ortho::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -53,18 +57,16 @@ void Ortho::keyPressed(unsigned char c) {
 	}
 }
 
-void Ortho::mouseClicked(int x, int y) {
-	cout << x << ", " << y << endl;
-	message.clear();
-	message += "> click ";
-	message += to_string(x);
-	message += ", ";
-	message += to_string(y);
-	spline->append(*new Vec3D(x, y, 0));
-}
-
-Ortho::~Ortho() {
-	// TODO Auto-generated destructor stub
+void Ortho::mouseClicked(int button, int state, int x, int y) {
+	if (button >= 0 && state) {
+		cout << x << ", " << y << endl;
+		message.clear();
+		message += "> click ";
+		message += to_string(x);
+		message += ", ";
+		message += to_string(y);
+		spline->append(*new Vec3D(x, y, 0));
+	}
 }
 
 } /* namespace std */

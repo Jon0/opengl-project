@@ -22,7 +22,7 @@ public:
 	void setView();
 	virtual void display();
 	virtual void keyPressed(unsigned char);
-	virtual void mouseClicked(int, int);
+	virtual void mouseClicked(int, int, int, int);
 	virtual ~Ortho();
 protected:
 	Spline *spline;

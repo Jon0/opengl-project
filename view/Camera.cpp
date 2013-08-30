@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <GL/glut.h>
 #include "Camera.h"
 
@@ -17,6 +18,11 @@ Camera::Camera(SceneInterface *sc, float aspect) {
 	viewzoom = 100.0;
 	angletilt = angleflat = 0.0;
 }
+
+Camera::~Camera() {
+	// TODO Auto-generated destructor stub
+}
+
 
 void Camera::setCamera() {
 	glMatrixMode(GL_PROJECTION);
@@ -42,8 +48,22 @@ void Camera::display() {
 	glPopMatrix();
 }
 
-Camera::~Camera() {
-	// TODO Auto-generated destructor stub
+void Camera::mouseClicked(int button, int state, int x, int y) {
+	cout << button << endl;
+	if (button == -1) {
+		turn(x-mouse_x, y-mouse_y);
+		mouse_x = x;
+		mouse_y = y;
+	}
+	else if (!state) {
+		mouse_x = x;
+		mouse_y = y;
+	}
+}
+
+void Camera::turn(int tx, int ty) {
+	angleflat += tx;
+	angletilt -= ty;
 }
 
 } /* namespace std */
