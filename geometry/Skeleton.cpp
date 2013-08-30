@@ -140,6 +140,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glRotatef(root->roty, 0, 1, 0);
 	glRotatef(root->rotx, 1, 0, 0);
 
+	glPushName(root->index);
 	// rgb axis display
 	glColor3f(1.0, 0.0, 0.0);
 	display_cylinder(q, 1, 0, 0, 1, true);
@@ -167,6 +168,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	}
 
 	display_cylinder(q, root->dirx, root->diry, root->dirz, root->length, false);
+	glPopName();
 
 	// draw children, translate into postition
 	glPushMatrix();
@@ -225,6 +227,29 @@ void Skeleton::animate(bool a) {
 
 void Skeleton::setPlaySpeed(int s) {
 	frame_rate = s;
+}
+
+void Skeleton::selectMouse(int x, int y) {
+	int BUFSIZE = 1024;
+	GLuint selectBuf[BUFSIZE];
+	GLint hits;
+	GLint viewport[4];
+	glGetIntegerv (GL_VIEWPORT, viewport); // viewport : x, y window coords of viewport, width, height
+	glSelectBuffer (BUFSIZE, selectBuf);
+	glRenderMode (GL_SELECT);
+	glInitNames();
+	glPushName(0);
+	glMatrixMode (GL_PROJECTION);
+	glPushMatrix ();
+	glLoadIdentity ();
+	gluPickMatrix ((GLdouble) x, (GLdouble) (viewport[3] - y), 5.0, 5.0, viewport); //x, y, width, height, viewport
+	 gluOrtho2D (0.0, 3.0, 0.0, 3.0);
+	//drawSquares (GL_SELECT);
+	glMatrixMode (GL_PROJECTION);
+	glPopMatrix ();
+	glFlush ();
+	hits = glRenderMode (GL_RENDER);
+	//processHits (hits, selectBuf);
 }
 
 void Skeleton::incSelection() {

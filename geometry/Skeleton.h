@@ -84,7 +84,6 @@ private:
 	DOF dofFromString(char*);
 	state *makeState();
 	void loadAMCStateBone( char *buff, state* current );
-
 public:
 	int numBones;
 	Skeleton(char*, char*);
@@ -93,6 +92,7 @@ public:
 	void defualtPose(bool);
 	void animate(bool);
 	void setPlaySpeed(int s);
+	void selectMouse(int, int);
 	void incSelection();
 	void modSelection(float, float, float);
 	Vec3D *getCentre();
