@@ -19,6 +19,7 @@ public:
 	virtual ~Spline();
 	void append(Vec3D &);
 	void display();
+	Vec3D getPoint(float);
 protected:
 	vector<Vec3D> points;
 	void displayline(Vec3D a, Vec3D b, Vec3D c, Vec3D d);

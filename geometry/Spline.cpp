@@ -55,4 +55,11 @@ void Spline::displayline(Vec3D a, Vec3D b, Vec3D c, Vec3D d) {
 
 }
 
+Vec3D Spline::getPoint(float f) {
+	float k = fmod(f, 1.0);
+	//Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
+	Vec3D g(0, 0, 0);
+	return g;
+}
+
 } /* namespace std */

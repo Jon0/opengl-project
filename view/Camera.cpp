@@ -6,17 +6,19 @@
  */
 
 #include <iostream>
+#include <math.h>
 #include <GL/glut.h>
 #include "Camera.h"
 
 namespace std {
 
 Camera::Camera(SceneInterface *sc, float aspect) {
-	focus = new Vec3D(0.0, 0.0, 0.0);
+	click = NULL;
 	scene = sc;
 	cam_aspect = aspect;
 	viewzoom = 100.0;
-	angletilt = angleflat = 0.0;
+	cam_angle = new Quaternion(0, 0, 0, 1);
+	focus = new Vec3D(0.0, 0.0, 0.0);
 }
 
 Camera::~Camera() {
@@ -38,32 +40,40 @@ void Camera::display() {
 
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
-	glRotatef(angletilt, 1.0, 0.0, 0.0);
-	glRotatef(angleflat, 0.0, 1.0, 0.0);
+
+	GLfloat *mat = new GLfloat [16];
+	cam_angle->toMatrix(mat);
+	glMultMatrixf(mat);
 
 	float x = focus->getX(), y = focus->getY(), z = focus->getZ();
-	gluLookAt(x, y, z, x, y, z + viewzoom, 0.0, 1.0, 0.0);
+	gluLookAt(x, y, z, x, y, z + viewzoom, 0.0, -1.0, 0.0);
 
 	scene->display();
 	glPopMatrix();
 }
 
 void Camera::mouseClicked(int button, int state, int x, int y) {
-	cout << button << endl;
 	if (button == -1) {
-		turn(x-mouse_x, y-mouse_y);
-		mouse_x = x;
-		mouse_y = y;
+		turn(x, y);
+		click = getArc(x, y);
 	}
 	else if (!state) {
-		mouse_x = x;
-		mouse_y = y;
+		click = getArc(x, y);
 	}
 }
 
 void Camera::turn(int tx, int ty) {
-	angleflat += tx;
-	angletilt -= ty;
+	Quaternion drag = *getArc(tx, ty) * click->multiplicativeInverse();
+	cam_angle = new Quaternion(drag * *cam_angle);
+
 }
+
+Quaternion *Camera::getArc(int ix, int iy) {
+	float x = (ix - 400.0)/700.0;
+	float y = (iy - 300.0)/700.0;
+	float z = sqrt(1 - (x*x + y*y));
+	return new Quaternion(0, x, y, z);
+}
+
 
 } /* namespace std */
