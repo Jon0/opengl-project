@@ -35,7 +35,6 @@ MainWindow::MainWindow(int width, int height) {
 
 	Ortho *o = new Ortho();
 	key_focus = o;
-	mouse_focus = o;
 	g_view.push_back( o );
 
 	// start running
