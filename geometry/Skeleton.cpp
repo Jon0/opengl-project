@@ -162,6 +162,7 @@ void Skeleton::displayId(bone* root, GLUquadric* q) {
 	glColor3ub(255, 0, root->index + 1);
 
 	state_rot *c_rot = drawnState->part[root->index];
+	state_rot *n_rot = drawnState_n->part[root->index];
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
 		glTranslatef(drawnState->centre.x, drawnState->centre.y, drawnState->centre.z);
@@ -176,9 +177,13 @@ void Skeleton::displayId(bone* root, GLUquadric* q) {
 	display_cylinder(q, 0, 1, 0, 1, true);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	glRotatef(c_rot->degree[2], 0, 0, 1);
-	glRotatef(c_rot->degree[1], 0, 1, 0);
-	glRotatef(c_rot->degree[0], 1, 0, 0);
+	float time = fmod(animate_frame, 1.0);
+	float a = c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
+	float b = c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
+	float c = c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
+	glRotatef(a, 0, 0, 1);
+	glRotatef(b, 0, 1, 0);
+	glRotatef(c, 1, 0, 0);
 
 	glRotatef(root->rotx, -1, 0, 0);
 	glRotatef(root->roty, 0, -1, 0);
