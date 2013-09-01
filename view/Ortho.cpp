@@ -55,7 +55,6 @@ void Ortho::keyPressed(unsigned char c) {
 	if (c == '\r') {
 		messageSent(message);
 		message.clear();
-		//message += "> ";
 	}
 	else {
 		message += c;	// string append

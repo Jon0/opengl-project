@@ -28,6 +28,7 @@ Camera::~Camera() {
 }
 
 void Camera::setView() {
+	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(20.0, cam_aspect, 1.0, 1000.0);
@@ -126,7 +127,6 @@ Quaternion *Camera::getArc(int ix, int iy) {
 		float len = sqrt(x*x + y*y);
 		return new Quaternion(0, x / len, y / len, 0);
 	}
-
 }
 
 

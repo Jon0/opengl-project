@@ -83,12 +83,19 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 	delete[] buff;
 	fclose(file);
 
-	// make a copy with actual length, need to copy children?
-	bone *bones = new bone [numBones*2];
-	memcpy(bones, root, sizeof(bone) * numBones);
-	//delete root;
+	// make a copy with actual array length, also remap children
+	bone *bones = new bone [numBones];
+	for (int i = 0; i < numBones; ++i) {
+		memcpy(&bones[i], &root[i], sizeof(bone));
+		bones[i].children = (bone**) malloc(sizeof(bone*) * 5);
+		for (int j = 0; j < root[i].numChildren; ++j) {
+			bones[i].children[j] = &bones[root[i].children[j]->index];
+		}
+		delete root[i].children;
+	}
+	delete root;
 
-	Skeleton *skel = new Skeleton(numBones, root);
+	Skeleton *skel = new Skeleton(numBones, bones);
 	printf("Completed reading skeleton file\n");
 	return skel;
 }
