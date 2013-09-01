@@ -13,7 +13,7 @@ namespace std {
 
 Camera::Camera() {
 	cam_aspect = 1.0;
-	cam_angle = new Quaternion(0, 0, 0, 1);
+	cam_angle = new Quaternion(0, 1, 0, 0);
 	focus = new Vec3D(0.0, 0.0, 0.0);
 	viewzoom = 100.0;
 
@@ -57,10 +57,6 @@ void Camera::resize(int x, int y) {
 	arcball_x = (x / 2.0);
 	arcball_y = (y / 2.0);
 	arcball_radius = (x / 2.0);
-}
-
-void Camera::keyPressed(unsigned char) {
-	// do nothing
 }
 
 void Camera::setClick(Quaternion *q) {

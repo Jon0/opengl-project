@@ -22,7 +22,7 @@ public:
 	virtual ~Camera();
 	virtual void setView();
 	virtual void resize(int, int);
-	virtual void keyPressed(unsigned char);
+	virtual void keyPressed(unsigned char) = 0;
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
 	GLfloat *getProjMatrix();

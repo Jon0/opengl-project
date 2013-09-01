@@ -21,6 +21,7 @@ public:
 
 	virtual int clickInner(int, int);
 	virtual int dragInner(int, int);
+	void keyPressed(unsigned char);
 	virtual void display();
 protected:
 	int clickx, clicky;

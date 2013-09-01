@@ -18,10 +18,11 @@
 #ifndef SKELETONH
 #define SKELETONH
 
-#include <stdio.h>
+#include <vector>
 #include <GL/glut.h>
 
 #include "../math/Vec3D.h"
+#include "../math/Quaternion.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ struct state_rot {
 	int size;
 	char *name;
 	float *degree;
+	Quaternion *angle; // use quaternion instead of degree
 };
 
 struct state {
@@ -61,6 +63,7 @@ class Skeleton {
 public:
 	Skeleton( int num, bone *bones );
 	~Skeleton();
+	void addState();
 	void display();
 	void defualtPose(bool);
 	void animate(bool);
@@ -72,16 +75,19 @@ public:
 	Vec3D *getCentre();
 protected:
 	state *makeState();
+	state *copyState(state *);
 private:
-	int numBones, numStates, animate_frame, selIndex, frame_rate;
+	int numBones, selIndex;
+	float animate_frame, frame_rate;
 
 	// array of bones
 	bone *root;
 	bone *select;
 
 	state *drawnState;	// current pose to draw
+	state *drawnState_n;	// current pose to draw
 	state *idle;	// Default pose
-	state **state_list;	// buffer of animated poses
+	vector<state *> animation;
 
 	bool show_animate;
 
@@ -89,7 +95,6 @@ private:
 	void display(bone *, GLUquadric *);
 	void displayId(bone *, GLUquadric *);
 	void display_cylinder(GLUquadric *, float, float, float, float, bool);
-	DOF dofFromString(char *);
 };
 
 #endif

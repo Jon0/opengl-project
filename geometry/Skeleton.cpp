@@ -27,18 +27,17 @@ static float rad_to_deg = 360.0/(2 * M_PI);
 
 Skeleton::Skeleton( int num, bone *bones ) {
 	numBones = num;
-	numStates = 0;
 	root = bones;
 	drawnState = NULL;
 	select = NULL;
 	idle = NULL;
 	selIndex = -1;
-	animate_frame = 0;
 	show_animate = false;
-	frame_rate = 1;
+	animate_frame = 0.0;
+	frame_rate = 0.01;
 
-	// set pose
-	defualtPose(true);
+	// set state
+	addState();
 }
 
 Skeleton::~Skeleton() {
@@ -55,6 +54,17 @@ void Skeleton::deleteBones(bone* root) {
 		}
 	}
 	free(root);
+}
+
+void Skeleton::addState() {
+	if (animation.size() > 0) {
+		animation.push_back( copyState( animation.back() ) );
+	}
+	else {
+		animation.push_back(makeState());
+	}
+	drawnState = animation.back();
+	drawnState_n = animation.back();
 }
 
 // [Assignment2] you may need to revise this function
@@ -76,9 +86,10 @@ void Skeleton::display() {
 	gluDeleteQuadric(quad);
 	glPopMatrix();
 
-	if (show_animate && numStates > 0) {
-		animate_frame = (numStates + animate_frame + frame_rate) % numStates;
-		drawnState = state_list[animate_frame];
+	if (show_animate && animation.size() > 0) {
+		animate_frame = fmod(animate_frame + frame_rate, animation.size());
+		drawnState = animation.at((int)animate_frame);
+		drawnState_n = animation.at( ((int)animate_frame + 1) % animation.size() );
 	}
 }
 
@@ -90,6 +101,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 
 	//gluQuadricDrawStyle(q, r);
 	state_rot *c_rot = drawnState->part[root->index];
+	state_rot *n_rot = drawnState_n->part[root->index];
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
 		glTranslatef(drawnState->centre.x, drawnState->centre.y, drawnState->centre.z);
@@ -107,9 +119,13 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor3f(0.0, 0.0, 1.0);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	glRotatef(c_rot->degree[2], 0, 0, 1);
-	glRotatef(c_rot->degree[1], 0, 1, 0);
-	glRotatef(c_rot->degree[0], 1, 0, 0);
+	float time = fmod(animate_frame, 1.0);
+	float a = c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
+	float b = c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
+	float c = c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
+	glRotatef(a, 0, 0, 1);
+	glRotatef(b, 0, 1, 0);
+	glRotatef(c, 1, 0, 0);
 
 	glRotatef(root->rotx, -1, 0, 0);
 	glRotatef(root->roty, 0, -1, 0);
@@ -318,6 +334,21 @@ state *Skeleton::makeState() {
 		current->part[i]->degree[0] = 0;
 		current->part[i]->degree[1] = 0;
 		current->part[i]->degree[2] = 0;
+		current->part[i]->size = 3;
+	}
+	return current;
+}
+
+state *Skeleton::copyState(state *other) {
+	state *current = new state();
+	current->part = new state_rot *[numBones];
+
+	for (int i = 0; i < numBones; ++i) {
+		current->part[i] = new state_rot();
+		current->part[i]->degree = new float [ 3 ];
+		current->part[i]->degree[0] = other->part[i]->degree[0];
+		current->part[i]->degree[1] = other->part[i]->degree[1];
+		current->part[i]->degree[2] = other->part[i]->degree[2];
 		current->part[i]->size = 3;
 	}
 	return current;

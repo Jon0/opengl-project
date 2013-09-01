@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include "Scene.h"
 
 namespace std {
@@ -36,6 +37,17 @@ int Scene::dragInner(int x, int y) {
 	}
 
 	return false;
+}
+
+void Scene::keyPressed(unsigned char c) {
+	if (c == 'a') {
+		cout << "add state" << endl;
+		skeleton->addState();
+	}
+	else if (c == 'p') {
+		cout << "play" << endl;
+		skeleton->animate(true);
+	}
 }
 
 void Scene::display() {
