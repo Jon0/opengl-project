@@ -19,6 +19,7 @@ public:
 	virtual void resize(int, int) = 0;
 	virtual void keyPressed(unsigned char) = 0;
 	virtual int mouseClicked(int, int, int, int) = 0;
+	virtual int mouseDragged(int, int) = 0;
 	virtual ~ViewInterface() {};
 protected:
 	virtual void display() = 0;

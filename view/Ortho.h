@@ -23,6 +23,7 @@ public:
 	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int) = 0;
+	virtual int mouseDragged(int x, int y) = 0;
 	virtual ~Ortho();
 protected:
 	int view_width, view_height;

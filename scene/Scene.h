@@ -9,6 +9,7 @@
 #define SCENE_H_
 
 #include "../view/Camera.h"
+#include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
 
 namespace std {
@@ -18,8 +19,12 @@ public:
 	Scene();
 	virtual ~Scene();
 
+	virtual int clickInner(int, int);
+	virtual int dragInner(int, int);
 	virtual void display();
 protected:
+	int clickx, clicky;
+	SkeletonLoader *loader;
 	Skeleton *skeleton;
 };
 

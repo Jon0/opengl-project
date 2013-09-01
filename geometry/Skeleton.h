@@ -57,12 +57,23 @@ struct bone {
 	int numChildren;
 };
 
-void trim(char**);
-
 class Skeleton {
-
+public:
+	Skeleton( int num, bone *bones );
+	~Skeleton();
+	void display();
+	void defualtPose(bool);
+	void animate(bool);
+	void setPlaySpeed(int s);
+	int selectMouse(int, int, GLfloat *, GLfloat *);
+	void setSelection(int);
+	void modSelection(float, float, float);
+	bool hasSelection();
+	Vec3D *getCentre();
+protected:
+	state *makeState();
 private:
-	int buffSize, maxBones, numStates, maxStates, animate_frame, selIndex, frame_rate;
+	int numBones, numStates, animate_frame, selIndex, frame_rate;
 
 	// array of bones
 	bone *root;
@@ -73,32 +84,12 @@ private:
 	state **state_list;	// buffer of animated poses
 
 	bool show_animate;
-	bool readASF(char*);
-	void readHeading(char*, FILE*);
-	void decomment(char*);
-	void deleteBones(bone*);
-	void readBone(char*, FILE*);
-	void readHierarchy(char*, FILE*);
-	void display(bone*, GLUquadric*);
-	void display_cylinder(GLUquadric*, float, float, float, float, bool);
-	DOF dofFromString(char*);
-	state *makeState();
-	void loadAMCStateBone( char *buff, state* current );
-public:
-	int numBones;
-	Skeleton(char*, char*);
-	~Skeleton();
-	void display();
-	void defualtPose(bool);
-	void animate(bool);
-	void setPlaySpeed(int s);
-	void selectMouse(int, int);
-	void incSelection();
-	void modSelection(float, float, float);
-	Vec3D *getCentre();
-	void readAMC(FILE*,int*);
-	void saveAMCState( char *filename );
-	void loadAMCState( char *filename );
+
+	void deleteBones(bone *);
+	void display(bone *, GLUquadric *);
+	void displayId(bone *, GLUquadric *);
+	void display_cylinder(GLUquadric *, float, float, float, float, bool);
+	DOF dofFromString(char *);
 };
 
 #endif

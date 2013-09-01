@@ -18,6 +18,7 @@ public:
 	ViewSpline();
 	virtual ~ViewSpline();
 	virtual int mouseClicked(int, int, int, int);
+	virtual int mouseDragged(int x, int y);
 protected:
 	bool play;
 	float time;

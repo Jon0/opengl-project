@@ -8,6 +8,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
+#include <GL/glut.h>
 #include "ViewInterface.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
@@ -23,16 +24,26 @@ public:
 	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int);
+	virtual int mouseDragged(int x, int y);
+	GLfloat *getProjMatrix();
+	GLfloat *getModelMatrix();
 	void turn(Quaternion *);
-
 protected:
+	Vec3D *focus;
+	bool button_state[5];
+	Quaternion *getArc(int x, int y);
+	virtual int clickInner(int, int) = 0;
+	virtual int dragInner(int, int) = 0;
+	virtual void display() = 0;
+private:
 	Quaternion *click;
 	Quaternion *cam_angle;
-	Vec3D *focus;
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
+	GLfloat temp_matrix [16];
+	GLfloat proj_matrix [16];
+	GLfloat model_matrix [16];
 	void setClick(Quaternion *q);
-	Quaternion *getArc(int x, int y);
-	virtual void display() = 0;
+
 };
 
 } /* namespace std */

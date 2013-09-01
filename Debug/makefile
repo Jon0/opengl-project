@@ -12,6 +12,7 @@ RM := rm -rf
 -include view/subdir.mk
 -include scene/subdir.mk
 -include math/subdir.mk
+-include load/subdir.mk
 -include geometry/subdir.mk
 -include subdir.mk
 -include objects.mk

@@ -23,7 +23,7 @@ ViewSpline::~ViewSpline() {
 }
 
 int ViewSpline::mouseClicked(int button, int state, int x, int y) {
-	if (button >= 0 && state) {
+	if (button == 2 && state) {
 		message.clear();
 		message += "click ";
 		message += to_string(x);
@@ -35,9 +35,12 @@ int ViewSpline::mouseClicked(int button, int state, int x, int y) {
 	return 0;
 }
 
+int ViewSpline::mouseDragged(int x, int y) {
+	return 0;
+}
+
 void ViewSpline::display() {
 	spline->display();
-
 
 	if (play) {
 		Vec3D point = spline->getPoint(time);

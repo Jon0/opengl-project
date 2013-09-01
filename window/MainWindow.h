@@ -28,7 +28,8 @@ protected:
 	void display();
 	void reshape(int, int);
 	void keyboard(unsigned char, int, int);
-	void mouse(int button, int state, int x, int y);
+	void mouseClick(int, int, int, int);
+	void mouseDrag(int, int);
 private:
 	static void displayCallback();
 	static void reshapeCallback(int, int);

@@ -43,7 +43,9 @@ MainWindow::MainWindow(int width, int height) {
 }
 
 MainWindow::~MainWindow() {
-	// TODO Auto-generated destructor stub
+	for (auto view: g_view) {
+		delete view;
+	}
 }
 
 void MainWindow::display() {
@@ -70,9 +72,16 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 
-void MainWindow::mouse(int button, int state, int x, int y) {
+void MainWindow::mouseClick(int button, int state, int x, int y) {
 	for (auto view: g_view) {
 			if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;
+	}
+	glutPostRedisplay();
+}
+
+void MainWindow::mouseDrag(int x, int y) {
+	for (auto view: g_view) {
+			if (((ViewInterface *) view )->mouseDragged(x, wnd_height - y)) break;
 	}
 	glutPostRedisplay();
 }
@@ -90,15 +99,15 @@ void MainWindow::keyboardCallback(unsigned char key, int x, int y) {
 }
 
 void MainWindow::mouseCallback(int button, int state, int x, int y) {
-	ins->mouse(button, state, x, y);
+	ins->mouseClick(button, state, x, y);
 }
 
 void MainWindow::mouseCallbackMotionFunc(int x, int y) {
-	ins->mouse(-1, -1, x, y);
+	ins->mouseDrag(x, y);
 }
 
 void MainWindow::idleFunc() {
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 } /* namespace std */

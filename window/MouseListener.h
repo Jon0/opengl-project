@@ -13,6 +13,7 @@ namespace std {
 class MouseListener {
 public:
 	virtual int mouseClicked(int, int, int, int) = 0;
+	virtual int mouseDragged(int x, int y) = 0;
 	virtual ~MouseListener() {};
 };
 

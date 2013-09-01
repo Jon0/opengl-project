@@ -28,5 +28,6 @@ view \
 scene \
 math \
 . \
+load \
 geometry \
 
