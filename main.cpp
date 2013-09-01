@@ -13,7 +13,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 
-	new MainWindow(800, 600);
+	delete new MainWindow(800, 600);
 
 	return EXIT_SUCCESS;
 }

@@ -26,10 +26,12 @@ protected:
 	KeyListener *key_focus;
 	MouseListener *mouse_focus;
 	void display();
+	void reshape(int, int);
 	void keyboard(unsigned char, int, int);
 	void mouse(int button, int state, int x, int y);
 private:
 	static void displayCallback();
+	static void reshapeCallback(int, int);
 	static void keyboardCallback(unsigned char, int, int);
 	static void mouseCallback(int button, int state, int x, int y);
 	static void mouseCallbackMotionFunc(int x, int y);

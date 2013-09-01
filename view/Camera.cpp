@@ -12,9 +12,9 @@
 
 namespace std {
 
-Camera::Camera(float aspect) {
+Camera::Camera() {
 	click = NULL;
-	cam_aspect = aspect;
+	cam_aspect = 1.0;
 	viewzoom = 100.0;
 	cam_angle = new Quaternion(0, 0, 0, 1);
 	focus = new Vec3D(0.0, 0.0, 0.0);
@@ -46,6 +46,10 @@ void Camera::setView() {
 
 	display();
 	glPopMatrix();
+}
+
+void Camera::resize(int x, int y) {
+	cam_aspect = (double) x / (double) y;
 }
 
 void Camera::keyPressed(unsigned char) {

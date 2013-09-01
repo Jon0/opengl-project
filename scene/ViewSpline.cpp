@@ -6,12 +6,13 @@
  */
 
 #include <iostream>
+#include <string>
 #include <GL/glut.h>
 #include "ViewSpline.h"
 
 namespace std {
 
-ViewSpline::ViewSpline(int width, int height): Ortho(width, height) {
+ViewSpline::ViewSpline(): Ortho() {
 	spline = new Spline();
 	time = 0.0;
 	play = false;

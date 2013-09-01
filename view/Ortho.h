@@ -18,8 +18,9 @@ namespace std {
 
 class Ortho: public ViewInterface {
 public:
-	Ortho(int, int);
+	Ortho();
 	virtual void setView();
+	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int) = 0;
 	virtual ~Ortho();

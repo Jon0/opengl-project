@@ -23,17 +23,18 @@ MainWindow::MainWindow(int width, int height) {
 	glutInitWindowSize(wnd_width, wnd_height);
 	g_mainWnd = glutCreateWindow("COMP308 Assignment 3");
 	glutDisplayFunc(displayCallback);
+	glutReshapeFunc(reshapeCallback);
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseCallbackMotionFunc);
 	glutIdleFunc(idleFunc);
 
 	// add some views
-	Scene *c = new Scene( (double) width / (double) height );
+	Scene *c = new Scene();
 	mouse_focus = c;
 	g_view.push_back( c );
 
-	ViewSpline *o = new ViewSpline(width, height);
+	ViewSpline *o = new ViewSpline();
 	key_focus = o;
 	g_view.push_back( o );
 
@@ -54,6 +55,16 @@ void MainWindow::display() {
 	glutSwapBuffers();
 }
 
+void MainWindow::reshape(int x, int y) {
+	wnd_width = x;
+	wnd_height = y;
+	glutInitWindowSize(wnd_width, wnd_height);
+	for (auto view : g_view) {
+		ViewInterface *i = view;
+		i->resize(x, y);
+	}
+}
+
 void MainWindow::keyboard(unsigned char key, int x, int y) {
 	key_focus->keyPressed(key);
 	glutPostRedisplay();
@@ -68,6 +79,10 @@ void MainWindow::mouse(int button, int state, int x, int y) {
 
 void MainWindow::displayCallback() {
 	ins->display();
+}
+
+void MainWindow::reshapeCallback(int x, int y) {
+	ins->reshape(x, y);
 }
 
 void MainWindow::keyboardCallback(unsigned char key, int x, int y) {

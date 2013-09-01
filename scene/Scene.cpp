@@ -9,7 +9,7 @@
 
 namespace std {
 
-Scene::Scene(float aspect): Camera(aspect) {
+Scene::Scene(): Camera() {
 	skeleton = new Skeleton("assets/priman.asf", NULL);
 }
 

@@ -15,7 +15,7 @@ namespace std {
 
 class ViewSpline: public Ortho {
 public:
-	ViewSpline(int, int);
+	ViewSpline();
 	virtual ~ViewSpline();
 	virtual int mouseClicked(int, int, int, int);
 protected:

@@ -17,9 +17,10 @@ namespace std {
 
 class Camera: public ViewInterface {
 public:
-	Camera(float);
+	Camera();
 	virtual ~Camera();
 	virtual void setView();
+	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int);
 	void turn(int, int);

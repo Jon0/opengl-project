@@ -12,9 +12,9 @@
 
 namespace std {
 
-Ortho::Ortho(int width, int height) {
-	view_width = width;
-	view_height = height;
+Ortho::Ortho() {
+	view_width = 1;
+	view_height = 1;
 	message = "Skeleton";
 }
 
@@ -25,7 +25,7 @@ Ortho::~Ortho() {
 void Ortho::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, view_width, 0.0, view_height, -100.0, 100.0);
+	glOrtho(0.0, view_width, 0.0, view_height, -1.0, 1.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -44,6 +44,11 @@ void Ortho::setView() {
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(font, str[i]);
 	}
+}
+
+void Ortho::resize(int x, int y) {
+	view_width = x;
+	view_height = y;
 }
 
 void Ortho::keyPressed(unsigned char c) {
