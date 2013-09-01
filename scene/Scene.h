@@ -16,8 +16,9 @@ namespace std {
 class Scene: public Camera {
 public:
 	Scene();
-	virtual void display();
 	virtual ~Scene();
+
+	virtual void display();
 protected:
 	Skeleton *skeleton;
 };

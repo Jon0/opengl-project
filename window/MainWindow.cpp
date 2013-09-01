@@ -56,13 +56,13 @@ void MainWindow::display() {
 }
 
 void MainWindow::reshape(int x, int y) {
-	wnd_width = x;
-	wnd_height = y;
-	glutInitWindowSize(wnd_width, wnd_height);
 	for (auto view : g_view) {
 		ViewInterface *i = view;
 		i->resize(x, y);
 	}
+	wnd_width = x;
+	wnd_height = y;
+	glViewport(0, 0, wnd_width, wnd_height);
 }
 
 void MainWindow::keyboard(unsigned char key, int x, int y) {

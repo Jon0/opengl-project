@@ -23,13 +23,14 @@ public:
 	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int);
-	void turn(int, int);
+	void turn(Quaternion *);
 
 protected:
 	Quaternion *click;
 	Quaternion *cam_angle;
 	Vec3D *focus;
-	float viewzoom, cam_aspect;
+	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
+	void setClick(Quaternion *q);
 	Quaternion *getArc(int x, int y);
 	virtual void display() = 0;
 };

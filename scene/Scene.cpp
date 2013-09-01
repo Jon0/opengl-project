@@ -13,12 +13,13 @@ Scene::Scene(): Camera() {
 	skeleton = new Skeleton("assets/priman.asf", NULL);
 }
 
+Scene::~Scene() {
+	delete skeleton;
+}
+
 void Scene::display() {
 	skeleton->display();
 }
 
-Scene::~Scene() {
-	delete skeleton;
-}
 
 } /* namespace std */
