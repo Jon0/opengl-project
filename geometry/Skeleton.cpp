@@ -53,6 +53,9 @@ Skeleton::Skeleton( int num, bone *bones ) {
 		b[i] = &colors[0];
 	}
 
+	// default colour function
+	cf = &Skeleton::colorStandard;
+
 	// set state
 	addState();
 }
@@ -99,7 +102,7 @@ void Skeleton::display() {
 		return;
 	}
 	//Actually draw the skeleton
-	display(root, quad, &Skeleton::colorStandard);
+	display(root, quad);
 
 	gluDeleteQuadric(quad);
 	glPopMatrix();
@@ -112,7 +115,7 @@ void Skeleton::display() {
 }
 
 // [Assignment2] you need to fill this function
-void Skeleton::display(bone* root, GLUquadric* q, colorfunc cf) {
+void Skeleton::display(bone* root, GLUquadric* q) {
 	if (root == NULL) {
 		return;
 	}
@@ -166,7 +169,7 @@ void Skeleton::display(bone* root, GLUquadric* q, colorfunc cf) {
 	glPushMatrix();
 	glTranslatef(root->dirx*root->length, root->diry*root->length, root->dirz*root->length);
 	for (int i = 0; i < root->numChildren; ++i) {
-		display( root->children[i], q, cf );
+		display( root->children[i], q );
 	}
 	glPopMatrix();
 	glPopMatrix();
@@ -222,33 +225,19 @@ void Skeleton::setPlaySpeed(int s) {
 }
 
 int Skeleton::selectMouse(int x, int y, GLfloat *proj, GLfloat *model) {
-	if ( root == NULL || drawnState == NULL ) {
-		return -1;
-	}
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(x, y, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glPushMatrix();
-	GLUquadric* quad = gluNewQuadric(); //Create a new quadric to allow you to draw cylinders
-	if (quad == 0) {
-		printf("Not enough memory to allocate space to draw\n");
-		return -1;
-	}
+	cf = &Skeleton::colorAsID;
+	display();
+	cf = &Skeleton::colorStandard;
 
-	// draw the skeleton
-	display( root, quad, &Skeleton::colorAsID);
-
-	gluDeleteQuadric(quad);
-	glPopMatrix();
-
-	GLubyte pix [4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pix);
-	int selection = (int)pix[0] - 1;
-	setSelection(selection);
-
+	setSelection((int)pix[0] - 1);
 	glDisable(GL_SCISSOR_TEST);
-	return selection;
+
+	return selIndex;
 }
 
 void Skeleton::setSelection(int i) {

@@ -35,11 +35,14 @@ typedef int DOF;
 #define DOF_RZ 4
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
+struct pose {
+	Quaternion *angle;
+};
+
 struct state_rot {
 	int size;
 	char *name;
 	float *degree;
-	Quaternion *angle; // use quaternion instead of degree
 };
 
 struct state {
@@ -87,6 +90,9 @@ protected:
 	state *makeState();
 	state *copyState(state *);
 private:
+	colorfunc cf;
+	GLubyte pix [4]; // buffer to return selection
+
 	int numBones, selIndex, colors[8];
 	float animate_frame, frame_rate;
 
@@ -103,7 +109,7 @@ private:
 	bool show_animate;
 
 	void deleteBones(bone *);
-	void display(bone *, GLUquadric *, colorfunc cf);
+	void display(bone *, GLUquadric *);
 	void displayId(bone *, GLUquadric *);
 	void display_cylinder(GLUquadric *, float, float, float, float, bool);
 	color *colorAsID(bone *);

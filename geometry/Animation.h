@@ -9,14 +9,10 @@
 #define ANIMATION_H_
 
 #include <vector>
-#include "Spline.h"
+#include "Skeleton.h"
 #include "../math/Quaternion.h"
 
 namespace std {
-
-struct pose {
-	Quaternion *angle; // use quaternion instead of degree
-};
 
 class Animation {
 public:
