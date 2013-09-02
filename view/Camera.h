@@ -25,6 +25,7 @@ public:
 	virtual void keyPressed(unsigned char) = 0;
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
+	void setupMatrix();
 	GLfloat *getProjMatrix();
 	GLfloat *getModelMatrix();
 	void turn(Quaternion *);

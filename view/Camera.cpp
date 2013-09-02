@@ -65,6 +65,7 @@ void Camera::setClick(Quaternion *q) {
 }
 
 int Camera::mouseClicked(int button, int state, int x, int y) {
+	setupMatrix();
 	button_state[button] = !state;
 	if ( clickInner(x, y) ) return true;
 	if (button_state[3]) {
@@ -83,6 +84,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 }
 
 int Camera::mouseDragged(int x, int y) {
+	setupMatrix();
 	if ( dragInner(x, y) ) return true;
 
 	if (button_state[0]) {
@@ -92,6 +94,16 @@ int Camera::mouseDragged(int x, int y) {
 		return true;
 	}
 	return false;
+}
+
+void Camera::setupMatrix() {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glMultMatrixf(proj_matrix);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glMultMatrixf(model_matrix);
 }
 
 GLfloat *Camera::getProjMatrix() {

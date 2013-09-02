@@ -36,6 +36,23 @@ Skeleton::Skeleton( int num, bone *bones ) {
 	animate_frame = 0.0;
 	frame_rate = 0.01;
 
+	colors[0] = 0;			// id
+	colors[1] = 0xff0000ff;	// red
+	colors[2] = 0xff00ff00;	// green
+	colors[3] = 0xffff0000;	// blue
+	colors[4] = 0xffffffff;	// white
+	colors[5] = 0xffffff00;	// teal
+	colors[6] = 0xff00ffff;	// yellow
+
+	cAsId = new color();
+	cStandard = new color();
+	int **a = (int **)cStandard;
+	int **b = (int **)cAsId;
+	for (int i = 0; i < 6; ++i) {
+		a[i] = &colors[i+1];
+		b[i] = &colors[0];
+	}
+
 	// set state
 	addState();
 }
@@ -82,7 +99,7 @@ void Skeleton::display() {
 		return;
 	}
 	//Actually draw the skeleton
-	display(root, quad);
+	display(root, quad, &Skeleton::colorStandard);
 
 	gluDeleteQuadric(quad);
 	glPopMatrix();
@@ -95,10 +112,11 @@ void Skeleton::display() {
 }
 
 // [Assignment2] you need to fill this function
-void Skeleton::display(bone* root, GLUquadric* q) {
+void Skeleton::display(bone* root, GLUquadric* q, colorfunc cf) {
 	if (root == NULL) {
 		return;
 	}
+	color *cl = (this->*cf)(root);
 
 	//gluQuadricDrawStyle(q, r);
 	state_rot *c_rot = drawnState->part[root->index];
@@ -113,11 +131,11 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glRotatef(root->rotx, 1, 0, 0);
 
 	// rgb axis display
-	glColor3f(1.0, 0.0, 0.0);
+	glColor4ubv((unsigned char *) cl->x);
 	display_cylinder(q, 1, 0, 0, 1, true);
-	glColor3f(0.0, 1.0, 0.0);
+	glColor4ubv((unsigned char *) cl->y);
 	display_cylinder(q, 0, 1, 0, 1, true);
-	glColor3f(0.0, 0.0, 1.0);
+	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
 	float time = fmod(animate_frame, 1.0);
@@ -133,77 +151,22 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glRotatef(root->rotz, 0, 0, -1);
 
 	if (root == select) {
-		glColor3f(1.0, 1.0, 0.0);
+		glColor4ubv((unsigned char *) cl->select);
 		gluSphere(q, 0.50, 12, 12);
 	}
 	else {
-		glColor3f(0.0, 1.0, 1.0);
+		glColor4ubv((unsigned char *) cl->sphere);
 		gluSphere(q, 0.25, 12, 12);
-		glColor3f(1.0, 1.0, 1.0);
+		glColor4ubv((unsigned char *) cl->bone);
 	}
 
 	display_cylinder(q, root->dirx, root->diry, root->dirz, root->length, false);
 
-	// draw children, translate into postition
+	// draw children, translate into position
 	glPushMatrix();
 	glTranslatef(root->dirx*root->length, root->diry*root->length, root->dirz*root->length);
 	for (int i = 0; i < root->numChildren; ++i) {
-		display(root->children[i], q);
-	}
-	glPopMatrix();
-	glPopMatrix();
-}
-
-void Skeleton::displayId(bone* root, GLUquadric* q) {
-	if (root == NULL) {
-		return;
-	}
-
-	// id color
-	glColor3ub(255, 0, root->index + 1);
-
-	state_rot *c_rot = drawnState->part[root->index];
-	state_rot *n_rot = drawnState_n->part[root->index];
-	glPushMatrix();
-	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		glTranslatef(drawnState->centre.x, drawnState->centre.y, drawnState->centre.z);
-	}
-
-	glRotatef(root->rotz, 0, 0, 1);
-	glRotatef(root->roty, 0, 1, 0);
-	glRotatef(root->rotx, 1, 0, 0);
-
-	// rgb axis display
-	display_cylinder(q, 1, 0, 0, 1, true);
-	display_cylinder(q, 0, 1, 0, 1, true);
-	display_cylinder(q, 0, 0, 1, 1, true);
-
-	float time = fmod(animate_frame, 1.0);
-	float a = c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
-	float b = c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
-	float c = c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
-	glRotatef(a, 0, 0, 1);
-	glRotatef(b, 0, 1, 0);
-	glRotatef(c, 1, 0, 0);
-
-	glRotatef(root->rotx, -1, 0, 0);
-	glRotatef(root->roty, 0, -1, 0);
-	glRotatef(root->rotz, 0, 0, -1);
-
-	if (root == select) {
-		gluSphere(q, 0.50, 12, 12);
-	}
-	else {
-		gluSphere(q, 0.25, 12, 12);
-	}
-
-	display_cylinder(q, root->dirx, root->diry, root->dirz, root->length, false);
-
-	// draw children, translate into postition
-	glPushMatrix();
-	glTranslatef(root->dirx*root->length, root->diry*root->length, root->dirz*root->length);
-	for (int i = 0; i < root->numChildren; ++i) {
-		displayId(root->children[i], q);
+		display( root->children[i], q, cf );
 	}
 	glPopMatrix();
 	glPopMatrix();
@@ -239,7 +202,7 @@ void Skeleton::display_cylinder(GLUquadric* q, float x, float y, float z, float 
 void Skeleton::defualtPose(bool reset) {
 	// reset recreates initial pose
 	if (reset) {
-		//if (idle) delete idle;
+		if (idle) delete idle;
 		idle = makeState();
 	}
 	else if (!idle) {
@@ -266,14 +229,6 @@ int Skeleton::selectMouse(int x, int y, GLfloat *proj, GLfloat *model) {
 	glScissor(x, y, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glMultMatrixf(proj);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMultMatrixf(model);
-
 	glPushMatrix();
 	GLUquadric* quad = gluNewQuadric(); //Create a new quadric to allow you to draw cylinders
 	if (quad == 0) {
@@ -282,14 +237,14 @@ int Skeleton::selectMouse(int x, int y, GLfloat *proj, GLfloat *model) {
 	}
 
 	// draw the skeleton
-	displayId(root, quad);
+	display( root, quad, &Skeleton::colorAsID);
 
 	gluDeleteQuadric(quad);
 	glPopMatrix();
 
 	GLubyte pix [4];
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pix);
-	int selection = (int)pix[2] - 1;
+	int selection = (int)pix[0] - 1;
 	setSelection(selection);
 
 	glDisable(GL_SCISSOR_TEST);
@@ -370,6 +325,13 @@ int Skeleton::getFrame() {
 	return animate_frame;
 }
 
+color *Skeleton::colorAsID(bone *b) {
+	colors[0] = b->index + 1;
+	return cAsId;
+}
 
+color *Skeleton::colorStandard(bone *b) {
+	return cStandard;
+}
 
 

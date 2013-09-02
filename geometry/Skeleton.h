@@ -59,6 +59,14 @@ struct bone {
 	int numChildren;
 };
 
+struct color {
+	int *x, *y, *z, *bone, *sphere, *select;
+};
+
+class Skeleton;
+
+typedef color *(Skeleton::*colorfunc)(bone *);
+
 class Skeleton {
 public:
 	Skeleton( int num, bone *bones );
@@ -79,7 +87,7 @@ protected:
 	state *makeState();
 	state *copyState(state *);
 private:
-	int numBones, selIndex;
+	int numBones, selIndex, colors[8];
 	float animate_frame, frame_rate;
 
 	// array of bones
@@ -90,13 +98,16 @@ private:
 	state *drawnState_n;	// current pose to draw
 	state *idle;	// Default pose
 	vector<state *> animation;
+	color *cStandard, *cAsId;
 
 	bool show_animate;
 
 	void deleteBones(bone *);
-	void display(bone *, GLUquadric *);
+	void display(bone *, GLUquadric *, colorfunc cf);
 	void displayId(bone *, GLUquadric *);
 	void display_cylinder(GLUquadric *, float, float, float, float, bool);
+	color *colorAsID(bone *);
+	color *colorStandard(bone *);
 };
 
 #endif

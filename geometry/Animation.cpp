@@ -9,8 +9,8 @@
 
 namespace std {
 
-Animation::Animation(Spline *s) {
-	spline = s;
+Animation::Animation() {
+
 }
 
 Animation::~Animation() {
