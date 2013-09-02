@@ -50,9 +50,8 @@ MainWindow::~MainWindow() {
 
 void MainWindow::display() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	for (auto view: g_view) {
-		ViewInterface *i = view;
-		i->setView();
+	for (auto &view: g_view) {
+		view->setView();
 	}
 	glutSwapBuffers();
 }
