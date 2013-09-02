@@ -72,6 +72,8 @@ public:
 	void setSelection(int);
 	void modSelection(float, float, float);
 	bool hasSelection();
+	void setFrame(int);
+	int getFrame();
 	Vec3D *getCentre();
 protected:
 	state *makeState();

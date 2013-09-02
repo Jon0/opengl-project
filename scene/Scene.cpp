@@ -48,6 +48,15 @@ void Scene::keyPressed(unsigned char c) {
 		cout << "play" << endl;
 		skeleton->animate(true);
 	}
+	else if (c == 'q') {
+		cout << "reset" << endl;
+		skeleton->setFrame(0);
+	}
+	else if (c == 'w') {
+		int i = skeleton->getFrame() + 1;
+		cout << "set frame " << i << endl;
+		skeleton->setFrame(i);
+	}
 }
 
 void Scene::display() {

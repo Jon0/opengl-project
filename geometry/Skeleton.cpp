@@ -63,6 +63,7 @@ void Skeleton::addState() {
 	else {
 		animation.push_back(makeState());
 	}
+	animate_frame = animation.size() - 1;
 	drawnState = animation.back();
 	drawnState_n = animation.back();
 }
@@ -357,6 +358,16 @@ state *Skeleton::copyState(state *other) {
 		current->part[i]->size = 3;
 	}
 	return current;
+}
+
+void Skeleton::setFrame(int i) {
+	animate_frame = i;
+	drawnState = animation.at(i);
+	drawnState_n = animation.at(i);
+}
+
+int Skeleton::getFrame() {
+	return animate_frame;
 }
 
 
