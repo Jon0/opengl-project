@@ -14,7 +14,7 @@ namespace std {
 
 class Quaternion {
 private:
-	float a, b, c, d;
+	float w, x, y, z;
 
 public:
 	Quaternion(const Vec3D &, const Vec3D &);
@@ -43,6 +43,8 @@ public:
 	friend float dotproduct(const Quaternion&, const Quaternion&);
 	friend Quaternion slerp(const Quaternion&, const Quaternion&, float);
 };
+
+Quaternion *fromEular(float, float, float);
 
 } /* namespace std */
 #endif /* QUATERNION_H_ */

@@ -29,7 +29,6 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
-	idle = NULL;
 	selIndex = -1;
 
 
@@ -74,6 +73,15 @@ int Skeleton::getNumBones() {
 	return numBones;
 }
 
+bone *Skeleton::getBone(char *name) {
+	for (int i = 0; i < numBones; ++i) {
+		if (strcmp(name, root[i].name) == 0) {
+			return &root[i];
+		}
+	}
+	return NULL;
+}
+
 // [Assignment2] you may need to revise this function
 void Skeleton::display( pose *p ) {
 	if ( root == NULL ) {
@@ -105,7 +113,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	//state_rot *n_rot = drawnState_n->part[root->index];
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		glTranslatef(p->position->x, p->position->y, p->position->z);
+		glTranslatef(p->position.x, p->position.y, p->position.z);
 	}
 
 	glRotatef(root->rotz, 0, 0, 1);
@@ -121,12 +129,26 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	display_cylinder(q, 0, 0, 1, 1, true);
 
 	//float time = fmod(animate_frame, 1.0);
-	float a = 0; //c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
-	float b = 0; //c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
-	float c = 0; //c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
-	glRotatef(a, 0, 0, 1);
-	glRotatef(b, 0, 1, 0);
-	glRotatef(c, 1, 0, 0);
+	//float a = 0; //c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
+	//float b = 0; //c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
+	//float c = 0; //c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
+	//glRotatef(a, 0, 0, 1);
+	//glRotatef(b, 0, 1, 0);
+	//glRotatef(c, 1, 0, 0);
+
+
+	//p->angle[root->index].print();
+	p->angle[root->index].toMatrix(temp_mat);
+	//temp_mat[0] = 1;
+	//temp_mat[5] = 1;
+	//for (int i = 0; i < 16; ++i) cout << temp_mat[i];
+	//cout << endl;
+	//Quaternion *qt = new Quaternion(temp_mat);
+	//qt->print();
+	glMultMatrixf(temp_mat);
+
+
+
 
 	glRotatef(root->rotx, -1, 0, 0);
 	glRotatef(root->roty, 0, -1, 0);

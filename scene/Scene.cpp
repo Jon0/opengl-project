@@ -32,7 +32,7 @@ int Scene::clickInner(int x, int y) {
 
 int Scene::dragInner(int x, int y) {
 	if ( selectedBone >= 0 ) {
-		animation->modSelection(selectedBone, x - clickx, y - clicky, 0);
+		animation->modSelection(selectedBone, (x - clickx)/ 20.0, (y - clicky)/ 20.0, 0);
 		clickx = x;
 		clicky = y;
 		return true;
@@ -63,9 +63,9 @@ void Scene::keyPressed(unsigned char c) {
 
 void Scene::display() {
 	if (skeleton) {
+		animation->update( 0.0 ); // TODO: use time
 		skeleton->setSelection(selectedBone);
 		skeleton->display( animation->currentPose() );
-		//animation->update( time );
 	}
 }
 

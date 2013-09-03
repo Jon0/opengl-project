@@ -14,6 +14,9 @@
 
 namespace std {
 
+pose *makeState(int);
+pose *copyState(int, pose *);
+
 class Animation {
 public:
 	Animation(Skeleton *);
@@ -24,14 +27,11 @@ public:
 	void addState();
 	void setPlaySpeed(int);
 	void modSelection(int, float, float, float);
+	void modSelection(int id, Quaternion &q);
 	void animate(bool);
 	void setFrame(int);
 	int getFrame();
 	Vec3D *getCentre();
-
-protected:
-	pose *makeState();
-	pose *copyState(pose *);
 
 private:
 	pose current;
@@ -39,6 +39,7 @@ private:
 	bool show_animate;
 	float animate_frame, frame_rate;
 	vector<pose> v_pose;
+	void setCurrentPose(pose *);
 };
 
 } /* namespace std */

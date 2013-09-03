@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
 #include "Camera.h"
 
@@ -13,7 +12,7 @@ namespace std {
 
 Camera::Camera() {
 	cam_aspect = 1.0;
-	cam_angle = new Quaternion(0, 1, 0, 0);
+	cam_angle = new Quaternion(1, 0, 0, 0);
 	focus = new Vec3D(0.0, 0.0, 0.0);
 	viewzoom = 100.0;
 
@@ -45,7 +44,7 @@ void Camera::setView() {
 	glMultMatrixf(temp_matrix);
 
 	float x = focus->getX(), y = focus->getY(), z = focus->getZ();
-	gluLookAt(x, y, z, x, y, z + viewzoom, 0.0, -1.0, 0.0);
+	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 
 	display();

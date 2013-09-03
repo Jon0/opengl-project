@@ -36,19 +36,8 @@ typedef int DOF;
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
 struct pose {
-	Vec3D *position;
+	Vec3D position;
 	Quaternion *angle;
-};
-
-struct state_rot {
-	int size;
-	char *name;
-	float *degree;
-};
-
-struct state {
-	Vec3D centre;
-	state_rot **part;
 };
 
 //Type to represent a bone
@@ -78,6 +67,7 @@ public:
 
 	void display(pose *p);
 	int getNumBones();
+	bone *getBone(char *);
 	int selectMouse(int, int, pose *p);
 	void setSelection(int);
 	bool hasSelection();
@@ -90,14 +80,14 @@ protected:
 
 private:
 	colorfunc cf;
-	GLubyte pix [4]; // buffer to return selection
+	GLubyte pix[4]; // buffer to return selection
+	GLfloat temp_mat[16];
 	int numBones, selIndex, colors[8];
 
 
 	// array of bones
 	bone *root;
 	bone *select;
-	state *idle;	// Default pose
 	color *cStandard, *cAsId;
 
 	// color functions

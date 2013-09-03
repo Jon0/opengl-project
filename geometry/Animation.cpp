@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <math.h>
 #include "Animation.h"
 
@@ -16,6 +17,7 @@ Animation::Animation(Skeleton *s) {
 	animate_frame = 0.0;
 	frame_rate = 0.01;
 
+	current.angle = new Quaternion [ s->getNumBones() ];
 	addState();
 }
 
@@ -28,33 +30,41 @@ pose *Animation::currentPose() {
 }
 
 Vec3D *Animation::getCentre() {
-	return current.position;
+	return &current.position;
 }
 
 void Animation::update(float time) {
 	if (show_animate && v_pose.size() > 0) {
-		animate_frame = fmod(animate_frame + frame_rate, v_pose.size());
-		//drawnState = v_pose.at((int)animate_frame);
-		//drawnState_n = v_pose.at( ((int)animate_frame + 1) % animation.size() );
+
+		// set correct pose base on keyframes
+		animate_frame = fmod( animate_frame + frame_rate, v_pose.size() );
+		pose *a = &v_pose.at( (int) animate_frame );
+		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
+		float t = fmod(animate_frame, 1.0);
+		int numBones = skeleton->getNumBones();
+
+		for (int i = 0; i < numBones; ++i) {
+			current.angle[i] = slerp(a->angle[i], b->angle[i], t);
+		}
+	}
+	else {
+		setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
 	}
 }
 
 void Animation::addState() {
 	if (v_pose.size() > 0) {
-		v_pose.push_back( *copyState( (pose *)&v_pose.back() ) );
+		v_pose.push_back( *copyState( skeleton->getNumBones(), (pose *)&v_pose.back() ) );
 	}
 	else {
-		v_pose.push_back( *makeState() );
+		v_pose.push_back( *makeState( skeleton->getNumBones() ) );
 	}
 	animate_frame = v_pose.size() - 1;
-	//drawnState = animation.back();
-	//drawnState_n = animation.back();
 }
 
 void Animation::setFrame(int i) {
+	animate(false);
 	animate_frame = i;
-	//drawnState = animation.at(i);
-	//drawnState_n = animation.at(i);
 }
 
 int Animation::getFrame() {
@@ -70,14 +80,17 @@ void Animation::animate(bool a) {
 }
 
 void Animation::modSelection(int id, float x, float y, float z) {
+	Quaternion q = *fromEular(x, y, z);
+	modSelection( id, q );
+}
+
+void Animation::modSelection(int id, Quaternion &q) {
 	if ( id < 0 ) {
 		return;
 	}
-
+	cout << "modify " << animate_frame << endl;
 	pose *p = &v_pose.at(animate_frame);
-	p->angle->rotate( *new Quaternion (0, x, y, z) );
-
-
+	p->angle[id].rotate( q );
 
 	//DOF dof = skeleton->getDof(id);
 	//if ((dof & DOF_RX) == DOF_RX) {
@@ -91,25 +104,31 @@ void Animation::modSelection(int id, float x, float y, float z) {
 	//}
 }
 
+void Animation::setCurrentPose(pose *p) {
+	current.position = p->position;
+	for (int i = 0; i < skeleton->getNumBones(); ++i) {
+		current.angle[i] = p->angle[i];
+	}
+}
 
-pose *Animation::makeState() {
+pose *makeState( int numBones ) {
 	pose *next = new pose();
-	int numBones = skeleton->getNumBones();
+	next->position = Vec3D(0, 0, 0);
 	next->angle = new Quaternion [ numBones ];
 
 	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion(0, 0, 0, 1);
+		next->angle[i] = *new Quaternion(1, 0, 0, 0);
 	}
 	return next;
 }
 
-pose *Animation::copyState( pose *other ) {
+pose *copyState( int numBones, pose *other ) {
 	pose *next = new pose();
-	int numBones = skeleton->getNumBones();
+	next->position = other->position;
 	next->angle = new Quaternion [ numBones ];
 
 	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = other->angle[i];
+		next->angle[i] = *new Quaternion( other->angle[i] );
 	}
 	return next;
 }

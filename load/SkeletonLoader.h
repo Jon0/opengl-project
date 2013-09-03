@@ -9,7 +9,6 @@
 #define SKELETONLOADER_H_
 
 #include <stdio.h>
-#include <GL/glut.h>
 #include "../geometry/Skeleton.h"
 
 namespace std {
@@ -21,9 +20,6 @@ public:
 	SkeletonLoader();
 	virtual ~SkeletonLoader();
 	Skeleton *readASF( const char * );
-	void readAMC(FILE*, int* , int &, bone *);
-	void saveAMCState( char *, int , bone *, state * );
-	void loadAMCState( char *, int , bone *, state * );
 
 protected:
 	void readHeading(char *, FILE *, int &, bone *);
@@ -31,11 +27,9 @@ protected:
 	void readBone(char *, FILE *, int &, bone * );
 	DOF dofFromString(char* s);
 	void decomment(char *);
-	state *makeState(int);
-	void loadAMCStateBone( char *, state *, int &, bone * );
 
 private:
-	int buffSize, maxBones, maxStates;
+	int buffSize, maxBones;
 };
 
 } /* namespace std */

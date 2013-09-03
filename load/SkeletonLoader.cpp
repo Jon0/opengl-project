@@ -6,9 +6,6 @@
  */
 
 #include <string.h>
-#include <stdlib.h>
-#include <math.h>
-#include <iostream>
 #include "SkeletonLoader.h"
 
 namespace std {
@@ -16,7 +13,6 @@ namespace std {
 SkeletonLoader::SkeletonLoader() {
 	buffSize = 200;
 	maxBones = 60;
-	maxStates = 20000;
 }
 
 SkeletonLoader::~SkeletonLoader() {
@@ -365,172 +361,6 @@ void trim(char **p) {
 			(*p)[--len] = '\0';
 		} else {
 			return;
-		}
-	}
-}
-
-void SkeletonLoader::readAMC(FILE* file, int* i, int &numBones, bone *root) {
-	printf("Reading animation\n");
-	int numStates = 0;
-	state **state_list = new state *[ maxStates ];
-	state *current;
-
-
-	char *buff = new char[buffSize];
-	char *p;
-	while ((p = fgets(buff, buffSize, file)) != NULL) {
-		char *start = buff;
-		trim(&start);
-
-		//Check if it is a comment or just empty
-		if (start[0] == '#' || start[0] == ':' || start[0] == '\0') {
-			continue;
-		}
-
-		if (start != NULL) {
-
-			// create a new frame
-			if ( isdigit( start[0] ) ) {
-				current = makeState(numBones);
-				state_list[ atoi(start)-1 ] = current;
-				numStates++;
-			}
-			else {
-				loadAMCStateBone(start, current, numBones, root);
-			}
-		}
-	}
-
-	printf("Read %d frames\n", numStates);
-}
-
-void SkeletonLoader::loadAMCStateBone( char *buff, state* current, int &numBones, bone *root ) {
-	char *start = buff;
-	// read line as a set of angles, to apply to a particular part
-					bool found = false;
-					char n[32];
-					sscanf(start, "%s ", n);
-					start += strlen(n);
-					trim(&start);
-
-					// match name in array
-					for (int i = 0; i < numBones; ++i) {
-						if (strcmp(n, root[i].name) == 0) {
-
-							// read number of angles, depending on dof
-							char next[32];
-
-							if ((root[i].dof & DOF_ROOT) == DOF_ROOT) {
-
-
-								for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
-									((float *) &current->centre)[j] = atof(next);
-									start += strlen(next);
-									trim(&start);
-								}
-
-								for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
-									current->part[i]->degree[j] = atof(next);
-									start += strlen(next);
-									trim(&start);
-								}
-
-
-							} else {
-								if ((root[i].dof & DOF_RX) == DOF_RX && sscanf(start, "%s", next) != 0) {
-									current->part[i]->degree[0] = atof(next);
-									start += strlen(next);
-									trim(&start);
-								}
-								if ((root[i].dof & DOF_RY) == DOF_RY && sscanf(start, "%s", next) != 0) {
-									current->part[i]->degree[1] = atof(next);
-									start += strlen(next);
-									trim(&start);
-								}
-								if ((root[i].dof & DOF_RZ) == DOF_RZ && sscanf(start, "%s", next) != 0) {
-									current->part[i]->degree[2] = atof(next);
-									start += strlen(next);
-									trim(&start);
-								}
-							}
-
-							found = true;
-							break;
-						}
-					}
-					if (!found) cout << n << " not found" << endl;
-}
-
-
-state *SkeletonLoader::makeState(int numBones) {
-	state *current = new state();
-	current->part = new state_rot *[numBones];
-
-	for (int i = 0; i < numBones; ++i) {
-		current->part[i] = new state_rot();
-		current->part[i]->degree = new float [ 3 ];
-		current->part[i]->degree[0] = 0;
-		current->part[i]->degree[1] = 0;
-		current->part[i]->degree[2] = 0;
-		current->part[i]->size = 3;
-	}
-	return current;
-}
-
-void SkeletonLoader::saveAMCState( char *filename, int numBones, bone *root, state *drawnState ) {
-	cout << "save to file: " << filename << endl;
-	FILE* f = fopen(filename, "w");
-
-	for (int i = 0; i < numBones; ++i) {
-		if (root[i].dof != 0) {
-			fprintf(f, "%s ", root[i].name);
-			float *ang = drawnState->part[root[i].index]->degree;
-			if ((root[i].dof & DOF_ROOT) == DOF_ROOT) {
-				fprintf(f, "%f ", drawnState->centre.x);
-				fprintf(f, "%f ", drawnState->centre.y);
-				fprintf(f, "%f", drawnState->centre.z);
-				fprintf(f, "%f ", ang[0]);
-				fprintf(f, "%f ", ang[1]);
-				fprintf(f, "%f ", ang[2]);
-			}
-			else {
-				if ((root[i].dof & DOF_RX) == DOF_RX) fprintf(f, "%f ", ang[0]);
-				if ((root[i].dof & DOF_RY) == DOF_RY) fprintf(f, "%f ", ang[1]);
-				if ((root[i].dof & DOF_RZ) == DOF_RZ) fprintf(f, "%f ", ang[2]);
-			}
-
-
-
-			fprintf(f, "\n");
-		}
-	}
-	fclose(f);
-}
-
-void SkeletonLoader::loadAMCState( char *filename, int numBones, bone *root, state *drawnState ) {
-	FILE* file = fopen(filename, "r");
-	if (!file) {
-		cout << "file not found" << endl;
-		return;
-	}
-	printf( "Reading pose: %s\n", filename );
-	state *current = makeState(numBones);	// get blank state
-
-	char *buff = new char[buffSize];
-	char *p;
-	while ((p = fgets(buff, buffSize, file)) != NULL) {
-		char *start = buff;
-		trim(&start);
-
-		//Check if it is a comment or just empty
-		if (start[0] == '#' || start[0] == ':' || start[0] == '\0') {
-			continue;
-		}
-		if (start != NULL) {
-			// read frame
-			if ( !isdigit( start[0] ) ) {
-				loadAMCStateBone(start, current, numBones, root);
-			}
 		}
 	}
 }
