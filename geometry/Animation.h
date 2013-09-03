@@ -16,11 +16,28 @@ namespace std {
 
 class Animation {
 public:
-	Animation();
+	Animation(Skeleton *);
 	virtual ~Animation();
 
-	void display();
+	pose *currentPose();
+	void update(float);
+	void addState();
+	void setPlaySpeed(int);
+	void modSelection(int, float, float, float);
+	void animate(bool);
+	void setFrame(int);
+	int getFrame();
+	Vec3D *getCentre();
+
+protected:
+	pose *makeState();
+	pose *copyState(pose *);
+
 private:
+	pose current;
+	Skeleton *skeleton;
+	bool show_animate;
+	float animate_frame, frame_rate;
 	vector<pose> v_pose;
 };
 

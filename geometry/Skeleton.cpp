@@ -25,16 +25,13 @@
 
 static float rad_to_deg = 360.0/(2 * M_PI);
 
-Skeleton::Skeleton( int num, bone *bones ) {
-	numBones = num;
+Skeleton::Skeleton( int numOfBones, bone *bones ) {
+	numBones = numOfBones;
 	root = bones;
-	drawnState = NULL;
 	select = NULL;
 	idle = NULL;
 	selIndex = -1;
-	show_animate = false;
-	animate_frame = 0.0;
-	frame_rate = 0.01;
+
 
 	colors[0] = 0;			// id
 	colors[1] = 0xff0000ff;	// red
@@ -55,9 +52,6 @@ Skeleton::Skeleton( int num, bone *bones ) {
 
 	// default colour function
 	cf = &Skeleton::colorStandard;
-
-	// set state
-	addState();
 }
 
 Skeleton::~Skeleton() {
@@ -76,57 +70,42 @@ void Skeleton::deleteBones(bone* root) {
 	free(root);
 }
 
-void Skeleton::addState() {
-	if (animation.size() > 0) {
-		animation.push_back( copyState( animation.back() ) );
-	}
-	else {
-		animation.push_back(makeState());
-	}
-	animate_frame = animation.size() - 1;
-	drawnState = animation.back();
-	drawnState_n = animation.back();
+int Skeleton::getNumBones() {
+	return numBones;
 }
 
 // [Assignment2] you may need to revise this function
-void Skeleton::display() {
-	if ( root == NULL || drawnState == NULL ) {
+void Skeleton::display( pose *p ) {
+	if ( root == NULL ) {
 		return;
 	}
 
 	glPushMatrix();
-
 	GLUquadric* quad = gluNewQuadric(); //Create a new quadric to allow you to draw cylinders
 	if (quad == 0) {
 		printf("Not enough memory to allocate space to draw\n");
 		return;
 	}
 	//Actually draw the skeleton
-	display(root, quad);
+	display(root, quad, p);
 
 	gluDeleteQuadric(quad);
 	glPopMatrix();
-
-	if (show_animate && animation.size() > 0) {
-		animate_frame = fmod(animate_frame + frame_rate, animation.size());
-		drawnState = animation.at((int)animate_frame);
-		drawnState_n = animation.at( ((int)animate_frame + 1) % animation.size() );
-	}
 }
 
 // [Assignment2] you need to fill this function
-void Skeleton::display(bone* root, GLUquadric* q) {
+void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	if (root == NULL) {
 		return;
 	}
 	color *cl = (this->*cf)(root);
 
 	//gluQuadricDrawStyle(q, r);
-	state_rot *c_rot = drawnState->part[root->index];
-	state_rot *n_rot = drawnState_n->part[root->index];
+	//state_rot *c_rot = drawnState->part[root->index];
+	//state_rot *n_rot = drawnState_n->part[root->index];
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		glTranslatef(drawnState->centre.x, drawnState->centre.y, drawnState->centre.z);
+		glTranslatef(p->position->x, p->position->y, p->position->z);
 	}
 
 	glRotatef(root->rotz, 0, 0, 1);
@@ -141,10 +120,10 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	float time = fmod(animate_frame, 1.0);
-	float a = c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
-	float b = c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
-	float c = c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
+	//float time = fmod(animate_frame, 1.0);
+	float a = 0; //c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
+	float b = 0; //c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
+	float c = 0; //c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
 	glRotatef(a, 0, 0, 1);
 	glRotatef(b, 0, 1, 0);
 	glRotatef(c, 1, 0, 0);
@@ -169,7 +148,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glPushMatrix();
 	glTranslatef(root->dirx*root->length, root->diry*root->length, root->dirz*root->length);
 	for (int i = 0; i < root->numChildren; ++i) {
-		display( root->children[i], q );
+		display( root->children[i], q, p );
 	}
 	glPopMatrix();
 	glPopMatrix();
@@ -202,42 +181,19 @@ void Skeleton::display_cylinder(GLUquadric* q, float x, float y, float z, float 
 	glPopMatrix();
 }
 
-void Skeleton::defualtPose(bool reset) {
-	// reset recreates initial pose
-	if (reset) {
-		if (idle) delete idle;
-		idle = makeState();
-	}
-	else if (!idle) {
-		idle = makeState();
-	}
-	animate(false);
-	drawnState = idle;
-}
 
-void Skeleton::animate(bool a) {
-	select = NULL;
-	show_animate = a;
-}
-
-void Skeleton::setPlaySpeed(int s) {
-	frame_rate = s;
-}
-
-int Skeleton::selectMouse(int x, int y, GLfloat *proj, GLfloat *model) {
+int Skeleton::selectMouse(int x, int y, pose *p) {
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(x, y, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	cf = &Skeleton::colorAsID;
-	display();
+	display( p );
 	cf = &Skeleton::colorStandard;
 
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pix);
-	setSelection((int)pix[0] - 1);
 	glDisable(GL_SCISSOR_TEST);
-
-	return selIndex;
+	return (int)pix[0] - 1;
 }
 
 void Skeleton::setSelection(int i) {
@@ -246,72 +202,16 @@ void Skeleton::setSelection(int i) {
 		select = NULL;
 		return;
 	}
-	show_animate = false;
 	selIndex = i % numBones;
 	select = &root[selIndex];
-}
-
-void Skeleton::modSelection(float x, float y, float z) {
-	if ( drawnState == NULL || select == NULL ) {
-		return;
-	}
-	if ((select->dof & DOF_RX) == DOF_RX) {
-		drawnState->part[select->index]->degree[0] += x;
-	}
-	if ((select->dof & DOF_RY) == DOF_RY) {
-		drawnState->part[select->index]->degree[1] += y;
-	}
-	if ((select->dof & DOF_RZ) == DOF_RZ) {
-		drawnState->part[select->index]->degree[2] += z;
-	}
 }
 
 bool Skeleton::hasSelection() {
 	return select;
 }
 
-Vec3D *Skeleton::getCentre() {
-	return &drawnState->centre;
-}
-
-state *Skeleton::makeState() {
-	state *current = new state();
-	current->part = new state_rot *[numBones];
-
-	for (int i = 0; i < numBones; ++i) {
-		current->part[i] = new state_rot();
-		current->part[i]->degree = new float [ 3 ];
-		current->part[i]->degree[0] = 0;
-		current->part[i]->degree[1] = 0;
-		current->part[i]->degree[2] = 0;
-		current->part[i]->size = 3;
-	}
-	return current;
-}
-
-state *Skeleton::copyState(state *other) {
-	state *current = new state();
-	current->part = new state_rot *[numBones];
-
-	for (int i = 0; i < numBones; ++i) {
-		current->part[i] = new state_rot();
-		current->part[i]->degree = new float [ 3 ];
-		current->part[i]->degree[0] = other->part[i]->degree[0];
-		current->part[i]->degree[1] = other->part[i]->degree[1];
-		current->part[i]->degree[2] = other->part[i]->degree[2];
-		current->part[i]->size = 3;
-	}
-	return current;
-}
-
-void Skeleton::setFrame(int i) {
-	animate_frame = i;
-	drawnState = animation.at(i);
-	drawnState_n = animation.at(i);
-}
-
-int Skeleton::getFrame() {
-	return animate_frame;
+DOF Skeleton::getDof(int i) {
+	return root[i].dof;
 }
 
 color *Skeleton::colorAsID(bone *b) {

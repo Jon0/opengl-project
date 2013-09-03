@@ -36,6 +36,7 @@ typedef int DOF;
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
 struct pose {
+	Vec3D *position;
 	Quaternion *angle;
 };
 
@@ -72,46 +73,34 @@ typedef color *(Skeleton::*colorfunc)(bone *);
 
 class Skeleton {
 public:
-	Skeleton( int num, bone *bones );
+	Skeleton( int, bone * );
 	~Skeleton();
-	void addState();
-	void display();
-	void defualtPose(bool);
-	void animate(bool);
-	void setPlaySpeed(int s);
-	int selectMouse(int, int, GLfloat *, GLfloat *);
+
+	void display(pose *p);
+	int getNumBones();
+	int selectMouse(int, int, pose *p);
 	void setSelection(int);
-	void modSelection(float, float, float);
 	bool hasSelection();
-	void setFrame(int);
-	int getFrame();
-	Vec3D *getCentre();
+	DOF getDof(int);
+
 protected:
-	state *makeState();
-	state *copyState(state *);
+	void deleteBones(bone *);
+	void display(bone *, GLUquadric *, pose *p);
+	void display_cylinder(GLUquadric *, float, float, float, float, bool);
+
 private:
 	colorfunc cf;
 	GLubyte pix [4]; // buffer to return selection
-
 	int numBones, selIndex, colors[8];
-	float animate_frame, frame_rate;
+
 
 	// array of bones
 	bone *root;
 	bone *select;
-
-	state *drawnState;	// current pose to draw
-	state *drawnState_n;	// current pose to draw
 	state *idle;	// Default pose
-	vector<state *> animation;
 	color *cStandard, *cAsId;
 
-	bool show_animate;
-
-	void deleteBones(bone *);
-	void display(bone *, GLUquadric *);
-	void displayId(bone *, GLUquadric *);
-	void display_cylinder(GLUquadric *, float, float, float, float, bool);
+	// color functions
 	color *colorAsID(bone *);
 	color *colorStandard(bone *);
 };

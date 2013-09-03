@@ -11,6 +11,7 @@
 #include "../view/Camera.h"
 #include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
+#include "../geometry/Animation.h"
 
 namespace std {
 
@@ -24,9 +25,11 @@ public:
 	void keyPressed(unsigned char);
 	virtual void display();
 protected:
+	int selectedBone;
 	int clickx, clicky;
 	SkeletonLoader *loader;
 	Skeleton *skeleton;
+	Animation *animation;
 };
 
 } /* namespace std */

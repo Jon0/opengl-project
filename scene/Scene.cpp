@@ -11,10 +11,12 @@
 namespace std {
 
 Scene::Scene(): Camera() {
+	selectedBone = 0;
 	clickx = clicky = 0;
 	const char *filename = "assets/priman.asf";
 	loader = new SkeletonLoader();
 	skeleton = loader->readASF((char *)filename);
+	animation = new Animation(skeleton);
 }
 
 Scene::~Scene() {
@@ -24,13 +26,13 @@ Scene::~Scene() {
 int Scene::clickInner(int x, int y) {
 	clickx = x;
 	clicky = y;
-	skeleton->selectMouse(x, y, getProjMatrix(), getModelMatrix());
+	selectedBone = skeleton->selectMouse(x, y, animation->currentPose());
 	return false;
 }
 
 int Scene::dragInner(int x, int y) {
-	if ( skeleton->hasSelection() ) {
-		skeleton->modSelection(x - clickx, y - clicky, 0);
+	if ( selectedBone >= 0 ) {
+		animation->modSelection(selectedBone, x - clickx, y - clicky, 0);
 		clickx = x;
 		clicky = y;
 		return true;
@@ -42,26 +44,28 @@ int Scene::dragInner(int x, int y) {
 void Scene::keyPressed(unsigned char c) {
 	if (c == 'a') {
 		cout << "add state" << endl;
-		skeleton->addState();
+		animation->addState();
 	}
 	else if (c == 'p') {
 		cout << "play" << endl;
-		skeleton->animate(true);
+		animation->animate(true);
 	}
 	else if (c == 'q') {
 		cout << "reset" << endl;
-		skeleton->setFrame(0);
+		animation->setFrame(0);
 	}
 	else if (c == 'w') {
-		int i = skeleton->getFrame() + 1;
+		int i = animation->getFrame() + 1;
 		cout << "set frame " << i << endl;
-		skeleton->setFrame(i);
+		animation->setFrame(i);
 	}
 }
 
 void Scene::display() {
 	if (skeleton) {
-		skeleton->display();
+		skeleton->setSelection(selectedBone);
+		skeleton->display( animation->currentPose() );
+		//animation->update( time );
 	}
 }
 

@@ -117,9 +117,7 @@ GLfloat *Camera::getModelMatrix() {
 void Camera::turn(Quaternion *current) {
 	if (!click) return;
 	Quaternion drag = *current * click->multiplicativeInverse();
-	Quaternion *new_cam_angle = new Quaternion(drag * *cam_angle);
-	if (cam_angle) delete cam_angle;
-	cam_angle = new_cam_angle;
+	cam_angle->rotate(drag);
 }
 
 Quaternion *Camera::getArc(int ix, int iy) {

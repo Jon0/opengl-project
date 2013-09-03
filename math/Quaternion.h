@@ -32,6 +32,7 @@ public:
 	Vec3D vector() const;
 	float firstValue() const;
 	void print() const;
+	void rotate(Quaternion &);
 
 	friend Quaternion operator+(const Quaternion&, const Quaternion&);
 	friend Quaternion operator-(const Quaternion&, const Quaternion&);

@@ -158,6 +158,14 @@ Quaternion& Quaternion::operator=(const Quaternion& q) {
 	return *this;
 }
 
+void Quaternion::rotate(Quaternion &other) {
+	Quaternion new_q = other * *this;
+	a = new_q.a;
+	b = new_q.b;
+	c = new_q.c;
+	d = new_q.d;
+}
+
 Quaternion operator+(const Quaternion& q1, const Quaternion& q2) {
 	Quaternion q(q1.a + q2.a, q1.b + q2.b, q1.c + q2.c, q1.d + q2.d);
 	return q;
