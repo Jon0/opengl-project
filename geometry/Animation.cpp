@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <math.h>
 #include "Animation.h"
 
@@ -84,11 +85,23 @@ void Animation::rollSelection(int id, float f) {
 	}
 
 	pose *p = &v_pose.at(animate_frame);
-	Vec3D v = p->angle[id].vector();
-	Quaternion q(f, v);
-	Quaternion k = *skeleton->getBoneRot(id) * q.multiplicativeInverse();
+	bone *b = skeleton->getBone(id);
+	//Vec3D v(-b->dirx, -b->diry, -b->dirz); //p->angle[id].vector();
 
-	p->angle[id].rotate( k );
+
+	Quaternion h(0, b->dirx, b->diry, b->dirz);
+	Quaternion i = h * b->rotation->multiplicativeInverse();
+
+
+	//Vec3D v(0, 1, 0);
+	Vec3D v = i.vector();
+	cout << v.getX() << ", " << v.getY() << ", " << v.getZ() << endl;
+
+	Quaternion q(f, v);
+	//Quaternion k = q*i;
+	//Quaternion m = q * k * q.multiplicativeInverse();
+
+	p->angle[id].rotate( q );
 
 }
 

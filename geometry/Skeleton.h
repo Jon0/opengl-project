@@ -70,6 +70,7 @@ public:
 	void display(pose *p);
 	int getNumBones();
 	bone *getBone(char *);
+	bone *getBone(int);
 	int selectMouse(int, int, pose *p);
 	void setSelection(int);
 	bool hasSelection();

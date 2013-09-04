@@ -83,6 +83,10 @@ bone *Skeleton::getBone(char *name) {
 	return NULL;
 }
 
+bone *Skeleton::getBone(int ind) {
+	return &root[ind];
+}
+
 // [Assignment2] you may need to revise this function
 void Skeleton::display( pose *p ) {
 	if ( root == NULL ) {
