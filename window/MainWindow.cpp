@@ -51,15 +51,14 @@ MainWindow::~MainWindow() {
 void MainWindow::display() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	for (auto &view: g_view) {
-		view->setView();
+		((ViewInterface *) view )->setView();
 	}
 	glutSwapBuffers();
 }
 
 void MainWindow::reshape(int x, int y) {
 	for (auto view : g_view) {
-		ViewInterface *i = view;
-		i->resize(x, y);
+		((ViewInterface *) view )->resize(x, y);
 	}
 	wnd_width = x;
 	wnd_height = y;

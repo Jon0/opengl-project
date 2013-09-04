@@ -10,14 +10,15 @@
 
 namespace std {
 
-Camera::Camera() {
+Camera::Camera():
+		focus(0, 0, 0),
+		cam_angle(1, 0, 0, 0),
+		click_old(1, 0, 0, 0),
+		click_new(1, 0, 0, 0) {
 	cam_aspect = 1.0;
-	cam_angle = new Quaternion(1, 0, 0, 0);
-	focus = new Vec3D(0.0, 0.0, 0.0);
 	viewzoom = 100.0;
 
 	// mouse action settings
-	click = NULL;
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
 }
@@ -40,10 +41,10 @@ void Camera::setView() {
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
 
-	cam_angle->toMatrix(temp_matrix);
+	cam_angle.toMatrix(temp_matrix);
 	glMultMatrixf(temp_matrix);
 
-	float x = focus->getX(), y = focus->getY(), z = focus->getZ();
+	float x = focus.getX(), y = focus.getY(), z = focus.getZ();
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 
@@ -56,11 +57,6 @@ void Camera::resize(int x, int y) {
 	arcball_x = (x / 2.0);
 	arcball_y = (y / 2.0);
 	arcball_radius = (x / 2.0);
-}
-
-void Camera::setClick(Quaternion *q) {
-	if (click) delete click;
-	click = q;
 }
 
 int Camera::mouseClicked(int button, int state, int x, int y) {
@@ -76,7 +72,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 		return true;
 	}
 	else if (!state) {
-		setClick( getArc(arcball_x, arcball_y, x, y, arcball_radius) );	// initial click down
+		getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_old ); // initial click down
 		return true;
 	}
 	return false;
@@ -87,9 +83,9 @@ int Camera::mouseDragged(int x, int y) {
 	if ( dragInner(x, y) ) return true;
 
 	if (button_state[0]) {
-		Quaternion *current = getArc(arcball_x, arcball_y, x, y, arcball_radius);
-		turn(current);
-		setClick(current);
+		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
+		turn(&click_new);
+		click_old = click_new;
 		return true;
 	}
 	return false;
@@ -114,22 +110,23 @@ GLfloat *Camera::getModelMatrix() {
 }
 
 void Camera::turn(Quaternion *current) {
-	if (!click) return;
-	Quaternion drag = *current * click->multiplicativeInverse();
-	cam_angle->rotate(drag);
+	Quaternion drag = *current * click_old.multiplicativeInverse();
+	cam_angle.rotate(drag);
 }
 
-Quaternion *Camera::getArc(int arcx, int arcy, int ix, int iy, float rad) {
+Quaternion *Camera::getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
 	float x = (ix - arcx) / rad;
 	float y = (iy - arcy) / rad;
 
 	// check click is inside the arcball radius
 	if (x*x + y*y < 1.0) {
 		float z = sqrt(1 - (x*x + y*y));
+		*result = Quaternion(0, x, y, z);
 		return new Quaternion(0, x, y, z);
 	}
 	else {
 		float len = sqrt(x*x + y*y);
+		*result = Quaternion(0, x / len, y / len, 0);
 		return new Quaternion(0, x / len, y / len, 0);
 	}
 }

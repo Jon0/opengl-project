@@ -20,15 +20,13 @@ public:
 	Scene();
 	virtual ~Scene();
 
+	void getBoneAlignment(Quaternion, Quaternion *);
 	virtual int clickInner(int, int);
 	virtual int dragInner(int, int);
 	void keyPressed(unsigned char);
 	virtual void display();
 protected:
-	int selectedBone;
-	int clickx, clicky;
-	float roll;
-	Quaternion *click_q;
+	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;
 	Skeleton *skeleton;
 	Animation *animation;

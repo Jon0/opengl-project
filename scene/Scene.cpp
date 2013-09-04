@@ -14,8 +14,6 @@ namespace std {
 Scene::Scene(): Camera() {
 	selectedBone = 0;
 	clickx = clicky = 0;
-	click_q = NULL;
-	roll = 0.0;
 	const char *filename = "assets/priman.asf";
 	loader = new SkeletonLoader();
 	skeleton = loader->readASF((char *)filename);
@@ -26,6 +24,12 @@ Scene::~Scene() {
 	delete skeleton;
 }
 
+void Scene::getBoneAlignment(Quaternion current, Quaternion *result) {
+	// reverse all existing rotations in order
+	Quaternion k = cam_angle * *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
+	*result = k.multiplicativeInverse() * current * k;
+}
+
 int Scene::clickInner(int x, int y) {
 	if (button_state[0]) {
 		if ( selectedBone >= 0 ) {
@@ -33,15 +37,7 @@ int Scene::clickInner(int x, int y) {
 			int dx = x - p[0], dy = y - p[1];
 			int d = sqrt(dx*dx + dy*dy);
 
-			// mouse wheel
-			if (button_state[3]) {
-				cout << "up" << endl;
-				animation->rollSelection(selectedBone, 5.0);
-			}
-			else if (button_state[4]) {
-				cout << "down" << endl;
-				animation->rollSelection(selectedBone, -5.0);
-			}
+
 			if ( d > 200.0 ) {
 				selectedBone = skeleton->selectMouse(x, y, animation->currentPose());
 			}
@@ -51,33 +47,44 @@ int Scene::clickInner(int x, int y) {
 		}
 
 	}
-	click_q = NULL;
+
 	clickx = x;
 	clicky = y;
+
+
+	// mouse wheel
+	if (button_state[3]) {
+		cout << "up" << endl;
+		animation->rollSelection(selectedBone, 5.0);
+	}
+	else if (button_state[4]) {
+		cout << "down" << endl;
+		animation->rollSelection(selectedBone, -5.0);
+	}
+
 	return selectedBone >= 0;
 }
 
 int Scene::dragInner(int x, int y) {
 	if ( selectedBone >= 0 ) {
 		GLdouble *p = skeleton->selectionCenter();
-		Quaternion *current = getArc(p[0], p[1], x, y, 200.0);
+		Quaternion temp;
 
-		Quaternion k = *cam_angle * *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
-		Quaternion final = k.multiplicativeInverse() * *current * k;
-
-
-		if (click_q) {
-			Quaternion drag = final * click_q->multiplicativeInverse();
-			animation->modSelection(selectedBone, drag); // a
-
+		// use old mouse position to find starting quaternion
+		if (clickx > 0 && clicky > 0) {
+			getArc( p[0], p[1], clickx, clicky, 200.0, &temp );
+			getBoneAlignment(temp, &click_old);
+			clickx = clicky = 0;
 		}
-		click_q = new Quaternion(final);
-		//animation->modSelection(selectedBone, (x - clickx)/ 20.0, (y - clicky)/ 20.0, 0);
-		clickx = x;
-		clicky = y;
+
+		// modify bone orientation
+		getArc( p[0], p[1], x, y, 200.0, &temp );
+		getBoneAlignment(temp, &click_new);
+		Quaternion drag = click_new * click_old.multiplicativeInverse();
+		animation->modSelection(selectedBone, drag);
+		click_old = click_new;
 		return true;
 	}
-
 	return false;
 }
 

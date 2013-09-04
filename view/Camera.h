@@ -30,21 +30,18 @@ public:
 	GLfloat *getModelMatrix();
 	void turn(Quaternion *);
 protected:
-	Vec3D *focus;
-	Quaternion *cam_angle;
+	Vec3D focus;
+	Quaternion cam_angle, click_old, click_new;
 	bool button_state[5];
-	Quaternion *getArc(int, int, int, int, float);
+	Quaternion *getArc(int, int, int, int, float, Quaternion *);
 	virtual int clickInner(int, int) = 0;
 	virtual int dragInner(int, int) = 0;
 	virtual void display() = 0;
 private:
-	Quaternion *click;
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16];
 	GLfloat proj_matrix [16];
 	GLfloat model_matrix [16];
-	void setClick(Quaternion *q);
-
 };
 
 } /* namespace std */
