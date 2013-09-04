@@ -118,6 +118,8 @@ void Animation::modSelection(int id, Quaternion &q) {
 	pose *p = &v_pose.at(animate_frame);
 	p->angle[id].rotate( q );
 
+	// quaternion to eular angle, ensure bone is within limits
+
 	//DOF dof = skeleton->getDof(id);
 	//if ((dof & DOF_RX) == DOF_RX) {
 	//	drawnState->part[id]->degree[0] += x;

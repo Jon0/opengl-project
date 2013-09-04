@@ -148,13 +148,17 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	    glGetIntegerv( GL_VIEWPORT, viewport );
 		gluProject(0, 0, 0, modelview, projection, viewport, &selPoint[0], &selPoint[1], &selPoint[2]);
 
-		selQuat = new Quaternion( 1, 0, 0, 0 );
-		bone *b = root->parent;
-		while(b) {
-			Quaternion q = p->angle[b->index].multiplicativeInverse();
-			selQuat->rotate( q );
-			b = b->parent;
-		}
+		GLfloat modelviewf[16];
+		glGetFloatv( GL_PROJECTION_MATRIX, modelviewf );
+		selQuat = new Quaternion(modelviewf);
+
+		//selQuat = new Quaternion( 1, 0, 0, 0 );
+		//bone *b = root->parent;
+		//while(b) {
+		//	Quaternion q = p->angle[b->index].multiplicativeInverse();
+		//	selQuat->rotateb( q );
+		//	b = b->parent;
+		//}
 
 	}
 	else {
