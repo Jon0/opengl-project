@@ -27,6 +27,8 @@ public:
 protected:
 	int selectedBone;
 	int clickx, clicky;
+	float roll;
+	Quaternion *click_q;
 	SkeletonLoader *loader;
 	Skeleton *skeleton;
 	Animation *animation;

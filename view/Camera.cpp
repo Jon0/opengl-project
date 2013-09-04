@@ -76,7 +76,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 		return true;
 	}
 	else if (!state) {
-		setClick( getArc(x, y) );	// initial click down
+		setClick( getArc(arcball_x, arcball_y, x, y, arcball_radius) );	// initial click down
 		return true;
 	}
 	return false;
@@ -87,7 +87,7 @@ int Camera::mouseDragged(int x, int y) {
 	if ( dragInner(x, y) ) return true;
 
 	if (button_state[0]) {
-		Quaternion *current = getArc(x, y);
+		Quaternion *current = getArc(arcball_x, arcball_y, x, y, arcball_radius);
 		turn(current);
 		setClick(current);
 		return true;
@@ -119,9 +119,9 @@ void Camera::turn(Quaternion *current) {
 	cam_angle->rotate(drag);
 }
 
-Quaternion *Camera::getArc(int ix, int iy) {
-	float x = (ix - arcball_x) / arcball_radius;
-	float y = (iy - arcball_y) / arcball_radius;
+Quaternion *Camera::getArc(int arcx, int arcy, int ix, int iy, float rad) {
+	float x = (ix - arcx) / rad;
+	float y = (iy - arcy) / rad;
 
 	// check click is inside the arcball radius
 	if (x*x + y*y < 1.0) {

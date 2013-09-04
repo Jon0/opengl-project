@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
 #include "Animation.h"
 
@@ -79,6 +78,20 @@ void Animation::animate(bool a) {
 	show_animate = a;
 }
 
+void Animation::rollSelection(int id, float f) {
+	if ( id < 0 ) {
+		return;
+	}
+
+	pose *p = &v_pose.at(animate_frame);
+	Vec3D v = p->angle[id].vector();
+	Quaternion q(f, v);
+	Quaternion k = *skeleton->getBoneRot(id) * q.multiplicativeInverse();
+
+	p->angle[id].rotate( k );
+
+}
+
 void Animation::modSelection(int id, float x, float y, float z) {
 	Quaternion q = *fromEular(x, y, z);
 	modSelection( id, q );
@@ -88,7 +101,7 @@ void Animation::modSelection(int id, Quaternion &q) {
 	if ( id < 0 ) {
 		return;
 	}
-	cout << "modify " << animate_frame << endl;
+
 	pose *p = &v_pose.at(animate_frame);
 	p->angle[id].rotate( q );
 

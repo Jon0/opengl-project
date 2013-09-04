@@ -46,8 +46,10 @@ struct bone {
 	char* name;
 	float dirx, diry, dirz;
 	float rotx, roty, rotz;
+	Quaternion *rotation;
 	DOF dof;
 	float length;
+	bone *parent;
 	bone** children;
 	int numChildren;
 };
@@ -72,6 +74,9 @@ public:
 	void setSelection(int);
 	bool hasSelection();
 	DOF getDof(int);
+	GLdouble *selectionCenter();
+	Quaternion *getSelectionRot();
+	Quaternion *getBoneRot(int);
 
 protected:
 	void deleteBones(bone *);
@@ -79,11 +84,12 @@ protected:
 	void display_cylinder(GLUquadric *, float, float, float, float, bool);
 
 private:
+	int numBones, selIndex, colors[8];
 	colorfunc cf;
 	GLubyte pix[4]; // buffer to return selection
 	GLfloat temp_mat[16];
-	int numBones, selIndex, colors[8];
-
+	GLdouble selPoint[3];
+	Quaternion *selQuat;
 
 	// array of bones
 	bone *root;

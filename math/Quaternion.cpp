@@ -74,7 +74,6 @@ Quaternion::Quaternion(float mat[16]) {
 
 Quaternion::Quaternion(const Quaternion& q) :
 		w(q.w), x(q.x), y(q.y), z(q.z) {
-
 }
 
 Quaternion::~Quaternion() {
@@ -166,6 +165,14 @@ void Quaternion::rotate(Quaternion &other) {
 	z = new_q.z;
 }
 
+void Quaternion::rotateb(Quaternion &other) {
+	Quaternion new_q = *this * other;
+	w = new_q.w;
+	x = new_q.x;
+	y = new_q.y;
+	z = new_q.z;
+}
+
 Quaternion operator+(const Quaternion& q1, const Quaternion& q2) {
 	Quaternion q(q1.w + q2.w, q1.x + q2.x, q1.y + q2.y, q1.z + q2.z);
 	return q;
@@ -223,11 +230,13 @@ Quaternion slerp(const Quaternion& p1, const Quaternion& q1, float t) {
 	}
 }
 
+/* convert angles in degrees to quaternion */
 Quaternion *fromEular(float x, float y, float z) {
-	return new Quaternion(cos(x/2.0)*cos(y/2.0)*cos(z/2.0) + sin(x/2.0)*sin(y/2.0)*sin(z/2.0),
-				sin(x/2.0)*cos(y/2.0)*cos(z/2.0) - cos(x/2.0)*sin(y/2.0)*sin(z/2.0),
-				cos(x/2.0)*sin(y/2.0)*cos(z/2.0) + sin(x/2.0)*cos(y/2.0)*sin(z/2.0),
-				cos(x/2.0)*cos(y/2.0)*sin(z/2.0) - sin(x/2.0)*sin(y/2.0)*cos(z/2.0));
+	double m = 0.0174532925 / 2.0;
+	return new Quaternion(cos(x*m)*cos(y*m)*cos(z*m) + sin(x*m)*sin(y*m)*sin(z*m),
+				sin(x*m)*cos(y*m)*cos(z*m) - cos(x*m)*sin(y*m)*sin(z*m),
+				cos(x*m)*sin(y*m)*cos(z*m) + sin(x*m)*cos(y*m)*sin(z*m),
+				cos(x*m)*cos(y*m)*sin(z*m) - sin(x*m)*sin(y*m)*cos(z*m));
 }
 
 } /* namespace std */

@@ -33,6 +33,7 @@ public:
 	float firstValue() const;
 	void print() const;
 	void rotate(Quaternion &);
+	void rotateb(Quaternion &);
 
 	friend Quaternion operator+(const Quaternion&, const Quaternion&);
 	friend Quaternion operator-(const Quaternion&, const Quaternion&);

@@ -17,8 +17,8 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
-#include <iostream>
 #include <GL/glut.h>
 
 #include "Skeleton.h"
@@ -29,6 +29,7 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
+	selQuat = NULL;
 	selIndex = -1;
 
 
@@ -94,7 +95,9 @@ void Skeleton::display( pose *p ) {
 		printf("Not enough memory to allocate space to draw\n");
 		return;
 	}
+
 	//Actually draw the skeleton
+	//gluQuadricDrawStyle(q, r);
 	display(root, quad, p);
 
 	gluDeleteQuadric(quad);
@@ -108,17 +111,13 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	}
 	color *cl = (this->*cf)(root);
 
-	//gluQuadricDrawStyle(q, r);
-	//state_rot *c_rot = drawnState->part[root->index];
-	//state_rot *n_rot = drawnState_n->part[root->index];
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
 		glTranslatef(p->position.x, p->position.y, p->position.z);
 	}
 
-	glRotatef(root->rotz, 0, 0, 1);
-	glRotatef(root->roty, 0, 1, 0);
-	glRotatef(root->rotx, 1, 0, 0);
+	root->rotation->toMatrix(temp_mat);
+	glMultMatrixf(temp_mat);
 
 	// rgb axis display
 	glColor4ubv((unsigned char *) cl->x);
@@ -128,42 +127,37 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	//float time = fmod(animate_frame, 1.0);
-	//float a = 0; //c_rot->degree[0]*(1-time) + n_rot->degree[0]*time;
-	//float b = 0; //c_rot->degree[1]*(1-time) + n_rot->degree[1]*time;
-	//float c = 0; //c_rot->degree[2]*(1-time) + n_rot->degree[2]*time;
-	//glRotatef(a, 0, 0, 1);
-	//glRotatef(b, 0, 1, 0);
-	//glRotatef(c, 1, 0, 0);
-
-
-	//p->angle[root->index].print();
 	p->angle[root->index].toMatrix(temp_mat);
-	//temp_mat[0] = 1;
-	//temp_mat[5] = 1;
-	//for (int i = 0; i < 16; ++i) cout << temp_mat[i];
-	//cout << endl;
-	//Quaternion *qt = new Quaternion(temp_mat);
-	//qt->print();
 	glMultMatrixf(temp_mat);
 
-
-
-
-	glRotatef(root->rotx, -1, 0, 0);
-	glRotatef(root->roty, 0, -1, 0);
-	glRotatef(root->rotz, 0, 0, -1);
+	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
+	glMultMatrixf(temp_mat);
 
 	if (root == select) {
 		glColor4ubv((unsigned char *) cl->select);
 		gluSphere(q, 0.50, 12, 12);
+	    GLint viewport[4];
+	    GLdouble modelview[16];
+	    GLdouble projection[16];
+	    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	    glGetIntegerv( GL_VIEWPORT, viewport );
+		gluProject(0, 0, 0, modelview, projection, viewport, &selPoint[0], &selPoint[1], &selPoint[2]);
+
+		selQuat = new Quaternion( 1, 0, 0, 0 );
+		bone *b = root->parent;
+		while(b) {
+			Quaternion q = p->angle[b->index].multiplicativeInverse();
+			selQuat->rotate( q );
+			b = b->parent;
+		}
+
 	}
 	else {
 		glColor4ubv((unsigned char *) cl->sphere);
 		gluSphere(q, 0.25, 12, 12);
 		glColor4ubv((unsigned char *) cl->bone);
 	}
-
 	display_cylinder(q, root->dirx, root->diry, root->dirz, root->length, false);
 
 	// draw children, translate into position
@@ -234,6 +228,18 @@ bool Skeleton::hasSelection() {
 
 DOF Skeleton::getDof(int i) {
 	return root[i].dof;
+}
+
+GLdouble *Skeleton::selectionCenter() {
+	return selPoint;
+}
+
+Quaternion *Skeleton::getSelectionRot() {
+	return selQuat;
+}
+
+Quaternion *Skeleton::getBoneRot(int id) {
+	return root[id].rotation;
 }
 
 color *Skeleton::colorAsID(bone *b) {

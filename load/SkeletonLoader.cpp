@@ -6,6 +6,7 @@
  */
 
 #include <string.h>
+#include <iostream>
 #include "SkeletonLoader.h"
 
 namespace std {
@@ -35,9 +36,11 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 		root[i].rotx = 0;
 		root[i].roty = 0;
 		root[i].rotz = 0;
+		root[i].rotation = NULL;
 		root[i].dof = DOF_NONE;
 		root[i].length = 0;
 		root[i].name = NULL;
+		root[i].parent = NULL;
 		root[i].numChildren = 0;
 		root[i].children = (bone**) malloc(sizeof(bone*) * 5);
 	}
@@ -50,6 +53,7 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 	root[0].name = name;
 	root[0].dof = DOF_ROOT;
 	root[0].index = 0;
+	root[0].rotation = new Quaternion(1, 0, 0, 0);
 
 
 	int numBones = 1;
@@ -83,6 +87,7 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 	bone *bones = new bone [numBones];
 	for (int i = 0; i < numBones; ++i) {
 		memcpy(&bones[i], &root[i], sizeof(bone));
+		if (root[i].parent) bones[i].parent = &bones[root[i].parent->index];
 		bones[i].children = (bone**) malloc(sizeof(bone*) * 5);
 		for (int j = 0; j < root[i].numChildren; ++j) {
 			bones[i].children[j] = &bones[root[i].children[j]->index];
@@ -238,6 +243,7 @@ void SkeletonLoader::readHierarchy(char* buff, FILE* file, int &numBones, bone *
 					}
 					rootBone->children[rootBone->numChildren] = other;
 					rootBone->numChildren++;
+					other->parent = rootBone;
 					p += strlen(t1) + 1;
 
 				}
@@ -315,6 +321,7 @@ void SkeletonLoader::readBone(char* buff, FILE* file, int &numBones, bone *root 
 					root[numBones].rotx = x;
 					root[numBones].roty = y;
 					root[numBones].rotz = z;
+					root[numBones].rotation = fromEular(x, y, z);
 				}
 				//There are more things but they are not needed for the core
 			}

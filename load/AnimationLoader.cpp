@@ -55,12 +55,12 @@ Animation *AnimationLoader::readAMC(FILE *file, int* , int &, Skeleton *skeleton
 	}
 
 	printf("Read %d frames\n", numStates);
+	return new Animation(skeleton);
 }
 
 void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skeleton) {
 	char *start = buff;
 	// read line as a set of angles, to apply to a particular part
-	bool found = false;
 	char n[32];
 	float eularAngle[3];
 	sscanf(start, "%s ", n);
@@ -111,8 +111,6 @@ void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skel
 		}
 
 		current->angle[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
-
-		found = true;
 	}
 	else {
 		cout << n << " not found" << endl;

@@ -26,6 +26,7 @@ public:
 	void update(float);
 	void addState();
 	void setPlaySpeed(int);
+	void rollSelection(int, float);
 	void modSelection(int, float, float, float);
 	void modSelection(int id, Quaternion &q);
 	void animate(bool);
