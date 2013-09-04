@@ -62,9 +62,7 @@ int Scene::dragInner(int x, int y) {
 		GLdouble *p = skeleton->selectionCenter();
 		Quaternion *current = getArc(p[0], p[1], x, y, 200.0);
 
-		//Quaternion j = cam_angle->multiplicativeInverse();
-
-		Quaternion k = *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
+		Quaternion k = *cam_angle * *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
 		Quaternion final = k.multiplicativeInverse() * *current * k;
 
 

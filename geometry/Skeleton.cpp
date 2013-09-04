@@ -153,14 +153,13 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 		selQuat = new Quaternion( 1, 0, 0, 0 );
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = p->angle[b->index];//.multiplicativeInverse();
-			//Quaternion bri = b->rotation->multiplicativeInverse();
-			//selQuat->rotate( *b->rotation );
+			Quaternion q = p->angle[b->index];
+			Quaternion bri = b->rotation->multiplicativeInverse();
+			selQuat->rotate( bri );
 			selQuat->rotate( q );
-			//selQuat->rotate( bri );
+			selQuat->rotate( *b->rotation );
 			b = b->parent;
 		}
-
 	}
 	else {
 		glColor4ubv((unsigned char *) cl->sphere);
