@@ -77,7 +77,7 @@ public:
 	DOF getDof(int);
 	GLdouble *selectionCenter();
 	Quaternion *getSelectionRot();
-	Quaternion *getBoneRot(int);
+	Quaternion *getBoneAxis(int);
 
 protected:
 	void deleteBones(bone *);

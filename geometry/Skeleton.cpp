@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <iostream>
 #include <GL/glut.h>
 
 #include "Skeleton.h"
@@ -148,17 +149,17 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	    glGetIntegerv( GL_VIEWPORT, viewport );
 		gluProject(0, 0, 0, modelview, projection, viewport, &selPoint[0], &selPoint[1], &selPoint[2]);
 
-		GLfloat modelviewf[16];
-		glGetFloatv( GL_PROJECTION_MATRIX, modelviewf );
-		selQuat = new Quaternion(modelviewf);
-
-		//selQuat = new Quaternion( 1, 0, 0, 0 );
-		//bone *b = root->parent;
-		//while(b) {
-		//	Quaternion q = p->angle[b->index].multiplicativeInverse();
-		//	selQuat->rotateb( q );
-		//	b = b->parent;
-		//}
+		// sum the rotations back to the root
+		selQuat = new Quaternion( 1, 0, 0, 0 );
+		bone *b = root->parent;
+		while(b) {
+			Quaternion q = p->angle[b->index];//.multiplicativeInverse();
+			//Quaternion bri = b->rotation->multiplicativeInverse();
+			//selQuat->rotate( *b->rotation );
+			selQuat->rotate( q );
+			//selQuat->rotate( bri );
+			b = b->parent;
+		}
 
 	}
 	else {
@@ -246,7 +247,7 @@ Quaternion *Skeleton::getSelectionRot() {
 	return selQuat;
 }
 
-Quaternion *Skeleton::getBoneRot(int id) {
+Quaternion *Skeleton::getBoneAxis(int id) {
 	return root[id].rotation;
 }
 

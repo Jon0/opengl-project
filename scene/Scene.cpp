@@ -63,19 +63,17 @@ int Scene::dragInner(int x, int y) {
 		Quaternion *current = getArc(p[0], p[1], x, y, 200.0);
 
 		//Quaternion j = cam_angle->multiplicativeInverse();
-		//current->rotate( j );
 
-		Quaternion i = skeleton->getBoneRot(selectedBone)->multiplicativeInverse();
-		current->rotate( i );
+		Quaternion k = *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
+		Quaternion final = k.multiplicativeInverse() * *current * k;
+
 
 		if (click_q) {
-			Quaternion drag = *current * click_q->multiplicativeInverse();
-			Quaternion k = *skeleton->getSelectionRot();
-			Quaternion a = k * drag * k.multiplicativeInverse();
-			animation->modSelection(selectedBone, a);
+			Quaternion drag = final * click_q->multiplicativeInverse();
+			animation->modSelection(selectedBone, drag); // a
 
 		}
-		click_q = current;
+		click_q = new Quaternion(final);
 		//animation->modSelection(selectedBone, (x - clickx)/ 20.0, (y - clicky)/ 20.0, 0);
 		clickx = x;
 		clicky = y;
