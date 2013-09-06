@@ -40,7 +40,6 @@ void Camera::setView() {
 	// setup camera position
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
-
 	cam_angle.toMatrix(temp_matrix);
 	glMultMatrixf(temp_matrix);
 

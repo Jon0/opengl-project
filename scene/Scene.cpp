@@ -15,9 +15,12 @@ Scene::Scene(): Camera() {
 	selectedBone = 0;
 	clickx = clicky = 0;
 	const char *filename = "assets/priman.asf";
+	const char *filename_a = "assets/kick.amc";
 	loader = new SkeletonLoader();
+	aloader = new AnimationLoader();
 	skeleton = loader->readASF((char *)filename);
-	animation = new Animation(skeleton);
+	animation = aloader->readAMC(filename_a, skeleton);
+	//animation = new Animation(skeleton);
 }
 
 Scene::~Scene() {
@@ -54,11 +57,9 @@ int Scene::clickInner(int x, int y) {
 
 	// mouse wheel
 	if (button_state[3]) {
-		cout << "up" << endl;
 		animation->rollSelection(selectedBone, 5.0);
 	}
 	else if (button_state[4]) {
-		cout << "down" << endl;
 		animation->rollSelection(selectedBone, -5.0);
 	}
 

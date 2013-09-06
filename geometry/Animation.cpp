@@ -21,6 +21,18 @@ Animation::Animation(Skeleton *s) {
 	addState();
 }
 
+Animation::Animation( int numPoses, pose **states, Skeleton *s) {
+	skeleton = s;
+	show_animate = false;
+	animate_frame = 0.0;
+	frame_rate = 0.01;
+	current.angle = new Quaternion [ s->getNumBones() ];
+
+	for (int i = 0; i < numPoses; ++i) {
+		v_pose.push_back( *states[i] );
+	}
+}
+
 Animation::~Animation() {
 	// TODO Auto-generated destructor stub
 }

@@ -9,6 +9,7 @@
 #define SCENE_H_
 
 #include "../view/Camera.h"
+#include "../load/AnimationLoader.h"
 #include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
 #include "../geometry/Animation.h"
@@ -28,6 +29,7 @@ public:
 protected:
 	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;
+	AnimationLoader *aloader;
 	Skeleton *skeleton;
 	Animation *animation;
 };

@@ -22,7 +22,12 @@ AnimationLoader::~AnimationLoader() {
 	// TODO Auto-generated destructor stub
 }
 
-Animation *AnimationLoader::readAMC(FILE *file, int* , int &, Skeleton *skeleton) {
+Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton) {
+	FILE* file = fopen(filename, "r");
+	if (file == NULL) {
+		printf("Failed to open file %s\n", filename);
+		return NULL;
+	}
 	printf("Reading animation\n");
 	int numStates = 0;
 	pose **state_list = new pose *[ maxStates ];
@@ -54,8 +59,13 @@ Animation *AnimationLoader::readAMC(FILE *file, int* , int &, Skeleton *skeleton
 		}
 	}
 
+	delete[] buff;
+	fclose(file);
 	printf("Read %d frames\n", numStates);
-	return new Animation(skeleton);
+	Animation *a = new Animation(numStates, state_list, skeleton);
+
+	delete state_list; // hopefully it gets copied by animation
+	return a;
 }
 
 void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skeleton) {

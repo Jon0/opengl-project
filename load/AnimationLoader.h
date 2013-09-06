@@ -18,7 +18,7 @@ class AnimationLoader {
 public:
 	AnimationLoader();
 	virtual ~AnimationLoader();
-	Animation *readAMC(FILE *, int* , int &, Skeleton *);
+	Animation *readAMC( const char *, Skeleton *);
 
 private:
 	int buffSize, maxStates;

@@ -20,6 +20,7 @@ pose *copyState(int, pose *);
 class Animation {
 public:
 	Animation(Skeleton *);
+	Animation(int, pose **, Skeleton *);
 	virtual ~Animation();
 
 	pose *currentPose();
