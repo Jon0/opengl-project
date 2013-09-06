@@ -53,8 +53,11 @@ void Animation::update(float time) {
 		pose *a = &v_pose.at( (int) animate_frame );
 		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 		float t = fmod(animate_frame, 1.0);
-		int numBones = skeleton->getNumBones();
 
+		current.position = a->position;	// this should use some interpolation
+
+
+		int numBones = skeleton->getNumBones();
 		for (int i = 0; i < numBones; ++i) {
 			current.angle[i] = slerp(a->angle[i], b->angle[i], t);
 		}
