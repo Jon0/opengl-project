@@ -14,6 +14,7 @@ namespace std {
 
 class Spline {
 public:
+	virtual ~Spline {};
 	Vec3D getPoint(float);
 	virtual Vec3D getKeyPoint(int) = 0;
 	virtual int getNumFrames() = 0;
