@@ -8,7 +8,7 @@
 #ifndef VIEWSPLINE_H_
 #define VIEWSPLINE_H_
 
-#include "../geometry/Spline.h"
+#include "../animation/PointList.h"
 #include "../view/Ortho.h"
 
 namespace std {
@@ -22,7 +22,7 @@ public:
 protected:
 	bool play;
 	float time;
-	Spline *spline;
+	PointList *spline;
 	virtual void display();
 	virtual void messageSent(string);
 };

@@ -18,7 +18,7 @@ namespace std {
 pose *makeState(int);
 pose *copyState(int, pose *);
 
-class Animation {
+class Animation: public Spline {
 public:
 	Animation(Skeleton *);
 	Animation(int, pose **, Skeleton *);
@@ -42,7 +42,6 @@ private:
 	Skeleton *skeleton;
 	bool show_animate;
 	float animate_frame, frame_rate;
-	Spline path;
 	vector<pose> v_pose;
 	void setCurrentPose(pose *);
 };

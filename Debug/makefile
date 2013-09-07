@@ -14,6 +14,7 @@ RM := rm -rf
 -include math/subdir.mk
 -include load/subdir.mk
 -include geometry/subdir.mk
+-include animation/subdir.mk
 -include subdir.mk
 -include objects.mk
 

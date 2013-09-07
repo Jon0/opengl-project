@@ -30,4 +30,5 @@ math \
 . \
 load \
 geometry \
+animation \
 

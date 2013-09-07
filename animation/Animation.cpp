@@ -19,6 +19,9 @@ Animation::Animation(Skeleton *s) {
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	addFrame();
+
+	glPointSize(4.0);
+	glEnable(GL_POINTS);
 }
 
 Animation::Animation( int numPoses, pose **states, Skeleton *s) {
@@ -29,9 +32,11 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	for (int i = 0; i < numPoses; ++i) {
-		path.append( states[i]->position );
 		v_pose.push_back( *states[i] );
 	}
+
+	glPointSize(4.0);
+	glEnable(GL_POINTS);
 }
 
 Animation::~Animation() {
@@ -55,7 +60,7 @@ void Animation::update(float time) {
 		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 		float t = fmod(animate_frame, 1.0);
 
-		current.position = path.getPoint(animate_frame); // a->position;
+		current.position = getPoint(animate_frame); // a->position;
 
 		int numBones = skeleton->getNumBones();
 		for (int i = 0; i < numBones; ++i) {
@@ -130,7 +135,7 @@ void Animation::rollSelection(int id, float f) {
 
 	//Vec3D v(0, 1, 0);
 	Vec3D v = i.vector();
-	cout << v.getX() << ", " << v.getY() << ", " << v.getZ() << endl;
+	//cout << v.getX() << ", " << v.getY() << ", " << v.getZ() << endl;
 
 	Quaternion q(f, v);
 	//Quaternion k = q*i;

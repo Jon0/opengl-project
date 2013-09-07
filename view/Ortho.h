@@ -10,7 +10,7 @@
 
 #include <string>
 #include "ViewInterface.h"
-#include "../geometry/Spline.h"
+#include "../animation/Spline.h"
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
 

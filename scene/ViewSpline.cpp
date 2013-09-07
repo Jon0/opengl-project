@@ -13,7 +13,7 @@
 namespace std {
 
 ViewSpline::ViewSpline(): Ortho() {
-	spline = new Spline();
+	spline = new PointList();
 	time = 0.0;
 	play = false;
 }
