@@ -56,12 +56,12 @@ int Scene::clickInner(int x, int y) {
 
 
 	// mouse wheel
-	if (button_state[3]) {
-		animation->rollSelection(selectedBone, 5.0);
-	}
-	else if (button_state[4]) {
-		animation->rollSelection(selectedBone, -5.0);
-	}
+	//if (button_state[3]) {
+	//	animation->rollSelection(selectedBone, 5.0);
+	//}
+	//else if (button_state[4]) {
+	//	animation->rollSelection(selectedBone, -5.0);
+	//}
 
 	return selectedBone >= 0;
 }

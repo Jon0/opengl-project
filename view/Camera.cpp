@@ -14,7 +14,8 @@ Camera::Camera():
 		focus(0, 0, 0),
 		cam_angle(1, 0, 0, 0),
 		click_old(1, 0, 0, 0),
-		click_new(1, 0, 0, 0) {
+		click_new(1, 0, 0, 0),
+		button_state() {
 	cam_aspect = 1.0;
 	viewzoom = 100.0;
 
