@@ -209,14 +209,6 @@ Quaternion operator/(const Quaternion& q1, const float& f) {
 	return q;
 }
 
-Quaternion operator^(const Quaternion &q1, const float &f) {
-	float nl = pow(q1.length(), f);
-
-
-	Quaternion q(q1.w / f, q1.x / f, q1.y / f, q1.z / f);
-	return q;
-}
-
 float dotproduct(const Quaternion& q1, const Quaternion& q2) {
 	float f = q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z;
 	return f;
