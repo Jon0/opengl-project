@@ -12,7 +12,7 @@
 
 namespace std {
 
-void Spline::displayline() {
+void Spline::displayline(float a, float b) {
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_POINTS);
 	int length = getNumFrames();
@@ -23,24 +23,27 @@ void Spline::displayline() {
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float u = 0; u < length; u += 0.01) {
+	for (float u = a; u < b; u += 0.02) {
 		Vec3D v = getPoint(u);
+		//glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
 		glVertex3f(v.getX(), v.getY(), v.getZ());
 	}
 	glEnd();
 
 }
 
+/*
+ * u must be in range (0, length-1)
+ */
 Vec3D Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
 	int length = getNumFrames();
-
-	int v = max(((int) part), 1);
 	int vs[4];
-	for (int i = 0; i < 4; ++i) {
-		vs[i] = ( v-1 + i ) % length;
-	}
+	vs[1] = (int) part;
+	vs[0] = max( vs[1]-1, 0 );
+	vs[2] = min( vs[1]+1, length-1 );
+	vs[3] = min( vs[1]+2, length-1 );
 	return catmull_rom(getKeyPoint(vs[0]), getKeyPoint(vs[1]), getKeyPoint(vs[2]), getKeyPoint(vs[3]), frac);
 }
 

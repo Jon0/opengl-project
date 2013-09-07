@@ -13,6 +13,7 @@ namespace std {
 Camera::Camera():
 		focus(0, 0, 0),
 		cam_angle(1, 0, 0, 0),
+		cam_angle_d(1, 0, 0, 0),
 		click_old(1, 0, 0, 0),
 		click_new(1, 0, 0, 0),
 		button_state() {
@@ -29,6 +30,9 @@ Camera::~Camera() {
 }
 
 void Camera::setView() {
+	cam_angle.rotate(cam_angle_d);
+	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, 0.9);
+
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -72,7 +76,8 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 		return true;
 	}
 	else if (!state) {
-		getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_old ); // initial click down
+		getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_new ); // initial click down
+		click_old = click_new;
 		return true;
 	}
 	return false;
@@ -84,7 +89,7 @@ int Camera::mouseDragged(int x, int y) {
 
 	if (button_state[0]) {
 		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
-		turn(&click_new);
+		cam_angle_d = click_new * click_old.multiplicativeInverse();
 		click_old = click_new;
 		return true;
 	}
@@ -109,6 +114,7 @@ GLfloat *Camera::getModelMatrix() {
 	return model_matrix;
 }
 
+/* this is not used */
 void Camera::turn(Quaternion *current) {
 	Quaternion drag = *current * click_old.multiplicativeInverse();
 	cam_angle.rotate(drag);

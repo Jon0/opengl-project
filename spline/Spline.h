@@ -19,7 +19,7 @@ public:
 	virtual Vec3D getKeyPoint(int) = 0;
 	virtual int getNumFrames() = 0;
 protected:
-	void displayline();
+	void displayline(float a, float b);
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
 };
 

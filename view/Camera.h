@@ -31,7 +31,7 @@ public:
 	void turn(Quaternion *);
 protected:
 	Vec3D focus;
-	Quaternion cam_angle, click_old, click_new;
+	Quaternion cam_angle, cam_angle_d, click_old, click_new;
 	bool button_state[5];
 	Quaternion *getArc(int, int, int, int, float, Quaternion *);
 	virtual int clickInner(int, int) = 0;

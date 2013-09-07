@@ -10,8 +10,8 @@
 
 namespace std {
 
-PointList::PointList() {
-	glPointSize(4.0);
+PointList::PointList(): points() {
+	glPointSize(2.0);
 	glEnable(GL_POINTS);
 }
 
@@ -20,7 +20,7 @@ PointList::~PointList() {
 }
 
 void PointList::display() {
-	displayline();
+	displayline(1, (float)points.size() - 2.0);
 }
 
 void PointList::append(Vec3D &vec) {

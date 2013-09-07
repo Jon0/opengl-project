@@ -15,12 +15,12 @@ Animation::Animation(Skeleton *s) {
 	skeleton = s;
 	show_animate = false;
 	animate_frame = 0.0;
-	frame_rate = 0.5;
+	frame_rate = 0.2;
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	addFrame();
 
-	glPointSize(4.0);
+	glPointSize(2.0);
 	glEnable(GL_POINTS);
 }
 
@@ -28,14 +28,14 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	skeleton = s;
 	show_animate = false;
 	animate_frame = 0.0;
-	frame_rate = 0.5;
+	frame_rate = 0.2;
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
 	}
 
-	glPointSize(4.0);
+	glPointSize(2.0);
 	glEnable(GL_POINTS);
 }
 
@@ -71,7 +71,7 @@ void Animation::update(float time) {
 		setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
 	}
 
-	displayline();
+	displayline(0, v_pose.size());
 }
 
 void Animation::addFrame() {

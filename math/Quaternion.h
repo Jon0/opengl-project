@@ -41,6 +41,7 @@ public:
 	friend Quaternion operator*(const Quaternion&, const float&);
 	friend Quaternion operator/(const Quaternion&, const Quaternion&);
 	friend Quaternion operator/(const Quaternion&, const float&);
+	friend Quaternion operator^(const Quaternion&, const float&);
 	friend float dotproduct(const Quaternion&, const Quaternion&);
 	friend Quaternion slerp(const Quaternion&, const Quaternion&, float);
 };
