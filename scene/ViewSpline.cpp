@@ -46,7 +46,7 @@ void ViewSpline::display() {
 		Vec3D point = spline->getPoint(time);
 		//cout << point.x << ", " << point.y << endl;
 		glPushMatrix();
-		glTranslatef(point.x/2, point.y/2, 0);
+		glTranslatef(point.getX(), point.getY(), point.getZ());
 
 		glColor3f(0.0, 1.0, 0.0);
 		GLUquadric* q = gluNewQuadric();

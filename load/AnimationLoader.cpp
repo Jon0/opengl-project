@@ -88,7 +88,7 @@ void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skel
 		if ((b->dof & DOF_ROOT) == DOF_ROOT) {
 
 			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
-				((float *) &current->position)[j] = atof(next);
+				((float *) current->position.v)[j] = atof(next);
 				start += strlen(next);
 				trim(&start);
 			}

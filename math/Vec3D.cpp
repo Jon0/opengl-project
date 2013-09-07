@@ -9,65 +9,63 @@
 
 namespace std {
 
-Vec3D::Vec3D() {
-	x = y = z = 0;
-}
+Vec3D::Vec3D(): v() {}
 
 Vec3D::~Vec3D() {
 	// TODO Auto-generated destructor stub
 }
 
-Vec3D::Vec3D(float a, float b, float c) {
-	x = a;
-	y = b;
-	z = c;
+Vec3D::Vec3D(float x, float y, float z) {
+	v[0] = x;
+	v[1] = y;
+	v[2] = z;
 }
 
 float Vec3D::getX() const {
-	return x;
+	return v[0];
 }
 
 float Vec3D::getY() const {
-	return y;
+	return v[1];
 }
 
 float Vec3D::getZ() const {
-	return z;
+	return v[2];
 }
 
 float Vec3D::dotproduct(Vec3D q) const {
 	float a = 0;
-	a += x * q.x;
-	a += y * q.y;
-	a += z * q.z;
+	a += v[0] * q.v[0];
+	a += v[1] * q.v[1];
+	a += v[2] * q.v[2];
 	return a;
 }
 
 Vec3D Vec3D::crossProduct(Vec3D q) const {
 	Vec3D cross;
-	cross.x = y * q.z - z * q.y;
-	cross.y = z * q.x - x * q.z;
-	cross.z = x * q.y - y * q.x;
+	cross.v[0] = v[1] * q.v[2] - v[2] * q.v[1];
+	cross.v[1] = v[2] * q.v[0] - v[0] * q.v[2];
+	cross.v[2] = v[0] * q.v[1] - v[1] * q.v[0];
 	return cross;
 }
 
 Vec3D operator+(const Vec3D &a, const Vec3D &b) {
-	Vec3D p(a.x+b.x, a.y+b.y, a.z+b.z);
+	Vec3D p(a.v[0]+b.v[0], a.v[1]+b.v[1], a.v[2]+b.v[2]);
 	return p;
 }
 
 Vec3D operator-(const Vec3D &a, const Vec3D &b) {
-	Vec3D p(a.x-b.x, a.y-b.y, a.z-b.z);
+	Vec3D p(a.v[0]-b.v[0], a.v[1]-b.v[1], a.v[2]-b.v[2]);
 	return p;
 }
 
 Vec3D operator*(const Vec3D &a, const float &f) {
-	Vec3D p(a.x*f, a.y*f, a.z*f);
+	Vec3D p(a.v[0]*f, a.v[1]*f, a.v[2]*f);
 	return p;
 }
 
 Vec3D operator/(const Vec3D &a, const float &f) {
-	Vec3D p(a.x/f, a.y/f, a.z/f);
+	Vec3D p(a.v[0]/f, a.v[1]/f, a.v[2]/f);
 	return p;
 }
 

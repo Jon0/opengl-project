@@ -70,6 +70,8 @@ void Animation::update(float time) {
 	else {
 		setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
 	}
+
+	displayline();
 }
 
 void Animation::addFrame() {
@@ -179,12 +181,12 @@ void Animation::setCurrentPose(pose *p) {
 	}
 }
 
-Vec3D Animation::getKeyPoint(int) {
-
+Vec3D Animation::getKeyPoint(int i) {
+	return ( (pose) v_pose.at(i) ).position;
 }
 
 int Animation::getNumFrames() {
-
+	return v_pose.size();
 }
 
 pose *makeState( int numBones ) {

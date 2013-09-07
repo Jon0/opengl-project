@@ -13,7 +13,7 @@ namespace std {
 class Vec3D {
 
 public:
-	float x, y, z;
+	float v[3];
 	Vec3D();
 	Vec3D(float, float, float);
 	virtual ~Vec3D();

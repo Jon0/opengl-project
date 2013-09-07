@@ -94,7 +94,6 @@ void Skeleton::display( pose *p ) {
 		return;
 	}
 
-	glPushMatrix();
 	GLUquadric* quad = gluNewQuadric(); //Create a new quadric to allow you to draw cylinders
 	if (quad == 0) {
 		printf("Not enough memory to allocate space to draw\n");
@@ -106,7 +105,6 @@ void Skeleton::display( pose *p ) {
 	display(root, quad, p);
 
 	gluDeleteQuadric(quad);
-	glPopMatrix();
 }
 
 // [Assignment2] you need to fill this function
@@ -118,7 +116,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		glTranslatef(p->position.x, p->position.y, p->position.z);
+		glTranslatef(p->position.getX(), p->position.getY(), p->position.getZ());
 	}
 
 	root->rotation->toMatrix(temp_mat);
@@ -180,20 +178,20 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 
 void Skeleton::display_cylinder(GLUquadric* q, float x, float y, float z, float length, bool arrow) {
 	Vec3D z_vec, d_vec;
-	z_vec.x = 0;	z_vec.y = 0;	z_vec.z = 1;
-	d_vec.x = x;	d_vec.y = y;	d_vec.z = z;
+	z_vec.v[0] = 0;	z_vec.v[1] = 0;	z_vec.v[2] = 1;
+	d_vec.v[0] = x;	d_vec.v[1] = y;	d_vec.v[2] = z;
 	Vec3D *a = &z_vec, *b = &d_vec;
 	*a = a->crossProduct(*b);
 
 	// dot product simplifies to z axis
 	float angle = rad_to_deg * acos(z);
-	float d = sqrt(a->x*a->x + a->y*a->y + a->z*a->z);
+	float d = sqrt(a->v[0]*a->v[0] + a->v[1]*a->v[1] + a->v[2]*a->v[2]);
 
 	// draw cylinder, rotated in correct direction
 	glPushMatrix();
 
 	if (d > 0) {
-		glRotatef(angle, a->x, a->y, a->z);
+		glRotatef(angle, a->v[0], a->v[1], a->v[2]);
 	}
 	gluCylinder(q, 0.08, 0.08, length, 10, 10);
 

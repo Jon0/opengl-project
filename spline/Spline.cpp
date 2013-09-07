@@ -18,14 +18,14 @@ void Spline::displayline() {
 	int length = getNumFrames();
 	for (int i = 0; i < length; ++i) {
 		Vec3D vec = getKeyPoint(i);
-		glVertex3f(vec.x, vec.y, vec.z);
+		glVertex3f(vec.getX(), vec.getY(), vec.getZ());
 	}
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
 	for (float u = 0; u < length; u += 0.01) {
 		Vec3D v = getPoint(u);
-		glVertex3f(v.x, v.y, v.z);
+		glVertex3f(v.getX(), v.getY(), v.getZ());
 	}
 	glEnd();
 
@@ -34,13 +34,14 @@ void Spline::displayline() {
 Vec3D Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
-	int v = (int) part;
-	Vec3D g;
-	if ( v+3 < getNumFrames() ) {
-		g = catmull_rom(getKeyPoint(v), getKeyPoint(v+1), getKeyPoint(v+2), getKeyPoint(v+3), frac);
-	}
-	return g;
+	int length = getNumFrames();
 
+	int v = max(((int) part), 1);
+	int vs[4];
+	for (int i = 0; i < 4; ++i) {
+		vs[i] = ( v-1 + i ) % length;
+	}
+	return catmull_rom(getKeyPoint(vs[0]), getKeyPoint(vs[1]), getKeyPoint(vs[2]), getKeyPoint(vs[3]), frac);
 }
 
 Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {

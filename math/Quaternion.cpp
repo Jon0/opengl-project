@@ -30,9 +30,9 @@ Quaternion::Quaternion(float angle, const Vec3D &p) {
 Quaternion::Quaternion(const Vec3D &p1, const Vec3D &p2) {
 	w = p1.dotproduct(p2);
 	Vec3D cross = p1.crossProduct(p2);
-	x = cross.x;
-	y = cross.y;
-	z = cross.z;
+	x = cross.getX();
+	y = cross.getY();
+	z = cross.getZ();
 }
 
 Quaternion::Quaternion(float mat[16]) {
@@ -82,9 +82,9 @@ Quaternion::~Quaternion() {
 
 Vec3D Quaternion::vector() const{
 	Vec3D v;
-	v.x = x;
-	v.y = y;
-	v.z = z;
+	v.v[0] = x;
+	v.v[1] = y;
+	v.v[2] = z;
 	return v;
 }
 
