@@ -66,4 +66,9 @@ Vec3D operator*(const Vec3D &a, const float &f) {
 	return p;
 }
 
+Vec3D operator/(const Vec3D &a, const float &f) {
+	Vec3D p(a.x/f, a.y/f, a.z/f);
+	return p;
+}
+
 } /* namespace std */

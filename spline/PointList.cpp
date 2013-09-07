@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <GL/glut.h>
 #include "PointList.h"
 
 namespace std {

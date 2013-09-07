@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "Spline.h"
-#include "Skeleton.h"
+#include "../geometry/Skeleton.h"
 #include "../math/Quaternion.h"
 
 namespace std {
@@ -36,6 +36,8 @@ public:
 	void setFrame(int);
 	int getFrame();
 	Vec3D *getCentre();
+	virtual Vec3D getKeyPoint(int);
+	virtual int getNumFrames();
 
 private:
 	pose current;

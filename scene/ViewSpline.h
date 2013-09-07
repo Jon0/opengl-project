@@ -8,7 +8,7 @@
 #ifndef VIEWSPLINE_H_
 #define VIEWSPLINE_H_
 
-#include "../animation/PointList.h"
+#include "../spline/PointList.h"
 #include "../view/Ortho.h"
 
 namespace std {

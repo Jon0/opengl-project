@@ -179,6 +179,14 @@ void Animation::setCurrentPose(pose *p) {
 	}
 }
 
+Vec3D Animation::getKeyPoint(int) {
+
+}
+
+int Animation::getNumFrames() {
+
+}
+
 pose *makeState( int numBones ) {
 	pose *next = new pose();
 	next->position = Vec3D(0, 0, 0);

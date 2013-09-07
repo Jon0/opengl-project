@@ -26,6 +26,7 @@ public:
 	friend Vec3D operator+(const Vec3D&, const Vec3D&);
 	friend Vec3D operator-(const Vec3D&, const Vec3D&);
 	friend Vec3D operator*(const Vec3D&, const float&);
+	friend Vec3D operator/(const Vec3D&, const float&);
 };
 
 } /* namespace std */

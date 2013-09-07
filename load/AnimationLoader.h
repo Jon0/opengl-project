@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "SkeletonLoader.h"
-#include "../animation/Animation.h"
+#include "../spline/Animation.h"
 
 namespace std {
 

@@ -14,10 +14,10 @@ namespace std {
 
 class Spline {
 public:
-	virtual ~Spline {};
 	Vec3D getPoint(float);
 	virtual Vec3D getKeyPoint(int) = 0;
 	virtual int getNumFrames() = 0;
+	virtual ~Spline() {};
 protected:
 	void displayline();
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);

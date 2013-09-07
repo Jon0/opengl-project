@@ -12,14 +12,6 @@
 
 namespace std {
 
-Spline::Spline() {
-
-}
-
-Spline::~Spline() {
-	// TODO Auto-generated destructor stub
-}
-
 void Spline::displayline() {
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_POINTS);
@@ -53,7 +45,7 @@ Vec3D Spline::getPoint(float u) {
 
 Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
 	Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
-	return v / 2;
+	return v / 2.0;
 }
 
 } /* namespace std */

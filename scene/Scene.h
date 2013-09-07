@@ -12,7 +12,7 @@
 #include "../load/AnimationLoader.h"
 #include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
-#include "../animation/Animation.h"
+#include "../spline/Animation.h"
 
 namespace std {
 
