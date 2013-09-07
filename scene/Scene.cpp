@@ -91,8 +91,12 @@ int Scene::dragInner(int x, int y) {
 
 void Scene::keyPressed(unsigned char c) {
 	if (c == 'a') {
-		cout << "add state" << endl;
-		animation->addState();
+		cout << "add frame" << endl;
+		animation->addFrame();
+	}
+	else if (c == 's') {
+		cout << "insert frame" << endl;
+		animation->insertFrame();
 	}
 	else if (c == 'p') {
 		cout << "play" << endl;

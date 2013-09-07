@@ -9,6 +9,7 @@
 #define ANIMATION_H_
 
 #include <vector>
+#include "Spline.h"
 #include "Skeleton.h"
 #include "../math/Quaternion.h"
 
@@ -25,7 +26,8 @@ public:
 
 	pose *currentPose();
 	void update(float);
-	void addState();
+	void addFrame();
+	void insertFrame();
 	void setPlaySpeed(int);
 	void rollSelection(int, float);
 	void modSelection(int, float, float, float);
@@ -40,6 +42,7 @@ private:
 	Skeleton *skeleton;
 	bool show_animate;
 	float animate_frame, frame_rate;
+	Spline path;
 	vector<pose> v_pose;
 	void setCurrentPose(pose *);
 };

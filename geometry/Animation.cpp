@@ -16,9 +16,9 @@ Animation::Animation(Skeleton *s) {
 	show_animate = false;
 	animate_frame = 0.0;
 	frame_rate = 0.01;
-
 	current.angle = new Quaternion [ s->getNumBones() ];
-	addState();
+
+	addFrame();
 }
 
 Animation::Animation( int numPoses, pose **states, Skeleton *s) {
@@ -29,12 +29,13 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	for (int i = 0; i < numPoses; ++i) {
+		path.append( states[i]->position );
 		v_pose.push_back( *states[i] );
 	}
 }
 
 Animation::~Animation() {
-	// TODO Auto-generated destructor stub
+	delete[] current.angle;
 }
 
 pose *Animation::currentPose() {
@@ -54,8 +55,7 @@ void Animation::update(float time) {
 		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 		float t = fmod(animate_frame, 1.0);
 
-		current.position = a->position;	// this should use some interpolation
-
+		current.position = path.getPoint(animate_frame); // a->position;
 
 		int numBones = skeleton->getNumBones();
 		for (int i = 0; i < numBones; ++i) {
@@ -67,7 +67,7 @@ void Animation::update(float time) {
 	}
 }
 
-void Animation::addState() {
+void Animation::addFrame() {
 	if (v_pose.size() > 0) {
 		v_pose.push_back( *copyState( skeleton->getNumBones(), (pose *)&v_pose.back() ) );
 	}
@@ -75,6 +75,26 @@ void Animation::addState() {
 		v_pose.push_back( *makeState( skeleton->getNumBones() ) );
 	}
 	animate_frame = v_pose.size() - 1;
+}
+
+void Animation::insertFrame() {
+	pose *p = makeState( skeleton->getNumBones() );
+
+	// insert at current position
+	animate_frame = fmod( animate_frame + frame_rate, v_pose.size() );
+	pose *a = &v_pose.at( (int) animate_frame );
+	pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
+	float t = fmod(animate_frame, 1.0);
+
+	p->position = a->position;	// this should use some interpolation
+
+	int numBones = skeleton->getNumBones();
+	for (int i = 0; i < numBones; ++i) {
+		p->angle[i] = slerp(a->angle[i], b->angle[i], t);
+	}
+
+
+	//v_pose.insert()
 }
 
 void Animation::setFrame(int i) {
