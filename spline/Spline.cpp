@@ -33,14 +33,14 @@ void Spline::displayline(float a, float b) {
 }
 
 /*
- * u must be in range (0, length-1)
+ * u >= 0 only
  */
 Vec3D Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
 	int length = getNumFrames();
 	int vs[4];
-	vs[1] = (int) part;
+	vs[1] = ((int) part ) % length;
 	vs[0] = max( vs[1]-1, 0 );
 	vs[2] = min( vs[1]+1, length-1 );
 	vs[3] = min( vs[1]+2, length-1 );

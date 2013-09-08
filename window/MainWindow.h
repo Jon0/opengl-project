@@ -23,8 +23,6 @@ protected:
 	GLuint g_mainWnd;
 	int wnd_width, wnd_height;
 	vector<ViewInterface *> g_view;
-	KeyListener *key_focus;
-	MouseListener *mouse_focus;
 	void display();
 	void reshape(int, int);
 	void keyboard(unsigned char, int, int);

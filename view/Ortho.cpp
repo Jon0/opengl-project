@@ -25,7 +25,7 @@ Ortho::~Ortho() {
 void Ortho::setView() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, view_width, 0.0, view_height, -1.0, 1.0);
+	glOrtho(0.0, view_width, 0.0, view_height, -10.0, 10.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

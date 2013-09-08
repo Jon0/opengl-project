@@ -43,6 +43,7 @@ void ViewSpline::display() {
 	spline->display();
 
 	if (play) {
+
 		Vec3D point = spline->getPoint(time);
 		//cout << point.x << ", " << point.y << endl;
 		glPushMatrix();

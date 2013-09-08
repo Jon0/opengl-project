@@ -31,8 +31,6 @@ MainWindow::MainWindow(int width, int height) {
 
 	// add some views
 	Scene *c = new Scene();
-	mouse_focus = c;
-	key_focus = c;
 	g_view.push_back( c );
 
 	ViewSpline *o = new ViewSpline();
@@ -66,20 +64,23 @@ void MainWindow::reshape(int x, int y) {
 }
 
 void MainWindow::keyboard(unsigned char key, int x, int y) {
-	key_focus->keyPressed(key);
+	for (auto view: g_view) {
+		((ViewInterface *) view )->keyPressed(key);
+		//if (((ViewInterface *) view )->keyPressed(key)) break;
+	}
 	//glutPostRedisplay();
 }
 
 void MainWindow::mouseClick(int button, int state, int x, int y) {
 	for (auto view: g_view) {
-			if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;
 	}
 	//glutPostRedisplay();
 }
 
 void MainWindow::mouseDrag(int x, int y) {
 	for (auto view: g_view) {
-			if (((ViewInterface *) view )->mouseDragged(x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseDragged(x, wnd_height - y)) break;
 	}
 	//glutPostRedisplay();
 }
