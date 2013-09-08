@@ -25,7 +25,7 @@ public:
 	virtual int clickInner(int, int);
 	virtual int dragInner(int, int);
 	void keyPressed(unsigned char);
-	virtual void display();
+	virtual void display(chrono::duration<double>);
 protected:
 	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;

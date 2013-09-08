@@ -8,22 +8,26 @@
 #ifndef VIEWSPLINE_H_
 #define VIEWSPLINE_H_
 
-#include "../spline/PointList.h"
+#include <vector>
+#include <chrono>
+#include "../spline/Spline.h"
 #include "../view/Ortho.h"
 
 namespace std {
 
-class ViewSpline: public Ortho {
+class ViewSpline: public Ortho, public Spline {
 public:
 	ViewSpline();
 	virtual ~ViewSpline();
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
+	virtual Vec3D getKeyPoint(int);
+	virtual int getNumFrames();
 protected:
 	bool play;
-	float time;
-	PointList *spline;
-	virtual void display();
+	vector<Vec3D> points;
+	chrono::duration<double> time;
+	virtual void display(chrono::duration<double>);
 	virtual void messageSent(string);
 };
 

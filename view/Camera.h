@@ -20,7 +20,7 @@ class Camera: public ViewInterface {
 public:
 	Camera();
 	virtual ~Camera();
-	virtual void setView();
+	virtual void setView(chrono::duration<double>);
 	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char) = 0;
 	virtual int mouseClicked(int, int, int, int);
@@ -36,7 +36,7 @@ protected:
 	Quaternion *getArc(int, int, int, int, float, Quaternion *);
 	virtual int clickInner(int, int) = 0;
 	virtual int dragInner(int, int) = 0;
-	virtual void display() = 0;
+	virtual void display(chrono::duration<double>) = 0;
 private:
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16];

@@ -12,10 +12,13 @@
 
 namespace std {
 
-ViewSpline::ViewSpline(): Ortho() {
-	spline = new PointList();
-	time = 0.0;
+ViewSpline::ViewSpline():
+		Ortho(),
+		Spline(),
+		points(),
+		time(0) {
 	play = false;
+	glPointSize(2.0);
 }
 
 ViewSpline::~ViewSpline() {
@@ -29,7 +32,8 @@ int ViewSpline::mouseClicked(int button, int state, int x, int y) {
 		message += to_string(x);
 		message += ", ";
 		message += to_string(y);
-		spline->append(*new Vec3D(x, y, 0));
+
+		points.push_back( *new Vec3D(x, y, 0) );
 		return 1;
 	}
 	return 0;
@@ -39,13 +43,12 @@ int ViewSpline::mouseDragged(int x, int y) {
 	return 0;
 }
 
-void ViewSpline::display() {
-	spline->display();
+void ViewSpline::display(chrono::duration<double> tick) {
+	displayline(1, (float)points.size() - 2.0);
 
 	if (play) {
-
-		Vec3D point = spline->getPoint(time);
-		//cout << point.x << ", " << point.y << endl;
+		time += tick;
+		Vec3D point = getPoint(time.count());
 		glPushMatrix();
 		glTranslatef(point.getX(), point.getY(), point.getZ());
 
@@ -53,17 +56,23 @@ void ViewSpline::display() {
 		GLUquadric* q = gluNewQuadric();
 		gluSphere(q, 10.0, 12, 12);
 		glPopMatrix();
-
-		time += 0.01;
 	}
 }
 
 void ViewSpline::messageSent(string s) {
 	cout << s << endl;
 	if (s == "play") {
-		time = 0.0;
+		time = time.zero();
 		play = true;
 	}
+}
+
+Vec3D ViewSpline::getKeyPoint(int i) {
+	return points.at(i);
+}
+
+int ViewSpline::getNumFrames() {
+	return points.size();
 }
 
 } /* namespace std */

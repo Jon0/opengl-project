@@ -9,6 +9,7 @@
 #define MAINWINDOW_H_
 
 #include <vector>
+#include <chrono>
 #include "KeyListener.h"
 #include "MouseListener.h"
 #include "../view/ViewInterface.h"
@@ -29,6 +30,7 @@ protected:
 	void mouseClick(int, int, int, int);
 	void mouseDrag(int, int);
 private:
+	chrono::time_point<chrono::high_resolution_clock> time;
 	static void displayCallback();
 	static void reshapeCallback(int, int);
 	static void keyboardCallback(unsigned char, int, int);

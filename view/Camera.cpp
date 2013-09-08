@@ -29,9 +29,9 @@ Camera::~Camera() {
 	// TODO Auto-generated destructor stub
 }
 
-void Camera::setView() {
+void Camera::setView(chrono::duration<double> tick) {
 	cam_angle.rotate(cam_angle_d);
-	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, 0.9);
+	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, 0.9 * (1-tick.count()));
 
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
@@ -52,7 +52,7 @@ void Camera::setView() {
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 
-	display();
+	display(tick);
 	glPopMatrix();
 }
 

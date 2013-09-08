@@ -72,7 +72,11 @@ Quaternion::Quaternion(float mat[16]) {
 	}
 }
 
-Quaternion::Quaternion(const Quaternion& q) :
+Quaternion::Quaternion(const Quaternion &q) :
+	w(q.w), x(q.x), y(q.y), z(q.z) {
+}
+
+Quaternion::Quaternion(Quaternion &&q) :
 		w(q.w), x(q.x), y(q.y), z(q.z) {
 }
 

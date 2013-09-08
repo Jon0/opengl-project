@@ -19,9 +19,6 @@ Animation::Animation(Skeleton *s) {
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	addFrame();
-
-	glPointSize(2.0);
-	glEnable(GL_POINTS);
 }
 
 Animation::Animation( int numPoses, pose **states, Skeleton *s) {
@@ -34,9 +31,6 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
 	}
-
-	glPointSize(2.0);
-	glEnable(GL_POINTS);
 }
 
 Animation::~Animation() {
@@ -206,7 +200,7 @@ pose *copyState( int numBones, pose *other ) {
 	next->angle = new Quaternion [ numBones ];
 
 	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion( other->angle[i] );
+		next->angle[i] = *new Quaternion(other->angle[i]);
 	}
 	return next;
 }

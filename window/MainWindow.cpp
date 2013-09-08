@@ -30,11 +30,14 @@ MainWindow::MainWindow(int width, int height) {
 	glutIdleFunc(idleFunc);
 
 	// add some views
-	Scene *c = new Scene();
-	g_view.push_back( c );
+	//Scene *c = new Scene();
+	//g_view.push_back( c );
 
 	ViewSpline *o = new ViewSpline();
 	g_view.push_back( o );
+
+	// get initial time
+	time = chrono::high_resolution_clock::now();
 
 	// start running
 	glutMainLoop();
@@ -47,9 +50,12 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::display() {
+	chrono::time_point<chrono::high_resolution_clock> newTime = chrono::system_clock::now();
+	chrono::duration<double> tick = newTime - time;
+	time = newTime;
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	for (auto &view: g_view) {
-		((ViewInterface *) view )->setView();
+		((ViewInterface *) view )->setView( tick );
 	}
 	glutSwapBuffers();
 }

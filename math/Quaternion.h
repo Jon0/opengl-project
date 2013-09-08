@@ -22,6 +22,7 @@ public:
 	Quaternion(float = 0, float = 0, float = 0, float = 0);
 	Quaternion(float[16]);
 	Quaternion(const Quaternion &);
+	Quaternion(Quaternion &&);
 	~Quaternion();
 	Quaternion& operator=(const Quaternion &);
 	float length() const;

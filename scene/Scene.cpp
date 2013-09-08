@@ -21,6 +21,8 @@ Scene::Scene(): Camera() {
 	skeleton = loader->readASF((char *)filename);
 	animation = aloader->readAMC(filename_a, skeleton);
 	//animation = new Animation(skeleton);
+
+	glPointSize(2.0);
 }
 
 Scene::~Scene() {
@@ -113,7 +115,7 @@ void Scene::keyPressed(unsigned char c) {
 	}
 }
 
-void Scene::display() {
+void Scene::display(chrono::duration<double> tick) {
 	if (skeleton) {
 		animation->update( 0.0 ); // TODO: use time
 		skeleton->setSelection(selectedBone);
