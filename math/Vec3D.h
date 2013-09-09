@@ -17,6 +17,7 @@ public:
 	Vec3D();
 	Vec3D(float, float, float);
 	virtual ~Vec3D();
+	float getDistance(const Vec3D&) const;
 	float getX() const;
 	float getY() const;
 	float getZ() const;

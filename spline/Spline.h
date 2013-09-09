@@ -16,6 +16,8 @@ class Spline {
 public:
 	virtual ~Spline() {};
 	Vec3D getPoint(float);
+	float getPointInc(float, float);
+	void equalise();
 	virtual Vec3D getKeyPoint(int) = 0;
 	virtual int getNumFrames() = 0;
 protected:

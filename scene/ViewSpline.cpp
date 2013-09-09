@@ -18,6 +18,7 @@ ViewSpline::ViewSpline():
 		points(),
 		time(0) {
 	play = false;
+	time_f = 0.0;
 	glPointSize(2.0);
 }
 
@@ -47,8 +48,8 @@ void ViewSpline::display(chrono::duration<double> tick) {
 	displayline(1, (float)points.size() - 2.0);
 
 	if (play) {
-		time += tick;
-		Vec3D point = getPoint(time.count());
+		time_f += getPointInc(time.count(), 0.01); // tick
+		Vec3D point = getPoint(time_f);
 		glPushMatrix();
 		glTranslatef(point.getX(), point.getY(), point.getZ());
 

@@ -26,6 +26,7 @@ public:
 protected:
 	bool play;
 	vector<Vec3D> points;
+	float time_f;
 	chrono::duration<double> time;
 	virtual void display(chrono::duration<double>);
 	virtual void messageSent(string);

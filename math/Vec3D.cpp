@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <math.h>
 #include "Vec3D.h"
 
 namespace std {
@@ -19,6 +20,11 @@ Vec3D::Vec3D(float x, float y, float z) {
 	v[0] = x;
 	v[1] = y;
 	v[2] = z;
+}
+
+float Vec3D::getDistance(const Vec3D &other) const {
+	float dx = other.v[0] - v[0], dy = other.v[1] - v[1], dz = other.v[2] - v[2];
+	return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
 float Vec3D::getX() const {

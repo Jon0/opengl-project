@@ -47,9 +47,40 @@ Vec3D Spline::getPoint(float u) {
 	return catmull_rom(getKeyPoint(vs[0]), getKeyPoint(vs[1]), getKeyPoint(vs[2]), getKeyPoint(vs[3]), frac);
 }
 
+float Spline::getPointInc(float u, float inc) {
+	Vec3D v1 = getPoint(u);
+
+	float u_inc = 0.005;
+	Vec3D v2 = getPoint(u+u_inc);
+	float dist = v1.getDistance(v2);
+	while(dist < inc) {
+		u_inc += 0.005;
+		v1 = v2;
+		Vec3D v2 = getPoint(u+u_inc);
+		dist += v1.getDistance(v2);
+	}
+
+
+
+
+	return  u_inc * (dist / inc);
+	//return v1*(1-ratio) + v2*ratio;
+}
+
 Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
 	Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
 	return v / 2.0;
+}
+
+void Spline::equalise() {
+	float delta = 0.01;
+	int length = getNumFrames();
+	for (float i = 0; i < length; ++delta) {
+		Vec3D v1 = getPoint(i);
+		Vec3D v2 = getPoint(i+0.01);
+
+		//v1.
+	}
 }
 
 } /* namespace std */
