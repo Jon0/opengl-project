@@ -35,6 +35,7 @@ int ViewSpline::mouseClicked(int button, int state, int x, int y) {
 		message += to_string(y);
 
 		points.push_back( *new Vec3D(x, y, 0) );
+		equalise();
 		return 1;
 	}
 	return 0;
@@ -48,8 +49,8 @@ void ViewSpline::display(chrono::duration<double> tick) {
 	displayline(1, (float)points.size() - 2.0);
 
 	if (play) {
-		time_f += getPointInc(time.count(), 0.01); // tick
-		Vec3D point = getPoint(time_f);
+		time_f += 2.0; // getPointInc(time_f, 1.0); // tick
+		Vec3D point = getDistPoint(time_f);
 		glPushMatrix();
 		glTranslatef(point.getX(), point.getY(), point.getZ());
 
@@ -63,6 +64,7 @@ void ViewSpline::display(chrono::duration<double> tick) {
 void ViewSpline::messageSent(string s) {
 	cout << s << endl;
 	if (s == "play") {
+		time_f = 0;
 		time = time.zero();
 		play = true;
 	}
