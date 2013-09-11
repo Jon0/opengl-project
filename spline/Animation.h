@@ -18,7 +18,7 @@ namespace std {
 pose *makeState(int);
 pose *copyState(int, pose *);
 
-class Animation: public Spline {
+class Animation {
 public:
 	Animation(Skeleton *);
 	Animation(int, pose **, Skeleton *);
@@ -37,13 +37,14 @@ public:
 	int getFrame();
 	Vec3D *getCentre();
 	virtual Vec3D getKeyPoint(int);
-	virtual int getNumFrames();
+	virtual int getNumKeyFrames();
 
 private:
 	pose current;
 	Skeleton *skeleton;
 	bool show_animate;
 	float animate_frame, frame_rate;
+	vector<Vec3D> path;
 	vector<pose> v_pose;
 	void setCurrentPose(pose *);
 };

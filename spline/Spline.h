@@ -17,18 +17,22 @@ class Spline {
 public:
 	Spline();
 	virtual ~Spline() {};
+	float getULength();
+	float getArcLength();
 	Vec3D getPoint(float);
 	Vec3D getDistPoint(float);
-	float getPointInc(float, float);
 	float calcPointInc(float, float);
-	void equalise();
 	virtual Vec3D getKeyPoint(int) = 0;
-	virtual int getNumFrames() = 0;
+	virtual int getNumKeyFrames() = 0;
+
 protected:
-	float delta, segments, spline_length;
-	vector<float> u_delta;
+	void equalise();
 	void displayline(float a, float b);
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
+
+private:
+	float delta, segments, spline_length;
+	vector<float> u_delta;
 };
 
 } /* namespace std */

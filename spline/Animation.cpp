@@ -15,9 +15,8 @@ Animation::Animation(Skeleton *s) {
 	skeleton = s;
 	show_animate = false;
 	animate_frame = 0.0;
-	frame_rate = 0.2;
+	frame_rate = 0.01;
 	current.angle = new Quaternion [ s->getNumBones() ];
-
 	addFrame();
 }
 
@@ -25,7 +24,7 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	skeleton = s;
 	show_animate = false;
 	animate_frame = 0.0;
-	frame_rate = 0.2;
+	frame_rate = 1.0;
 	current.angle = new Quaternion [ s->getNumBones() ];
 
 	for (int i = 0; i < numPoses; ++i) {
@@ -54,8 +53,7 @@ void Animation::update(float time) {
 		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 		float t = fmod(animate_frame, 1.0);
 
-		current.position = getPoint(animate_frame); // a->position;
-
+		//current.position = getPoint(animate_frame);
 		int numBones = skeleton->getNumBones();
 		for (int i = 0; i < numBones; ++i) {
 			current.angle[i] = slerp(a->angle[i], b->angle[i], t);
@@ -65,7 +63,7 @@ void Animation::update(float time) {
 		setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
 	}
 
-	displayline(0, v_pose.size());
+	//displayline(0, v_pose.size() - 3);
 }
 
 void Animation::addFrame() {
@@ -119,26 +117,15 @@ void Animation::rollSelection(int id, float f) {
 	if ( id < 0 ) {
 		return;
 	}
-
 	pose *p = &v_pose.at(animate_frame);
 	bone *b = skeleton->getBone(id);
 	//Vec3D v(-b->dirx, -b->diry, -b->dirz); //p->angle[id].vector();
-
-
 	Quaternion h(0, b->dirx, b->diry, b->dirz);
 	Quaternion i = h * b->rotation->multiplicativeInverse();
 
-
-	//Vec3D v(0, 1, 0);
 	Vec3D v = i.vector();
-	//cout << v.getX() << ", " << v.getY() << ", " << v.getZ() << endl;
-
 	Quaternion q(f, v);
-	//Quaternion k = q*i;
-	//Quaternion m = q * k * q.multiplicativeInverse();
-
 	p->angle[id].rotate( q );
-
 }
 
 void Animation::modSelection(int id, float x, float y, float z) {
@@ -176,10 +163,12 @@ void Animation::setCurrentPose(pose *p) {
 }
 
 Vec3D Animation::getKeyPoint(int i) {
+	if (i <= -1) return ( (pose) v_pose.at(0) ).position;
+	else if ( i >= v_pose.size() ) return ( (pose) v_pose.back() ).position;
 	return ( (pose) v_pose.at(i) ).position;
 }
 
-int Animation::getNumFrames() {
+int Animation::getNumKeyFrames() {
 	return v_pose.size();
 }
 

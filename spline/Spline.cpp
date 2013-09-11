@@ -12,26 +12,37 @@
 
 namespace std {
 
-Spline::Spline(): u_delta() { delta  = 0.1; segments = 0.005; }
+Spline::Spline(): u_delta() {
+	delta  = 0.1;
+	segments = 0.005;
+	spline_length = 0.0;
+}
+
+float Spline::getULength() {
+	return getNumKeyFrames() - 1;
+}
+
+float Spline::getArcLength() {
+	return spline_length;
+}
 
 void Spline::displayline(float a, float b) {
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 0.0, 1.0);
 	glBegin(GL_POINTS);
-	int length = getNumFrames();
-	for (int i = 0; i < length; ++i) {
+	int length = getNumKeyFrames() + 1;
+	for (int i = -1; i < length; ++i) {
 		Vec3D vec = getKeyPoint(i);
 		glVertex3f(vec.getX(), vec.getY(), vec.getZ());
 	}
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float u = a; u < b; u += 0.02) {
+	for (float u = a; u < b - 1; u += 0.02) {
 		Vec3D v = getPoint(u);
-		//glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
+		glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
 		glVertex3f(v.getX(), v.getY(), v.getZ());
 	}
 	glEnd();
-
 }
 
 /*
@@ -40,13 +51,9 @@ void Spline::displayline(float a, float b) {
 Vec3D Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
-	int length = getNumFrames();
-	int vs[4];
-	vs[1] = ((int) part ) % length;
-	vs[0] = max( vs[1]-1, 0 );
-	vs[2] = min( vs[1]+1, length-1 );
-	vs[3] = min( vs[1]+2, length-1 );
-	return catmull_rom(getKeyPoint(vs[0]), getKeyPoint(vs[1]), getKeyPoint(vs[2]), getKeyPoint(vs[3]), frac);
+	int length = getNumKeyFrames();
+	int v = ((int) part ) % (length - 1);
+	return catmull_rom(getKeyPoint(v-1), getKeyPoint(v), getKeyPoint(v+1), getKeyPoint(v+2), frac);
 }
 
  Vec3D Spline::getDistPoint(float dist) {
@@ -54,27 +61,15 @@ Vec3D Spline::getPoint(float u) {
 	float percent = mod / segments;
 	int seg_a = (int)( (dist - mod) / segments ) % ( u_delta.size() - 1 );
 
-
 	float k = u_delta.at(seg_a) * (1 - percent) + u_delta.at(seg_a + 1) * percent;
 	return getPoint( k );
  }
 
-float Spline::getPointInc(float u, float dist_inc) {
-	float mod = fmod(u, segments);
-	float percent = mod / segments;
-
-	int seg_a = (u - mod) / segments;
-	//int dist = u_delta.at(seg_a) * (1 - percent);
-
-	return u_delta.at(seg_a) * (1-percent) + u_delta.at(seg_a+1) * percent;
-}
-
 /* at point u on the spline find the increment
  * required to move forward the given distance */
 float Spline::calcPointInc(float u, float dist_inc) {
-	float u_inc = 0.005;
-	Vec3D v1 = getPoint(u), v2 = getPoint(u+u_inc);
-	float dist = v1.getDistance(v2);
+	Vec3D v1, v2 = getPoint(u);
+	float dist = 0, u_inc = 0;
 
 	// move along arc
 	while(dist < dist_inc) {
@@ -99,7 +94,6 @@ Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
  */
 void Spline::equalise() {
 	u_delta.clear();
-	int length = getNumFrames();
 
 	// distance | u
 	// 0		| 0
@@ -107,7 +101,9 @@ void Spline::equalise() {
 	// 0.10		| 0.521
 	// etc
 
-	for (float u = 0; u < length - 1;) {
+	// TODO: only add new parts
+	float ulength = getULength();
+	for (float u = 0; u < ulength - segments;) {
 		u_delta.push_back(u);
 		u += calcPointInc(u, segments);
 	}

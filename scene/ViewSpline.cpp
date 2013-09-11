@@ -46,7 +46,7 @@ int ViewSpline::mouseDragged(int x, int y) {
 }
 
 void ViewSpline::display(chrono::duration<double> tick) {
-	displayline(1, (float)points.size() - 2.0);
+	displayline(0, (float)points.size() - 2.0);
 
 	if (play) {
 		time_f += 2.0; // getPointInc(time_f, 1.0); // tick
@@ -71,11 +71,11 @@ void ViewSpline::messageSent(string s) {
 }
 
 Vec3D ViewSpline::getKeyPoint(int i) {
-	return points.at(i);
+	return points.at(i + 1);
 }
 
-int ViewSpline::getNumFrames() {
-	return points.size();
+int ViewSpline::getNumKeyFrames() {
+	return points.size() - 2;
 }
 
 } /* namespace std */

@@ -30,11 +30,11 @@ MainWindow::MainWindow(int width, int height) {
 	glutIdleFunc(idleFunc);
 
 	// add some views
-	//Scene *c = new Scene();
-	//g_view.push_back( c );
+	Scene *c = new Scene();
+	g_view.push_back( c );
 
-	ViewSpline *o = new ViewSpline();
-	g_view.push_back( o );
+	//ViewSpline *o = new ViewSpline();
+	//g_view.push_back( o );
 
 	// get initial time
 	time = chrono::high_resolution_clock::now();

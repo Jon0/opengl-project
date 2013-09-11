@@ -13,6 +13,7 @@
 #include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
 #include "../spline/Animation.h"
+#include "../spline/Path.h"
 
 namespace std {
 
@@ -32,6 +33,7 @@ protected:
 	AnimationLoader *aloader;
 	Skeleton *skeleton;
 	Animation *animation;
+	Path *path;
 };
 
 } /* namespace std */

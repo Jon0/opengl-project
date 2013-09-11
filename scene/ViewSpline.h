@@ -22,7 +22,7 @@ public:
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
 	virtual Vec3D getKeyPoint(int);
-	virtual int getNumFrames();
+	virtual int getNumKeyFrames();
 protected:
 	bool play;
 	vector<Vec3D> points;

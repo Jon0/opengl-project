@@ -19,8 +19,10 @@ Scene::Scene(): Camera() {
 	loader = new SkeletonLoader();
 	aloader = new AnimationLoader();
 	skeleton = loader->readASF((char *)filename);
-	animation = aloader->readAMC(filename_a, skeleton);
-	//animation = new Animation(skeleton);
+	//animation = aloader->readAMC(filename_a, skeleton);
+	animation = new Animation(skeleton);
+	path = new Path();
+	path->append(Vec3D(0,0,0));
 
 	glPointSize(2.0);
 }
@@ -103,6 +105,7 @@ void Scene::keyPressed(unsigned char c) {
 	else if (c == 'p') {
 		cout << "play" << endl;
 		animation->animate(true);
+		path->play = true;
 	}
 	else if (c == 'q') {
 		cout << "reset" << endl;
@@ -113,14 +116,18 @@ void Scene::keyPressed(unsigned char c) {
 		cout << "set frame " << i << endl;
 		animation->setFrame(i);
 	}
+	else if (c == 'b') {
+		path->append(Vec3D(rand() % 20, rand() % 20, rand() % 20));
+	}
 }
 
 void Scene::display(chrono::duration<double> tick) {
 	if (skeleton) {
 		animation->update( 0.0 ); // TODO: use time
 		skeleton->setSelection(selectedBone);
-		skeleton->display( animation->currentPose() );
+		path->display(tick, skeleton, animation->currentPose());
 	}
+
 }
 
 
