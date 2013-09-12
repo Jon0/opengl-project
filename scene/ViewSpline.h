@@ -10,25 +10,22 @@
 
 #include <vector>
 #include <chrono>
-#include "../spline/Spline.h"
+#include "../geometry/Drawable.h"
+#include "../spline/Path.h"
 #include "../view/Ortho.h"
 
 namespace std {
 
-class ViewSpline: public Ortho, public Spline {
+class ViewSpline: public Ortho {
 public:
 	ViewSpline();
 	virtual ~ViewSpline();
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
-	virtual Vec3D getKeyPoint(int);
-	virtual int getNumKeyFrames();
+	void display(chrono::duration<double>);
 protected:
-	bool play;
-	vector<Vec3D> points;
-	float time_f;
-	chrono::duration<double> time;
-	virtual void display(chrono::duration<double>);
+	Drawable *d;
+	Path path;
 	virtual void messageSent(string);
 };
 

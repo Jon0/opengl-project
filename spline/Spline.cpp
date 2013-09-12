@@ -26,7 +26,7 @@ float Spline::getArcLength() {
 	return spline_length;
 }
 
-void Spline::displayline(float a, float b) {
+void Spline::displayline() {
 	glColor3f(1.0, 0.0, 1.0);
 	glBegin(GL_POINTS);
 	int length = getNumKeyFrames() + 1;
@@ -37,7 +37,8 @@ void Spline::displayline(float a, float b) {
 	glEnd();
 
 	glBegin(GL_LINE_STRIP);
-	for (float u = a; u < b - 1; u += 0.02) {
+	length = getNumKeyFrames() - 1;
+	for (float u = 0; u < length; u += 0.02) {
 		Vec3D v = getPoint(u);
 		glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
 		glVertex3f(v.getX(), v.getY(), v.getZ());

@@ -12,6 +12,8 @@
 
 namespace std {
 
+extern float rad_to_deg;
+
 class Quaternion {
 private:
 	float w, x, y, z;

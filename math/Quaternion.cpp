@@ -13,6 +13,8 @@
 
 namespace std {
 
+float rad_to_deg = 360.0/(2 * M_PI);
+
 Quaternion::Quaternion(float r, float i, float j, float k) :
 		w(r), x(i), y(j), z(k) {
 }

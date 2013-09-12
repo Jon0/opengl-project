@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <GL/glut.h>
-
+#include "Drawable.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
 
@@ -58,30 +58,36 @@ struct color {
 	int *x, *y, *z, *bone, *sphere, *select;
 };
 
+pose *makeState(int);
+pose *copyState(int, pose *);
+
 class Skeleton;
 
 typedef color *(Skeleton::*colorfunc)(bone *);
 
-class Skeleton {
+class Skeleton: public Drawable {
 public:
 	Skeleton( int, bone * );
 	~Skeleton();
 
-	void display(pose *p);
+	virtual void display();
 	int getNumBones();
 	bone *getBone(char *);
 	bone *getBone(int);
-	int selectMouse(int, int, pose *p);
+	pose *getPose();
+	int selectMouse(int, int);
 	void setSelection(int);
 	bool hasSelection();
 	DOF getDof(int);
 	GLdouble *selectionCenter();
 	Quaternion *getSelectionRot();
 	Quaternion *getBoneAxis(int);
+	void setCurrentPose(pose *p);
+
 
 protected:
 	void deleteBones(bone *);
-	void display(bone *, GLUquadric *, pose *p);
+	void display(bone *, GLUquadric *);
 	void display_cylinder(GLUquadric *, float, float, float, float, bool);
 
 private:
@@ -91,6 +97,9 @@ private:
 	GLfloat temp_mat[16];
 	GLdouble selPoint[3];
 	Quaternion *selQuat;
+
+	// current pose
+	pose current_pose;
 
 	// array of bones
 	bone *root;

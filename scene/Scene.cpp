@@ -22,8 +22,6 @@ Scene::Scene(): Camera() {
 	//animation = aloader->readAMC(filename_a, skeleton);
 	animation = new Animation(skeleton);
 	path = new Path();
-	path->append(Vec3D(0,0,0));
-
 	glPointSize(2.0);
 }
 
@@ -46,11 +44,13 @@ int Scene::clickInner(int x, int y) {
 
 
 			if ( d > 200.0 ) {
-				selectedBone = skeleton->selectMouse(x, y, animation->currentPose());
+				//*skeleton->getPose() = *animation->currentPose();
+				selectedBone = skeleton->selectMouse(x, y);
 			}
 		}
 		else {
-			selectedBone = skeleton->selectMouse(x, y, animation->currentPose());
+			//*skeleton->getPose() = *animation->currentPose();
+			selectedBone = skeleton->selectMouse(x, y);
 		}
 
 	}
@@ -123,11 +123,10 @@ void Scene::keyPressed(unsigned char c) {
 
 void Scene::display(chrono::duration<double> tick) {
 	if (skeleton) {
-		animation->update( 0.0 ); // TODO: use time
 		skeleton->setSelection(selectedBone);
-		path->display(tick, skeleton, animation->currentPose());
+		animation->update( 0.0 ); // TODO: use time
+		path->display(tick, skeleton);
 	}
-
 }
 
 

@@ -16,7 +16,6 @@ Animation::Animation(Skeleton *s) {
 	show_animate = false;
 	animate_frame = 0.0;
 	frame_rate = 0.01;
-	current.angle = new Quaternion [ s->getNumBones() ];
 	addFrame();
 }
 
@@ -25,26 +24,16 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 	show_animate = false;
 	animate_frame = 0.0;
 	frame_rate = 1.0;
-	current.angle = new Quaternion [ s->getNumBones() ];
 
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
 	}
 }
 
-Animation::~Animation() {
-	delete[] current.angle;
-}
-
-pose *Animation::currentPose() {
-	return &current;
-}
-
-Vec3D *Animation::getCentre() {
-	return &current.position;
-}
+Animation::~Animation() {}
 
 void Animation::update(float time) {
+	pose *out = skeleton->getPose();
 	if (show_animate && v_pose.size() > 0) {
 
 		// set correct pose base on keyframes
@@ -56,11 +45,11 @@ void Animation::update(float time) {
 		//current.position = getPoint(animate_frame);
 		int numBones = skeleton->getNumBones();
 		for (int i = 0; i < numBones; ++i) {
-			current.angle[i] = slerp(a->angle[i], b->angle[i], t);
+			out->angle[i] = slerp(a->angle[i], b->angle[i], t);
 		}
 	}
 	else {
-		setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
+		skeleton->setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
 	}
 
 	//displayline(0, v_pose.size() - 3);
@@ -153,45 +142,6 @@ void Animation::modSelection(int id, Quaternion &q) {
 	//if ((dof & DOF_RZ) == DOF_RZ) {
 	//	drawnState->part[id]->degree[2] += z;
 	//}
-}
-
-void Animation::setCurrentPose(pose *p) {
-	current.position = p->position;
-	for (int i = 0; i < skeleton->getNumBones(); ++i) {
-		current.angle[i] = p->angle[i];
-	}
-}
-
-Vec3D Animation::getKeyPoint(int i) {
-	if (i <= -1) return ( (pose) v_pose.at(0) ).position;
-	else if ( i >= v_pose.size() ) return ( (pose) v_pose.back() ).position;
-	return ( (pose) v_pose.at(i) ).position;
-}
-
-int Animation::getNumKeyFrames() {
-	return v_pose.size();
-}
-
-pose *makeState( int numBones ) {
-	pose *next = new pose();
-	next->position = Vec3D(0, 0, 0);
-	next->angle = new Quaternion [ numBones ];
-
-	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion(1, 0, 0, 0);
-	}
-	return next;
-}
-
-pose *copyState( int numBones, pose *other ) {
-	pose *next = new pose();
-	next->position = other->position;
-	next->angle = new Quaternion [ numBones ];
-
-	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion(other->angle[i]);
-	}
-	return next;
 }
 
 } /* namespace std */

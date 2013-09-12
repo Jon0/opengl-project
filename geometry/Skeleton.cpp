@@ -24,14 +24,13 @@
 
 #include "Skeleton.h"
 
-static float rad_to_deg = 360.0/(2 * M_PI);
-
 Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
 	selQuat = NULL;
 	selIndex = -1;
+	current_pose = *makeState(numOfBones);
 
 
 	colors[0] = 0;			// id
@@ -57,6 +56,7 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 
 Skeleton::~Skeleton() {
 	deleteBones(root);
+	delete[] current_pose.angle;
 }
 
 void Skeleton::deleteBones(bone* root) {
@@ -88,8 +88,12 @@ bone *Skeleton::getBone(int ind) {
 	return &root[ind];
 }
 
+pose *Skeleton::getPose() {
+	return &current_pose;
+}
+
 // [Assignment2] you may need to revise this function
-void Skeleton::display( pose *p ) {
+void Skeleton::display() {
 	if ( root == NULL ) {
 		return;
 	}
@@ -102,13 +106,13 @@ void Skeleton::display( pose *p ) {
 
 	//Actually draw the skeleton
 	//gluQuadricDrawStyle(q, r);
-	display(root, quad, p);
+	display(root, quad);
 
 	gluDeleteQuadric(quad);
 }
 
 // [Assignment2] you need to fill this function
-void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
+void Skeleton::display(bone* root, GLUquadric* q) {
 	if (root == NULL) {
 		return;
 	}
@@ -116,7 +120,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 
 	glPushMatrix();
 	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		glTranslatef(p->position.getX(), p->position.getY(), p->position.getZ());
+		//glTranslatef(p->position.getX(), p->position.getY(), p->position.getZ());
 	}
 
 	root->rotation->toMatrix(temp_mat);
@@ -130,7 +134,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	p->angle[root->index].toMatrix(temp_mat);
+	current_pose.angle[root->index].toMatrix(temp_mat);
 	glMultMatrixf(temp_mat);
 
 	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
@@ -151,7 +155,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 		selQuat = new Quaternion( 1, 0, 0, 0 );
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = p->angle[b->index];
+			Quaternion q = current_pose.angle[b->index];
 			Quaternion bri = b->rotation->multiplicativeInverse();
 			selQuat->rotate( bri );
 			selQuat->rotate( q );
@@ -170,7 +174,7 @@ void Skeleton::display(bone* root, GLUquadric* q, pose *p) {
 	glPushMatrix();
 	glTranslatef(root->dirx*root->length, root->diry*root->length, root->dirz*root->length);
 	for (int i = 0; i < root->numChildren; ++i) {
-		display( root->children[i], q, p );
+		display( root->children[i], q );
 	}
 	glPopMatrix();
 	glPopMatrix();
@@ -204,13 +208,13 @@ void Skeleton::display_cylinder(GLUquadric* q, float x, float y, float z, float 
 }
 
 
-int Skeleton::selectMouse(int x, int y, pose *p) {
+int Skeleton::selectMouse(int x, int y) {
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(x, y, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	cf = &Skeleton::colorAsID;
-	display( p );
+	display();
 	cf = &Skeleton::colorStandard;
 
 	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pix);
@@ -248,6 +252,13 @@ Quaternion *Skeleton::getBoneAxis(int id) {
 	return root[id].rotation;
 }
 
+void Skeleton::setCurrentPose(pose *p) {
+	current_pose.position = p->position;
+	for (int i = 0; i < numBones; ++i) {
+		current_pose.angle[i] = p->angle[i];
+	}
+}
+
 color *Skeleton::colorAsID(bone *b) {
 	colors[0] = b->index + 1;
 	return cAsId;
@@ -255,6 +266,28 @@ color *Skeleton::colorAsID(bone *b) {
 
 color *Skeleton::colorStandard(bone *b) {
 	return cStandard;
+}
+
+pose *makeState( int numBones ) {
+	pose *next = new pose();
+	next->position = Vec3D(0, 0, 0);
+	next->angle = new Quaternion [ numBones ];
+
+	for (int i = 0; i < numBones; ++i) {
+		next->angle[i] = *new Quaternion(1, 0, 0, 0);
+	}
+	return next;
+}
+
+pose *copyState( int numBones, pose *other ) {
+	pose *next = new pose();
+	next->position = other->position;
+	next->angle = new Quaternion [ numBones ];
+
+	for (int i = 0; i < numBones; ++i) {
+		next->angle[i] = *new Quaternion(other->angle[i]);
+	}
+	return next;
 }
 
 
