@@ -15,7 +15,7 @@ Animation::Animation(Skeleton *s) {
 	numBones = s->getNumBones();
 	show_animate = false;
 	animate_frame = 0.0;
-	frame_rate = 0.01;
+	frame_rate = 1.0;
 	makeState(numBones, &current);
 	addFrame();
 }

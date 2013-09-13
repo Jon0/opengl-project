@@ -53,7 +53,7 @@ void Path::display(chrono::duration<double> tick, Drawable *d) {
 	displayline();
 
 	if (play && getNumKeyFrames() >= 2) {
-		time += tick * 10;
+		time += tick * 25; // TODO: fix time multiplier
 		Vec3D newpoint = getDistPoint(time.count());
 		Quaternion k =  Quaternion(0, newpoint-trans_point) * Quaternion(0, trans_point-trans_point_n).multiplicativeInverse();
 		rot_point.rotate(k);

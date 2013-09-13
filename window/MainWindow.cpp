@@ -30,11 +30,11 @@ MainWindow::MainWindow(int width, int height) {
 	glutIdleFunc(idleFunc);
 
 	// add some views
-	Scene *c = new Scene();
-	g_view.push_back( c );
+	//Scene *c = new Scene();
+	//g_view.push_back( c );
 
-	//ViewSpline *o = new ViewSpline();
-	//g_view.push_back( o );
+	ViewSpline *o = new ViewSpline();
+	g_view.push_back( o );
 
 	// get initial time
 	time = chrono::high_resolution_clock::now();
@@ -77,6 +77,7 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 	//glutPostRedisplay();
 }
 
+// TODO: send GLuint of window
 void MainWindow::mouseClick(int button, int state, int x, int y) {
 	for (auto view: g_view) {
 		if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;

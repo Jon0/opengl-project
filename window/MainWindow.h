@@ -39,5 +39,7 @@ private:
 	static void idleFunc();
 };
 
+extern MainWindow *ins;
+
 } /* namespace std */
 #endif /* MAINWINDOW_H_ */

@@ -16,12 +16,12 @@ Scene::Scene(): Camera(), time(0) {
 	selectedBone = 0;
 	clickx = clicky = 0;
 	const char *filename = "assets/priman.asf";
-	const char *filename_a = "assets/kick.amc";
+	const char *filename_a = "assets/walk.amc";
 	loader = new SkeletonLoader();
 	aloader = new AnimationLoader();
 	skeleton = loader->readASF((char *)filename);
-	//animation = aloader->readAMC(filename_a, skeleton);
-	animation = new Animation(skeleton);
+	animation = aloader->readAMC(filename_a, skeleton);
+	//animation = new Animation(skeleton);
 	path = new Path();
 	makeState(skeleton->getNumBones(), &p);
 	glPointSize(2.0);
@@ -120,13 +120,13 @@ void Scene::keyPressed(unsigned char c) {
 		animation->setFrame(i);
 	}
 	else if (c == 'b') {
-		path->append(Vec3D(rand() % 20, rand() % 20, rand() % 20));
+		path->append(Vec3D(rand() % 80 - 40, rand() % 80 - 40, rand() % 80 - 40));
 	}
 }
 
 void Scene::display(chrono::duration<double> tick) {
 	if (playing) {
-		time += tick;
+		time += tick * 25;
 	}
 	if (skeleton) {
 		animation->update( time.count(), &p ); // TODO: use time

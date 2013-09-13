@@ -80,6 +80,9 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 		click_old = click_new;
 		return true;
 	}
+
+	//TODO: other controls
+
 	return false;
 }
 
