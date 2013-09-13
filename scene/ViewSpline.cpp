@@ -21,7 +21,7 @@ ViewSpline::ViewSpline():
 
 	primary.addView(this);
 
-	MainWindow *s = new MainWindow(800, 600);
+	MainWindow *s = new MainWindow(300, 200);
 	s->addView(this);
 
 }
@@ -30,7 +30,17 @@ ViewSpline::~ViewSpline() {
 	// TODO Auto-generated destructor stub
 }
 
-int ViewSpline::mouseClicked(int button, int state, int x, int y) {
+int ViewSpline::mouseClicked(GLuint wnd, int button, int state, int x, int y) {
+	if (wnd == primary.g_mainWnd) {
+		clickPrimary(button, state, x, y);
+	}
+	else {
+		clickSecondary(button, state, x, y);
+	}
+	return 0;
+}
+
+int ViewSpline::clickPrimary(int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (button == 2 && state) {
 		message.clear();
@@ -53,14 +63,29 @@ int ViewSpline::mouseClicked(int button, int state, int x, int y) {
 	return 0;
 }
 
-int ViewSpline::mouseDragged(int x, int y) {
+int ViewSpline::clickSecondary(int button, int state, int x, int y) {
+	Vec3D click(x, y, 0);
+	if (button == 2 && state) {
+
+		// TODO: sort new values, so order has increasing x
+
+		speed.append( click );
+		return 1;
+	}
+	return 0;
+}
+
+int ViewSpline::mouseDragged(GLuint, int x, int y) {
 	return 0;
 }
 
 void ViewSpline::display(GLuint view, chrono::duration<double> tick) {
 	if (view == primary.g_mainWnd) {
 		path.displayline();
-		path.display(tick, d);
+		path.translate(tick, d);
+	}
+	else {
+		speed.displayline();
 	}
 }
 

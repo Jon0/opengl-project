@@ -29,7 +29,7 @@ Camera::~Camera() {
 	// TODO Auto-generated destructor stub
 }
 
-void Camera::setView(chrono::duration<double> tick) {
+void Camera::setView(GLuint, chrono::duration<double> tick) {
 	cam_angle.rotate(cam_angle_d);
 	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, (1 - tick.count() * 10));
 
@@ -56,14 +56,14 @@ void Camera::setView(chrono::duration<double> tick) {
 	glPopMatrix();
 }
 
-void Camera::resize(int x, int y) {
+void Camera::resize(GLuint, int x, int y) {
 	cam_aspect = (double) x / (double) y;
 	arcball_x = (x / 2.0);
 	arcball_y = (y / 2.0);
 	arcball_radius = (x / 2.0);
 }
 
-int Camera::mouseClicked(int button, int state, int x, int y) {
+int Camera::mouseClicked(GLuint, int button, int state, int x, int y) {
 	setupMatrix();
 	button_state[button] = !state;
 	if ( clickInner(x, y) ) return true;
@@ -86,7 +86,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 	return false;
 }
 
-int Camera::mouseDragged(int x, int y) {
+int Camera::mouseDragged(GLuint, int x, int y) {
 	setupMatrix();
 	if ( dragInner(x, y) ) return true;
 

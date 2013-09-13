@@ -19,12 +19,16 @@ namespace std {
 class Ortho: public ViewInterface {
 public:
 	Ortho();
-	virtual void setView(GLuint, chrono::duration<double>);
-	virtual void resize(int, int);
-	virtual void keyPressed(unsigned char);
-	virtual int mouseClicked(int, int, int, int) = 0;
-	virtual int mouseDragged(int x, int y) = 0;
 	virtual ~Ortho();
+
+	void drawString(string message);
+
+	virtual void setView(GLuint, chrono::duration<double>);
+	virtual void resize(GLuint, int, int);
+	virtual void keyPressed(GLuint, unsigned char);
+	virtual int mouseClicked(GLuint, int, int, int, int) = 0;
+	virtual int mouseDragged(GLuint, int x, int y) = 0;
+
 protected:
 	int view_width, view_height;
 	string message;

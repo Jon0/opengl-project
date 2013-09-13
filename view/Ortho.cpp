@@ -22,17 +22,7 @@ Ortho::~Ortho() {
 	// TODO Auto-generated destructor stub
 }
 
-void Ortho::setView(GLuint view, chrono::duration<double> tick) {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, view_width, 0.0, view_height, -50.0, 50.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	// draw scene
-	display(view, tick);
-
+void Ortho::drawString(string message) {
 	// draw text
 	glColor3f(1.0, 1.0, 1.0);
 	glRasterPos2f(0.0, 0.0);
@@ -46,12 +36,24 @@ void Ortho::setView(GLuint view, chrono::duration<double> tick) {
 	}
 }
 
-void Ortho::resize(int x, int y) {
+void Ortho::setView(GLuint view, chrono::duration<double> tick) {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, view_width, 0.0, view_height, -50.0, 50.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// draw scene
+	display( view, tick );
+}
+
+void Ortho::resize(GLuint, int x, int y) {
 	view_width = x;
 	view_height = y;
 }
 
-void Ortho::keyPressed(unsigned char c) {
+void Ortho::keyPressed(GLuint, unsigned char c) {
 	if (c == '\r') {
 		messageSent(message);
 		message.clear();

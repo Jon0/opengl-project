@@ -49,7 +49,7 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 }
 
 
-void Path::display(chrono::duration<double> tick, Drawable *d) {
+void Path::translate(chrono::duration<double> tick, Drawable *d) {
 	displayline();
 
 	if (play && getNumKeyFrames() >= 2) {

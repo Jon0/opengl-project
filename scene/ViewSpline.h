@@ -21,13 +21,16 @@ class ViewSpline: public Ortho {
 public:
 	ViewSpline();
 	virtual ~ViewSpline();
-	virtual int mouseClicked(int, int, int, int);
-	virtual int mouseDragged(int x, int y);
+	virtual int mouseClicked(GLuint, int, int, int, int);
+	int clickPrimary(int button, int state, int x, int y);
+	int clickSecondary(int button, int state, int x, int y);
+	virtual int mouseDragged(GLuint, int x, int y);
 	void display(GLuint, chrono::duration<double>);
 protected:
 	MainWindow primary;
 	Drawable *d;
 	Path path;
+	Path speed;
 	virtual void messageSent(string);
 };
 

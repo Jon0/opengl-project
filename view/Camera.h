@@ -20,11 +20,12 @@ class Camera: public ViewInterface {
 public:
 	Camera();
 	virtual ~Camera();
-	virtual void setView(chrono::duration<double>);
-	virtual void resize(int, int);
-	virtual void keyPressed(unsigned char) = 0;
-	virtual int mouseClicked(int, int, int, int);
-	virtual int mouseDragged(int x, int y);
+
+	virtual void setView(GLuint, chrono::duration<double>);
+	virtual void resize(GLuint, int, int);
+	virtual void keyPressed(GLuint, unsigned char) = 0;
+	virtual int mouseClicked(GLuint, int, int, int, int);
+	virtual int mouseDragged(GLuint, int x, int y);
 	void setupMatrix();
 	GLfloat *getProjMatrix();
 	GLfloat *getModelMatrix();

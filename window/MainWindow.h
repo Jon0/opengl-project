@@ -8,6 +8,7 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
+#include <map>
 #include <vector>
 #include <chrono>
 #include "KeyListener.h"
@@ -40,7 +41,7 @@ private:
 	static void idleFunc();
 };
 
-extern MainWindow *ins;
+extern map<int, MainWindow *> instances;
 
 } /* namespace std */
 #endif /* MAINWINDOW_H_ */

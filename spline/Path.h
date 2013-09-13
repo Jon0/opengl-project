@@ -30,7 +30,7 @@ public:
 	void append(Vec3D);
 	Vec3D *getPoint(int);
 	bool getNearestPoint(Vec3D, int *, float *);
-	void display(chrono::duration<double>, Drawable *);
+	void translate(chrono::duration<double>, Drawable *);
 	virtual Vec3D getKeyPoint(int);
 	virtual int getNumKeyFrames();
 };

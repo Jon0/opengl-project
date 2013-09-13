@@ -132,7 +132,7 @@ void Scene::display(chrono::duration<double> tick) {
 		animation->update( time.count(), &p ); // TODO: use time
 		skeleton->setSelection( selectedBone );
 		skeleton->setCurrentPose( &p );
-		path->display( tick, skeleton );
+		path->translate( tick, skeleton );
 	}
 }
 

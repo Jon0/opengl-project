@@ -16,11 +16,11 @@ namespace std {
 
 class ViewInterface: public KeyListener, public MouseListener {
 public:
-	virtual void setView(GLuint window, chrono::duration<double>) = 0;
-	virtual void resize(int, int) = 0;
-	virtual void keyPressed(unsigned char) = 0;
-	virtual int mouseClicked(int, int, int, int) = 0;
-	virtual int mouseDragged(int, int) = 0;
+	virtual void setView(GLuint, chrono::duration<double>) = 0;
+	virtual void resize(GLuint, int, int) = 0;
+	virtual void keyPressed(GLuint, unsigned char) = 0;
+	virtual int mouseClicked(GLuint, int, int, int, int) = 0;
+	virtual int mouseDragged(GLuint, int, int) = 0;
 	virtual ~ViewInterface() {};
 };
 

@@ -5,16 +5,16 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <GL/glut.h>
 #include "MainWindow.h"
 
 namespace std {
 
 /* pointer to the running instance */
-MainWindow *ins;
+map<int, MainWindow *> instances;
 
 MainWindow::MainWindow(int width, int height) {
-	ins = this;
 	wnd_width = width;
 	wnd_height = height;
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -26,6 +26,12 @@ MainWindow::MainWindow(int width, int height) {
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseCallbackMotionFunc);
 	glutIdleFunc(idleFunc);
+
+	/*
+	 *	keep a reference to this instance
+	 *	available from static methods
+	 */
+	instances[g_mainWnd] = this;
 
 	// get initial time
 	time = chrono::high_resolution_clock::now();
@@ -54,7 +60,7 @@ void MainWindow::display() {
 
 void MainWindow::reshape(int x, int y) {
 	for (auto view : g_view) {
-		((ViewInterface *) view )->resize(x, y);
+		((ViewInterface *) view )->resize( g_mainWnd, x, y);
 	}
 	wnd_width = x;
 	wnd_height = y;
@@ -63,7 +69,7 @@ void MainWindow::reshape(int x, int y) {
 
 void MainWindow::keyboard(unsigned char key, int x, int y) {
 	for (auto view: g_view) {
-		((ViewInterface *) view )->keyPressed(key);
+		((ViewInterface *) view )->keyPressed( g_mainWnd, key);
 		//if (((ViewInterface *) view )->keyPressed(key)) break;
 	}
 	//glutPostRedisplay();
@@ -72,35 +78,40 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 // TODO: send GLuint of window
 void MainWindow::mouseClick(int button, int state, int x, int y) {
 	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseClicked(button, state, x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseClicked( g_mainWnd, button, state, x, wnd_height - y)) break;
 	}
 	//glutPostRedisplay();
 }
 
 void MainWindow::mouseDrag(int x, int y) {
 	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseDragged(x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseDragged( g_mainWnd, x, wnd_height - y)) break;
 	}
 	//glutPostRedisplay();
 }
 
 void MainWindow::displayCallback() {
+	MainWindow *ins = instances[ glutGetWindow() ];
 	ins->display();
 }
 
 void MainWindow::reshapeCallback(int x, int y) {
+	MainWindow *ins = instances[ glutGetWindow() ];
 	ins->reshape(x, y);
 }
 
 void MainWindow::keyboardCallback(unsigned char key, int x, int y) {
+	MainWindow *ins = instances[ glutGetWindow() ];
 	ins->keyboard(key, x, y);
 }
 
 void MainWindow::mouseCallback(int button, int state, int x, int y) {
+	MainWindow *ins = instances[ glutGetWindow() ];
 	ins->mouseClick(button, state, x, y);
 }
 
 void MainWindow::mouseCallbackMotionFunc(int x, int y) {
+	MainWindow *ins = instances[ glutGetWindow() ];
 	ins->mouseDrag(x, y);
 }
 
