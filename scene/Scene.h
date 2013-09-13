@@ -28,12 +28,15 @@ public:
 	void keyPressed(unsigned char);
 	virtual void display(chrono::duration<double>);
 protected:
+	chrono::duration<double> time;
 	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;
 	AnimationLoader *aloader;
 	Skeleton *skeleton;
 	Animation *animation;
 	Path *path;
+	pose p;
+	bool playing;
 };
 
 } /* namespace std */

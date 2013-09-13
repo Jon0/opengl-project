@@ -11,7 +11,8 @@
 
 namespace std {
 
-Scene::Scene(): Camera() {
+Scene::Scene(): Camera(), time(0) {
+	playing = false;
 	selectedBone = 0;
 	clickx = clicky = 0;
 	const char *filename = "assets/priman.asf";
@@ -22,6 +23,7 @@ Scene::Scene(): Camera() {
 	//animation = aloader->readAMC(filename_a, skeleton);
 	animation = new Animation(skeleton);
 	path = new Path();
+	makeState(skeleton->getNumBones(), &p);
 	glPointSize(2.0);
 }
 
@@ -106,6 +108,7 @@ void Scene::keyPressed(unsigned char c) {
 		cout << "play" << endl;
 		animation->animate(true);
 		path->play = true;
+		playing = !playing;
 	}
 	else if (c == 'q') {
 		cout << "reset" << endl;
@@ -122,10 +125,14 @@ void Scene::keyPressed(unsigned char c) {
 }
 
 void Scene::display(chrono::duration<double> tick) {
+	if (playing) {
+		time += tick;
+	}
 	if (skeleton) {
-		skeleton->setSelection(selectedBone);
-		animation->update( 0.0 ); // TODO: use time
-		path->display(tick, skeleton);
+		animation->update( time.count(), &p ); // TODO: use time
+		skeleton->setSelection( selectedBone );
+		skeleton->setCurrentPose( &p );
+		path->display( tick, skeleton );
 	}
 }
 

@@ -30,8 +30,7 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	select = NULL;
 	selQuat = NULL;
 	selIndex = -1;
-	current_pose = *makeState(numOfBones);
-
+	current_pose = NULL;
 
 	colors[0] = 0;			// id
 	colors[1] = 0xff0000ff;	// red
@@ -56,7 +55,6 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 
 Skeleton::~Skeleton() {
 	deleteBones(root);
-	delete[] current_pose.angle;
 }
 
 void Skeleton::deleteBones(bone* root) {
@@ -88,13 +86,9 @@ bone *Skeleton::getBone(int ind) {
 	return &root[ind];
 }
 
-pose *Skeleton::getPose() {
-	return &current_pose;
-}
-
 // [Assignment2] you may need to revise this function
 void Skeleton::display() {
-	if ( root == NULL ) {
+	if ( root == NULL || current_pose == NULL ) {
 		return;
 	}
 
@@ -134,7 +128,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	current_pose.angle[root->index].toMatrix(temp_mat);
+	current_pose->angle[root->index].toMatrix(temp_mat);
 	glMultMatrixf(temp_mat);
 
 	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
@@ -155,7 +149,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 		selQuat = new Quaternion( 1, 0, 0, 0 );
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = current_pose.angle[b->index];
+			Quaternion q = current_pose->angle[b->index];
 			Quaternion bri = b->rotation->multiplicativeInverse();
 			selQuat->rotate( bri );
 			selQuat->rotate( q );
@@ -253,10 +247,7 @@ Quaternion *Skeleton::getBoneAxis(int id) {
 }
 
 void Skeleton::setCurrentPose(pose *p) {
-	current_pose.position = p->position;
-	for (int i = 0; i < numBones; ++i) {
-		current_pose.angle[i] = p->angle[i];
-	}
+	current_pose = p;
 }
 
 color *Skeleton::colorAsID(bone *b) {
@@ -268,8 +259,7 @@ color *Skeleton::colorStandard(bone *b) {
 	return cStandard;
 }
 
-pose *makeState( int numBones ) {
-	pose *next = new pose();
+pose *makeState( int numBones, pose *next ) {
 	next->position = Vec3D(0, 0, 0);
 	next->angle = new Quaternion [ numBones ];
 
@@ -279,8 +269,7 @@ pose *makeState( int numBones ) {
 	return next;
 }
 
-pose *copyState( int numBones, pose *other ) {
-	pose *next = new pose();
+pose *copyState( int numBones, pose *other, pose *next ) {
 	next->position = other->position;
 	next->angle = new Quaternion [ numBones ];
 

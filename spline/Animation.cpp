@@ -12,19 +12,20 @@
 namespace std {
 
 Animation::Animation(Skeleton *s) {
-	skeleton = s;
+	numBones = s->getNumBones();
 	show_animate = false;
 	animate_frame = 0.0;
 	frame_rate = 0.01;
+	makeState(numBones, &current);
 	addFrame();
 }
 
 Animation::Animation( int numPoses, pose **states, Skeleton *s) {
-	skeleton = s;
+	numBones = s->getNumBones();
 	show_animate = false;
 	animate_frame = 0.0;
 	frame_rate = 1.0;
-
+	makeState(numBones, &current);
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
 	}
@@ -32,41 +33,34 @@ Animation::Animation( int numPoses, pose **states, Skeleton *s) {
 
 Animation::~Animation() {}
 
-void Animation::update(float time) {
-	pose *out = skeleton->getPose();
-	if (show_animate && v_pose.size() > 0) {
+void Animation::update(float time, pose *current) {
 
-		// set correct pose base on keyframes
-		animate_frame = fmod( animate_frame + frame_rate, v_pose.size() );
-		pose *a = &v_pose.at( (int) animate_frame );
-		pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
-		float t = fmod(animate_frame, 1.0);
+	// set correct pose base on keyframes
+	float animate_frame = fmod( time, v_pose.size() );
+	pose *a = &v_pose.at( (int) animate_frame );
+	pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
+	float t = fmod(animate_frame, 1.0);
 
-		//current.position = getPoint(animate_frame);
-		int numBones = skeleton->getNumBones();
-		for (int i = 0; i < numBones; ++i) {
-			out->angle[i] = slerp(a->angle[i], b->angle[i], t);
-		}
+	//current.position = getPoint(animate_frame);;
+	for (int i = 0; i < numBones; ++i) {
+		current->angle[i] = slerp(a->angle[i], b->angle[i], t);
 	}
-	else {
-		skeleton->setCurrentPose( (pose *)&v_pose.at( (int) animate_frame ) );
-	}
-
-	//displayline(0, v_pose.size() - 3);
 }
 
 void Animation::addFrame() {
+	pose newPose;
 	if (v_pose.size() > 0) {
-		v_pose.push_back( *copyState( skeleton->getNumBones(), (pose *)&v_pose.back() ) );
+		copyState( numBones, (pose *)&v_pose.back(), &newPose);
 	}
 	else {
-		v_pose.push_back( *makeState( skeleton->getNumBones() ) );
+		makeState(numBones, &newPose);
 	}
-	animate_frame = v_pose.size() - 1;
+	v_pose.push_back( newPose );
 }
 
 void Animation::insertFrame() {
-	pose *p = makeState( skeleton->getNumBones() );
+	pose newPose;
+	makeState( numBones, &newPose );
 
 	// insert at current position
 	animate_frame = fmod( animate_frame + frame_rate, v_pose.size() );
@@ -74,11 +68,9 @@ void Animation::insertFrame() {
 	pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 	float t = fmod(animate_frame, 1.0);
 
-	p->position = a->position;	// this should use some interpolation
-
-	int numBones = skeleton->getNumBones();
+	newPose.position = a->position;	// this should use some interpolation
 	for (int i = 0; i < numBones; ++i) {
-		p->angle[i] = slerp(a->angle[i], b->angle[i], t);
+		newPose.angle[i] = slerp(a->angle[i], b->angle[i], t);
 	}
 
 
@@ -106,15 +98,7 @@ void Animation::rollSelection(int id, float f) {
 	if ( id < 0 ) {
 		return;
 	}
-	pose *p = &v_pose.at(animate_frame);
-	bone *b = skeleton->getBone(id);
-	//Vec3D v(-b->dirx, -b->diry, -b->dirz); //p->angle[id].vector();
-	Quaternion h(0, b->dirx, b->diry, b->dirz);
-	Quaternion i = h * b->rotation->multiplicativeInverse();
-
-	Vec3D v = i.vector();
-	Quaternion q(f, v);
-	p->angle[id].rotate( q );
+	// TODO: something
 }
 
 void Animation::modSelection(int id, float x, float y, float z) {

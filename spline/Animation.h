@@ -21,7 +21,7 @@ public:
 	Animation(int, pose **, Skeleton *);
 	virtual ~Animation();
 
-	void update(float);
+	void update(float, pose *);
 	void addFrame();
 	void insertFrame();
 	void setPlaySpeed(int);
@@ -33,10 +33,15 @@ public:
 	int getFrame();
 
 private:
-	Skeleton *skeleton;
+	int numBones;
+	vector<pose> v_pose;
+
+
+	//TODO: unused things:
 	bool show_animate;
 	float animate_frame, frame_rate;
-	vector<pose> v_pose;
+	pose current;
+
 };
 
 } /* namespace std */

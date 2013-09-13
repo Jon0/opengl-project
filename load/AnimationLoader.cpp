@@ -44,12 +44,11 @@ Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton) {
 		if (start[0] == '#' || start[0] == ':' || start[0] == '\0') {
 			continue;
 		}
-
 		if (start != NULL) {
-
 			// create a new frame
 			if ( isdigit( start[0] ) ) {
-				current = makeState( skeleton->getNumBones() );
+				current = new pose();
+				makeState( skeleton->getNumBones(), current );
 				state_list[ atoi(start)-1 ] = current;
 				numStates++;
 			}

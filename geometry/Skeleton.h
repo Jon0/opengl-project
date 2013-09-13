@@ -37,7 +37,7 @@ typedef int DOF;
 
 struct pose {
 	Vec3D position;
-	Quaternion *angle;
+	Quaternion *angle; // TODO: use vector
 };
 
 //Type to represent a bone
@@ -58,8 +58,8 @@ struct color {
 	int *x, *y, *z, *bone, *sphere, *select;
 };
 
-pose *makeState(int);
-pose *copyState(int, pose *);
+pose *makeState(int, pose *);
+pose *copyState(int, pose *, pose *);
 
 class Skeleton;
 
@@ -74,7 +74,6 @@ public:
 	int getNumBones();
 	bone *getBone(char *);
 	bone *getBone(int);
-	pose *getPose();
 	int selectMouse(int, int);
 	void setSelection(int);
 	bool hasSelection();
@@ -99,7 +98,7 @@ private:
 	Quaternion *selQuat;
 
 	// current pose
-	pose current_pose;
+	pose *current_pose;
 
 	// array of bones
 	bone *root;
