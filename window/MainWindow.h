@@ -18,10 +18,11 @@ namespace std {
 
 class MainWindow {
 public:
+	GLuint g_mainWnd;
 	MainWindow(int, int);
 	virtual ~MainWindow();
+	void addView(ViewInterface *vi);
 protected:
-	GLuint g_mainWnd;
 	int wnd_width, wnd_height;
 	vector<ViewInterface *> g_view;
 	void display();

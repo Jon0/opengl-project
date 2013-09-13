@@ -6,14 +6,16 @@
  */
 
 #include <GL/glut.h>
-#include "window/MainWindow.h"
+#include "scene/ViewSpline.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
+	ViewSpline view = ViewSpline();
 
-	MainWindow(800, 600);
+	// start running
+	glutMainLoop();
 	return EXIT_SUCCESS;
 }
 

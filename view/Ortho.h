@@ -19,7 +19,7 @@ namespace std {
 class Ortho: public ViewInterface {
 public:
 	Ortho();
-	virtual void setView(chrono::duration<double>);
+	virtual void setView(GLuint, chrono::duration<double>);
 	virtual void resize(int, int);
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int) = 0;
@@ -28,7 +28,7 @@ public:
 protected:
 	int view_width, view_height;
 	string message;
-	virtual void display(chrono::duration<double>) = 0;
+	virtual void display(GLuint view, chrono::duration<double>) = 0;
 	virtual void messageSent(string) = 0;
 };
 

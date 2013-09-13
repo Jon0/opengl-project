@@ -9,12 +9,21 @@
 #include <string>
 #include <GL/glut.h>
 #include "../geometry/Teapot.h"
+#include "../window/MainWindow.h"
 #include "ViewSpline.h"
 
 namespace std {
 
-ViewSpline::ViewSpline(): Ortho() {
+ViewSpline::ViewSpline():
+		Ortho(),
+		primary(800, 600) {
 	d = new Teapot();
+
+	primary.addView(this);
+
+	MainWindow *s = new MainWindow(800, 600);
+	s->addView(this);
+
 }
 
 ViewSpline::~ViewSpline() {
@@ -39,6 +48,7 @@ int ViewSpline::mouseClicked(int button, int state, int x, int y) {
 			cout << "select " << i << endl;
 			return 1;
 		}
+
 	}
 	return 0;
 }
@@ -47,9 +57,11 @@ int ViewSpline::mouseDragged(int x, int y) {
 	return 0;
 }
 
-void ViewSpline::display(chrono::duration<double> tick) {
-	path.displayline();
-	path.display(tick, d);
+void ViewSpline::display(GLuint view, chrono::duration<double> tick) {
+	if (view == primary.g_mainWnd) {
+		path.displayline();
+		path.display(tick, d);
+	}
 }
 
 void ViewSpline::messageSent(string s) {

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <chrono>
+#include "../window/MainWindow.h"
 #include "../geometry/Drawable.h"
 #include "../spline/Path.h"
 #include "../view/Ortho.h"
@@ -22,8 +23,9 @@ public:
 	virtual ~ViewSpline();
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int x, int y);
-	void display(chrono::duration<double>);
+	void display(GLuint, chrono::duration<double>);
 protected:
+	MainWindow primary;
 	Drawable *d;
 	Path path;
 	virtual void messageSent(string);

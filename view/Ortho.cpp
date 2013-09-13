@@ -22,7 +22,7 @@ Ortho::~Ortho() {
 	// TODO Auto-generated destructor stub
 }
 
-void Ortho::setView(chrono::duration<double> tick) {
+void Ortho::setView(GLuint view, chrono::duration<double> tick) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, view_width, 0.0, view_height, -50.0, 50.0);
@@ -31,7 +31,7 @@ void Ortho::setView(chrono::duration<double> tick) {
 	glLoadIdentity();
 
 	// draw scene
-	display(tick);
+	display(view, tick);
 
 	// draw text
 	glColor3f(1.0, 1.0, 1.0);
