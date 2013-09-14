@@ -18,11 +18,9 @@ AnimationLoader::AnimationLoader() {
 	maxStates = 20000;
 }
 
-AnimationLoader::~AnimationLoader() {
-	// TODO Auto-generated destructor stub
-}
+AnimationLoader::~AnimationLoader() {}
 
-Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton) {
+Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton, Path *path) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
 		printf("Failed to open file %s\n", filename);
@@ -32,7 +30,6 @@ Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton) {
 	int numStates = 0;
 	pose **state_list = new pose *[ maxStates ];
 	pose *current;
-
 
 	char *buff = new char[buffSize];
 	char *p;
@@ -53,21 +50,23 @@ Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton) {
 				numStates++;
 			}
 			else {
-				loadAMCStateBone( start, current, skeleton );
+				loadAMCStateBone( start, current, skeleton, path );
 			}
 		}
 	}
+	path->equaliseLength();
 
 	delete[] buff;
 	fclose(file);
 	printf("Read %d frames\n", numStates);
 	Animation *a = new Animation(numStates, state_list, skeleton);
 
+	// TODO: make speed curve
 	delete state_list; // hopefully it gets copied by animation
 	return a;
 }
 
-void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skeleton) {
+void AnimationLoader::loadAMCStateBone( char *buff, pose *current, Skeleton *skeleton, Path *path ) {
 	char *start = buff;
 	// read line as a set of angles, to apply to a particular part
 	char n[32];
@@ -86,11 +85,14 @@ void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skel
 		char next[32];
 		if ((b->dof & DOF_ROOT) == DOF_ROOT) {
 
+			float v[3];
 			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
-				((float *) current->position.v)[j] = atof(next);
+				v[j] = atof(next);
 				start += strlen(next);
 				trim(&start);
 			}
+			Vec3D vect(v);
+			path->points.push_back(vect);
 
 			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
 				eularAngle[j] = atof(next);
@@ -119,7 +121,7 @@ void AnimationLoader::loadAMCStateBone(char *buff, pose* current, Skeleton *skel
 			}
 		}
 
-		current->angle[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
+		current->data()[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
 	}
 	else {
 		cout << n << " not found" << endl;

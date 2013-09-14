@@ -35,10 +35,7 @@ typedef int DOF;
 #define DOF_RZ 4
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
-struct pose {
-	Vec3D position;
-	Quaternion *angle; // TODO: use vector
-};
+typedef vector<Quaternion> pose;
 
 //Type to represent a bone
 struct bone {

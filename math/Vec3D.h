@@ -15,9 +15,11 @@ class Vec3D {
 public:
 	float v[3];
 	Vec3D();
+	Vec3D(float *);
 	Vec3D(float, float, float);
 	virtual ~Vec3D();
 	float getDistance(const Vec3D&) const;
+	float getDistanceSq(const Vec3D &) const;
 	float getX() const;
 	float getY() const;
 	float getZ() const;

@@ -23,9 +23,7 @@ Ortho::Ortho( SceneInterface *s, MainWindow *mw ): scene(s) {
 	wnd->addView(this);
 }
 
-Ortho::~Ortho() {
-	// TODO Auto-generated destructor stub
-}
+Ortho::~Ortho() {}
 
 void Ortho::setView( chrono::duration<double> tick ) {
 	glMatrixMode(GL_PROJECTION);

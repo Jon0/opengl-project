@@ -18,7 +18,7 @@
 
 namespace std {
 
-Quaternion *getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result);
+void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result);
 
 class Camera: public ViewInterface {
 public:
@@ -35,7 +35,6 @@ public:
 	void setupMatrix();
 	GLfloat *getProjMatrix();
 	GLfloat *getModelMatrix();
-	void turn(Quaternion *);
 
 private:
 	MainWindow *wnd;

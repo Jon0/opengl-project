@@ -11,7 +11,7 @@
 
 namespace std {
 
-Scene::Scene(): time(0) {
+Scene::Scene(): time(0), sp() {
 	playing = false;
 	selectedBone = 0;
 	clickx = clicky = 0;
@@ -20,11 +20,15 @@ Scene::Scene(): time(0) {
 	loader = new SkeletonLoader();
 	aloader = new AnimationLoader();
 	skeleton = loader->readASF((char *)filename);
-	animation = aloader->readAMC(filename_a, skeleton);
+
 	//animation = new Animation(skeleton);
 	path = new Path();
-	makeState(skeleton->getNumBones(), &p);
+	animation = aloader->readAMC(filename_a, skeleton, path);
+
+	makeState(skeleton->getNumBones(), &current_pose);
 	glPointSize(2.0);
+
+	new Camera( this, new MainWindow(800, 600) );
 }
 
 Scene::~Scene() {
@@ -38,13 +42,13 @@ void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternio
 }
 
 int Scene::mouseClicked(ViewInterface *, int button, int state, int x, int y) {
-	if (button == 1 && state == 0) {
+
+
+	if (button == 0 && state) {
 		if ( selectedBone >= 0 ) {
 			GLdouble *p = skeleton->selectionCenter();
 			int dx = x - p[0], dy = y - p[1];
 			int d = sqrt(dx*dx + dy*dy);
-
-
 			if ( d > 200.0 ) {
 				//*skeleton->getPose() = *animation->currentPose();
 				selectedBone = skeleton->selectMouse(x, y);
@@ -88,7 +92,7 @@ int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 		getArc( p[0], p[1], x, y, 200.0, &temp );
 		getBoneAlignment(temp, in->cameraAngle(), &click_new);
 		Quaternion drag = click_new * click_old.multiplicativeInverse();
-		animation->modSelection(selectedBone, drag);
+		animation->modSelection(time.count(), selectedBone, drag);
 		click_old = click_new;
 		return true;
 	}
@@ -102,38 +106,43 @@ void Scene::keyPressed(unsigned char c) {
 	}
 	else if (c == 's') {
 		cout << "insert frame" << endl;
-		animation->insertFrame();
+		//animation->insertFrame();
 	}
 	else if (c == 'p') {
 		cout << "play" << endl;
-		animation->animate(true);
 		playing = !playing;
 	}
 	else if (c == 'q') {
 		cout << "reset" << endl;
-		animation->setFrame(0);
+		time = time.zero();
 	}
 	else if (c == 'w') {
-		int i = animation->getFrame() + 1;
-		cout << "set frame " << i << endl;
-		animation->setFrame(i);
+		cout << "set frame" << endl;
+		//int i = animation->getFrame() + 1;
+		//animation->setFrame(i);
 	}
 	else if (c == 'b') {
 		path->append(Vec3D(rand() % 80 - 40, rand() % 80 - 40, rand() % 80 - 40));
 	}
 }
 
-// TODO : scene manage own clock
 void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 	if (playing) {
-		time += tick * 25;
+		time += tick * 20;
 	}
 	if (skeleton) {
-		animation->update( time.count(), &p ); // TODO: use time
+		sp.setTimeDisplay(time.count());
+		float d = sp.getDistanceValue(time.count()) * path->getArcLength() / sp.getTotalDistance();
+		animation->update( time.count(), &current_pose );
 		skeleton->setSelection( selectedBone );
-		skeleton->setCurrentPose( &p );
-		path->translate( time.count() * 25, skeleton );
+		skeleton->setCurrentPose( &current_pose );
+		path->translate( d, skeleton );
+		path->displayline();
 	}
+}
+
+void Scene::messageSent(string str) {
+
 }
 
 

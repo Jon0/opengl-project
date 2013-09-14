@@ -19,7 +19,7 @@ Spline::Spline(): u_delta() {
 }
 
 float Spline::getULength() {
-	return getNumKeyFrames() - 1;
+	return (getNumKeyFrames() - 1);
 }
 
 float Spline::getArcLength() {
@@ -72,18 +72,17 @@ float Spline::calcPointInc(float u, float dist_inc) {
 	Vec3D v1, v2 = getPoint(u);
 	float dist = 0, u_inc = 0;
 
-	// TODO: binary search
-	// move along arc
+	// TODO: binary search might be faster, and more accurate
 	while(dist < dist_inc) {
-		u_inc += 0.005;
+		u_inc += 0.001;
 		v1 = v2;
-		Vec3D v2 = getPoint(u+u_inc);
+		v2 = getPoint(u+u_inc);
 		dist += v1.getDistance(v2);
 	}
 
 	// distance is >= to dist_inc
-	float ratio = (dist_inc / dist);
-	return u_inc*ratio;
+	//float ratio = (dist_inc / dist);
+	return u_inc; // * ratio
 }
 
 Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
@@ -94,7 +93,7 @@ Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
 /*
  * calculate a map between linear distance and u
  */
-void Spline::equalise() {
+void Spline::equaliseLength() {
 	u_delta.clear();
 
 	// distance | u
@@ -104,8 +103,8 @@ void Spline::equalise() {
 	// etc
 
 	// TODO: only add new parts
-	float ulength = getULength();
-	for (float u = 0; u < ulength - segments;) {
+	float ulength = getULength() - segments;
+	for (float u = 0; u < ulength;) {
 		u_delta.push_back(u);
 		u += calcPointInc(u, segments);
 	}

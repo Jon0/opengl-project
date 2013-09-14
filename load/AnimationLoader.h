@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "SkeletonLoader.h"
+#include "../spline/Path.h"
 #include "../spline/Animation.h"
 
 namespace std {
@@ -18,11 +19,11 @@ class AnimationLoader {
 public:
 	AnimationLoader();
 	virtual ~AnimationLoader();
-	Animation *readAMC( const char *, Skeleton *);
+	Animation *readAMC( const char *, Skeleton *, Path *path);
 
 private:
 	int buffSize, maxStates;
-	void loadAMCStateBone( char *buff, pose* current, Skeleton * );
+	void loadAMCStateBone( char *buff, pose *current, Skeleton *, Path *path );
 };
 
 } /* namespace std */

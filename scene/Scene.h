@@ -8,6 +8,7 @@
 #ifndef SCENE_H_
 #define SCENE_H_
 
+#include "SpeedCurve.h"
 #include "../view/Camera.h"
 #include "../load/AnimationLoader.h"
 #include "../load/SkeletonLoader.h"
@@ -28,17 +29,21 @@ public:
 	virtual void display( ViewInterface *, chrono::duration<double> );
 	virtual int mouseClicked( ViewInterface *, int, int, int, int );
 	virtual int mouseDragged( ViewInterface *, int, int );
+	virtual void messageSent(string);
 protected:
-	Quaternion click_old, click_new;
-	chrono::duration<double> time;
 	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;
 	AnimationLoader *aloader;
 	Skeleton *skeleton;
 	Animation *animation;
 	Path *path;
-	pose p;
+	pose current_pose;
+
+	Quaternion click_old, click_new;
+
 	bool playing;
+	chrono::duration<double> time;
+	SpeedCurve sp;
 };
 
 } /* namespace std */

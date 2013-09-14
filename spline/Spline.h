@@ -23,11 +23,11 @@ public:
 	Vec3D getDistPoint(float);
 	float calcPointInc(float, float);
 	void displayline();
+	void equaliseLength();
 	virtual Vec3D getKeyPoint(int) = 0;
 	virtual int getNumKeyFrames() = 0;
 
 protected:
-	void equalise();
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
 
 private:

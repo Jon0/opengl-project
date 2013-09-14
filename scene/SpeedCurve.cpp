@@ -49,7 +49,6 @@ void SpeedCurve::calculateValues() {
 		float b = values.at( values.size() - 1 );
 		total_distance += values_dx * (a + b) / 2.0;
 		distance.push_back(total_distance);
-		cout << total_distance << endl;
 	}
 }
 
@@ -76,7 +75,7 @@ float SpeedCurve::getDistanceValue(float time) {
 }
 
 float SpeedCurve::getTotalDistance() {
-	return total_distance;
+	return total_distance > 0 ? total_distance : 1.0;
 }
 
 void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
@@ -134,11 +133,16 @@ int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int
 	return 0;
 }
 
+// TODO: drag values
 int SpeedCurve::mouseDragged(ViewInterface *, int x, int y) {
 	return false;
 }
 
 void SpeedCurve::messageSent(string) {
+
+}
+
+void SpeedCurve::keyPressed(unsigned char) {
 
 }
 

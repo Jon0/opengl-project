@@ -128,7 +128,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	current_pose->angle[root->index].toMatrix(temp_mat);
+	current_pose->data()[root->index].toMatrix(temp_mat);
 	glMultMatrixf(temp_mat);
 
 	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
@@ -149,7 +149,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 		selQuat = new Quaternion( 1, 0, 0, 0 );
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = current_pose->angle[b->index];
+			Quaternion q = current_pose->data()[b->index];
 			Quaternion bri = b->rotation->multiplicativeInverse();
 			selQuat->rotate( bri );
 			selQuat->rotate( q );
@@ -260,21 +260,21 @@ color *Skeleton::colorStandard(bone *b) {
 }
 
 pose *makeState( int numBones, pose *next ) {
-	next->position = Vec3D(0, 0, 0);
-	next->angle = new Quaternion [ numBones ];
+	*next = pose();
+	next->reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion(1, 0, 0, 0);
+		next->push_back( Quaternion(1, 0, 0, 0) );
 	}
 	return next;
 }
 
 pose *copyState( int numBones, pose *other, pose *next ) {
-	next->position = other->position;
-	next->angle = new Quaternion [ numBones ];
+	*next = pose();
+	next->reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
-		next->angle[i] = *new Quaternion(other->angle[i]);
+		next->push_back( other->data()[i] );
 	}
 	return next;
 }

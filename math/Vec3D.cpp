@@ -12,8 +12,10 @@ namespace std {
 
 Vec3D::Vec3D(): v() {}
 
-Vec3D::~Vec3D() {
-	// TODO Auto-generated destructor stub
+Vec3D::Vec3D(float *f) {
+	v[0] = f[0];
+	v[1] = f[1];
+	v[2] = f[2];
 }
 
 Vec3D::Vec3D(float x, float y, float z) {
@@ -22,9 +24,18 @@ Vec3D::Vec3D(float x, float y, float z) {
 	v[2] = z;
 }
 
+Vec3D::~Vec3D() {
+	// TODO Auto-generated destructor stub
+}
+
 float Vec3D::getDistance(const Vec3D &other) const {
 	float dx = other.v[0] - v[0], dy = other.v[1] - v[1], dz = other.v[2] - v[2];
 	return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+float Vec3D::getDistanceSq(const Vec3D &other) const {
+	float dx = other.v[0] - v[0], dy = other.v[1] - v[1], dz = other.v[2] - v[2];
+	return dx*dx + dy*dy + dz*dz;
 }
 
 float Vec3D::getX() const {

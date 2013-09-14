@@ -19,13 +19,11 @@ Path::Path():
 		trans_point_n(0.0, 0.0, 0.0),
 		rot_point(1.0, 0.0, 0.0, 0.0) {}
 
-Path::~Path() {
-	// TODO Auto-generated destructor stub
-}
+Path::~Path() {}
 
 void Path::append(Vec3D point) {
 	points.push_back(point);
-	equalise();
+	equaliseLength();
 }
 
 bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {

@@ -30,6 +30,7 @@ public:
 	virtual int mouseClicked(ViewInterface *, int, int, int, int);
 	virtual int mouseDragged(ViewInterface *, int x, int y);
 	virtual void messageSent(string);
+	virtual void keyPressed(unsigned char);
 
 private:
 	float total_distance;

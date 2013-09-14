@@ -23,6 +23,7 @@ public:
 	virtual int mouseClicked( ViewInterface *, int, int, int, int ) = 0;
 	virtual int mouseDragged( ViewInterface *, int, int ) = 0;
 	virtual void messageSent(string) = 0;
+	virtual void keyPressed(unsigned char) = 0;
 };
 
 } /* namespace std */

@@ -29,9 +29,7 @@ Camera::Camera( SceneInterface *s, MainWindow *mw ):
 	wnd->addView(this);
 }
 
-Camera::~Camera() {
-	// TODO Auto-generated destructor stub
-}
+Camera::~Camera() {}
 
 void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle.rotate(cam_angle_d);
@@ -67,8 +65,8 @@ void Camera::resize(int x, int y) {
 	arcball_radius = (x / 2.0);
 }
 
-void Camera::keyPressed(unsigned char) {
-	// TODO: pass key press
+void Camera::keyPressed(unsigned char c) {
+	scene->keyPressed(c);
 }
 
 int Camera::mouseClicked(int button, int state, int x, int y) {
@@ -129,13 +127,7 @@ GLfloat *Camera::getModelMatrix() {
 	return model_matrix;
 }
 
-/* this is not used */
-void Camera::turn(Quaternion *current) {
-	Quaternion drag = *current * click_old.multiplicativeInverse();
-	cam_angle.rotate(drag);
-}
-
-Quaternion *getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
+void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
 	float x = (ix - arcx) / rad;
 	float y = (iy - arcy) / rad;
 
@@ -143,12 +135,10 @@ Quaternion *getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *re
 	if (x*x + y*y < 1.0) {
 		float z = sqrt(1 - (x*x + y*y));
 		*result = Quaternion(0, x, y, z);
-		return new Quaternion(0, x, y, z);
 	}
 	else {
 		float len = sqrt(x*x + y*y);
 		*result = Quaternion(0, x / len, y / len, 0);
-		return new Quaternion(0, x / len, y / len, 0);
 	}
 }
 

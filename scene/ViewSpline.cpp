@@ -52,6 +52,7 @@ int ViewSpline::mouseDragged(ViewInterface *v, int x, int y) {
 	return 0;
 }
 
+// TODO: display speed increments
 void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
 	if (play) {
 		time += tick * 10;
@@ -68,6 +69,10 @@ void ViewSpline::messageSent(string s) {
 	if (s == "play") {
 		play = true;
 	}
+}
+
+void ViewSpline::keyPressed(unsigned char) {
+
 }
 
 } /* namespace std */

@@ -23,25 +23,14 @@ public:
 
 	void update(float, pose *);
 	void addFrame();
-	void insertFrame();
-	void setPlaySpeed(int);
+	void insertFrame(float);
 	void rollSelection(int, float);
-	void modSelection(int, float, float, float);
-	void modSelection(int id, Quaternion &q);
-	void animate(bool);
-	void setFrame(int);
-	int getFrame();
+	void modSelection(int, int, float, float, float);
+	void modSelection(int, int id, Quaternion &q);
 
 private:
 	int numBones;
 	vector<pose> v_pose;
-
-
-	//TODO: unused things:
-	bool show_animate;
-	float animate_frame, frame_rate;
-	pose current;
-
 };
 
 } /* namespace std */

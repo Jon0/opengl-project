@@ -10,13 +10,9 @@
 
 namespace std {
 
-Teapot::Teapot() {
-	// TODO Auto-generated constructor stub
-}
+Teapot::Teapot() {}
 
-Teapot::~Teapot() {
-	// TODO Auto-generated destructor stub
-}
+Teapot::~Teapot() {}
 
 void Teapot::display() {
 	glutSolidTeapot(12.0);
