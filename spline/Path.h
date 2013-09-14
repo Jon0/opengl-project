@@ -23,15 +23,10 @@ public:
 	vector<Vec3D> points;
 	Vec3D trans_point, trans_point_n;
 	Quaternion rot_point;
-	chrono::duration<double> time;
-	bool play;
-
-
-
 
 	void append(Vec3D);
 	bool getNearestPoint(Vec3D, int *, float *);
-	void translate(chrono::duration<double>, Drawable *);
+	void translate(float, Drawable *);
 	virtual Vec3D getKeyPoint(int);
 	virtual int getNumKeyFrames();
 };

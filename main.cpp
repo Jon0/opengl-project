@@ -6,13 +6,13 @@
  */
 
 #include <GL/glut.h>
-#include "scene/SpeedCurve.h"
+#include "scene/ViewSpline.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
-	SpeedCurve view = SpeedCurve();
+	ViewSpline view = ViewSpline();
 
 	// start running
 	glutMainLoop();

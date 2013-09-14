@@ -50,7 +50,6 @@ void MainWindow::display() {
 	chrono::duration<double> tick = newTime - time;
 	time = newTime;
 	glViewport(0, 0, wnd_width, wnd_height);
-
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	for (auto &view: g_view) {
@@ -116,7 +115,10 @@ void MainWindow::mouseCallbackMotionFunc(int x, int y) {
 }
 
 void MainWindow::idleFunc() {
-	glutPostRedisplay();
+	for(auto iter=instances.begin(); iter!=instances.end(); ++iter) {
+		glutSetWindow(iter->first);
+		glutPostRedisplay();
+	}
 }
 
 } /* namespace std */

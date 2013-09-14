@@ -14,19 +14,18 @@
 
 namespace std {
 
-ViewSpline::ViewSpline() {
+ViewSpline::ViewSpline(): sp() {
+	play = false;
 	teapot = Teapot();
 	message = "Skeleton";
-
 	view = new Ortho( this, new MainWindow(800, 600) );
-	acc = new Ortho( this, new MainWindow(400, 300) );
 }
 
 ViewSpline::~ViewSpline() {
 	// TODO Auto-generated destructor stub
 }
 
-int ViewSpline::clickPrimary(int button, int state, int x, int y) {
+int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (button == 2 && state) {
 		message.clear();
@@ -49,47 +48,25 @@ int ViewSpline::clickPrimary(int button, int state, int x, int y) {
 	return 0;
 }
 
-int ViewSpline::clickSecondary(int button, int state, int x, int y) {
-	Vec3D click(x, y, 0);
-	if (button == 2 && state) {
-
-		// TODO: sort new values, so order has increasing x
-
-		speed.append( click );
-		return 1;
-	}
-	return 0;
-}
-
-int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
-	if (v == view) {
-		clickPrimary(button, state, x, y);
-	}
-	else {
-		clickSecondary(button, state, x, y);
-	}
-	return 0;
-}
-
 int ViewSpline::mouseDragged(ViewInterface *v, int x, int y) {
 	return 0;
 }
 
-void ViewSpline::display( ViewInterface *v, chrono::duration<double> tick ) {
-	if (v == view) {
-		path.displayline();
-		path.translate(tick, &teapot);
-		drawString(message);
+void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
+	if (play) {
+		time += tick * 10;
 	}
-	else {
-		speed.displayline();
-	}
+	sp.setTimeDisplay(time.count());
+	float d = sp.getDistanceValue(time.count()) * path.getArcLength() / sp.getTotalDistance();
+	path.displayline();
+	path.translate(d, &teapot);
+	drawString(message);
 }
 
 void ViewSpline::messageSent(string s) {
 	cout << s << endl;
 	if (s == "play") {
-		path.play = true;
+		play = true;
 	}
 }
 

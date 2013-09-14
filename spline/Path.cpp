@@ -17,10 +17,7 @@ Path::Path():
 		points(),
 		trans_point(0.0, 0.0, 0.0),
 		trans_point_n(0.0, 0.0, 0.0),
-		rot_point(1.0, 0.0, 0.0, 0.0),
-		time(0) {
-	play = false;
-}
+		rot_point(1.0, 0.0, 0.0, 0.0) {}
 
 Path::~Path() {
 	// TODO Auto-generated destructor stub
@@ -43,10 +40,9 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 	return false;
 }
 
-void Path::translate(chrono::duration<double> tick, Drawable *d) {
-	if (play && getNumKeyFrames() >= 2) {
-		time += tick * 25; // TODO: fix time multiplier
-		Vec3D newpoint = getDistPoint(time.count());
+void Path::translate(float distance, Drawable *d) {
+	if (getNumKeyFrames() >= 2) {
+		Vec3D newpoint = getDistPoint(distance);
 		Quaternion k =  Quaternion(0, newpoint-trans_point) * Quaternion(0, trans_point-trans_point_n).multiplicativeInverse();
 		rot_point.rotate(k);
 		trans_point_n = trans_point;

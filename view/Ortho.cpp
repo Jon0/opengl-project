@@ -73,7 +73,7 @@ void drawString(string message) {
 	glRasterPos2f(0.0, 0.0);
 	const char *str = message.c_str();
 	int len = (int) strlen(str);
-	void *font = GLUT_BITMAP_HELVETICA_18;
+	void *font = GLUT_BITMAP_HELVETICA_12;
 	glutBitmapCharacter(font, '>');
 	glutBitmapCharacter(font, ' ');
 	for (int i = 0; i < len; i++) {

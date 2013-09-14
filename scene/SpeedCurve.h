@@ -13,7 +13,7 @@
 
 namespace std {
 
-bool vec_comp_x(Vec3D, Vec3D);
+bool vec_comp_x(const Vec3D &, const Vec3D &);
 
 class SpeedCurve: public SceneInterface {
 public:
@@ -21,6 +21,10 @@ public:
 	virtual ~SpeedCurve();
 
 	void calculateValues();
+	void setTimeDisplay(float);
+	float getSpeedValue(float);
+	float getDistanceValue(float);
+	float getTotalDistance();
 
 	virtual void display( ViewInterface *, chrono::duration<double> );
 	virtual int mouseClicked(ViewInterface *, int, int, int, int);
@@ -28,14 +32,13 @@ public:
 	virtual void messageSent(string);
 
 private:
+	float total_distance;
+	float time;
 	float values_dx;
 	vector<float> values;
-
-
+	vector<float> distance;
 	ViewInterface *view;
 	Path speed;
-
-
 };
 
 } /* namespace std */

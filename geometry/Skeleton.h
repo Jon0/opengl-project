@@ -45,7 +45,7 @@ struct bone {
 	int index;
 	char* name;
 	float dirx, diry, dirz;
-	float rotx, roty, rotz;
+	float rotx, roty, rotz;	// TODO : remove rot
 	Quaternion *rotation;
 	DOF dof;
 	float length;

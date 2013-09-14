@@ -107,7 +107,6 @@ void Scene::keyPressed(unsigned char c) {
 	else if (c == 'p') {
 		cout << "play" << endl;
 		animation->animate(true);
-		path->play = true;
 		playing = !playing;
 	}
 	else if (c == 'q') {
@@ -133,7 +132,7 @@ void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 		animation->update( time.count(), &p ); // TODO: use time
 		skeleton->setSelection( selectedBone );
 		skeleton->setCurrentPose( &p );
-		path->translate( tick, skeleton );
+		path->translate( time.count() * 25, skeleton );
 	}
 }
 
