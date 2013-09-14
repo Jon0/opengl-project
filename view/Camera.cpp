@@ -10,26 +10,30 @@
 
 namespace std {
 
-Camera::Camera():
+Camera::Camera( SceneInterface *s, MainWindow *mw ):
 		focus(0, 0, 0),
 		cam_angle(1, 0, 0, 0),
 		cam_angle_d(1, 0, 0, 0),
 		click_old(1, 0, 0, 0),
 		click_new(1, 0, 0, 0),
 		button_state() {
+	scene = s;
 	cam_aspect = 1.0;
 	viewzoom = 100.0;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
+
+	wnd = mw;
+	wnd->addView(this);
 }
 
 Camera::~Camera() {
 	// TODO Auto-generated destructor stub
 }
 
-void Camera::setView(GLuint, chrono::duration<double> tick) {
+void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle.rotate(cam_angle_d);
 	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, (1 - tick.count() * 10));
 
@@ -52,21 +56,25 @@ void Camera::setView(GLuint, chrono::duration<double> tick) {
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 
-	display(tick);
+	scene->display( this, tick );
 	glPopMatrix();
 }
 
-void Camera::resize(GLuint, int x, int y) {
+void Camera::resize(int x, int y) {
 	cam_aspect = (double) x / (double) y;
 	arcball_x = (x / 2.0);
 	arcball_y = (y / 2.0);
 	arcball_radius = (x / 2.0);
 }
 
-int Camera::mouseClicked(GLuint, int button, int state, int x, int y) {
+void Camera::keyPressed(unsigned char) {
+	// TODO: pass key press
+}
+
+int Camera::mouseClicked(int button, int state, int x, int y) {
 	setupMatrix();
 	button_state[button] = !state;
-	if ( clickInner(x, y) ) return true;
+	if ( scene->mouseClicked( this, button, state, x, y ) ) return true;
 	if (button_state[3]) {
 		viewzoom /= 1.05;	// scroll back
 		return true;
@@ -86,9 +94,9 @@ int Camera::mouseClicked(GLuint, int button, int state, int x, int y) {
 	return false;
 }
 
-int Camera::mouseDragged(GLuint, int x, int y) {
+int Camera::mouseDragged(int x, int y) {
 	setupMatrix();
-	if ( dragInner(x, y) ) return true;
+	if ( scene->mouseDragged( this, x, y ) ) return true;
 
 	if (button_state[0]) {
 		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
@@ -97,6 +105,10 @@ int Camera::mouseDragged(GLuint, int x, int y) {
 		return true;
 	}
 	return false;
+}
+
+Quaternion Camera::cameraAngle() {
+	return cam_angle;
 }
 
 void Camera::setupMatrix() {
@@ -123,7 +135,7 @@ void Camera::turn(Quaternion *current) {
 	cam_angle.rotate(drag);
 }
 
-Quaternion *Camera::getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
+Quaternion *getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
 	float x = (ix - arcx) / rad;
 	float y = (iy - arcy) / rad;
 

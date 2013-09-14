@@ -11,7 +11,7 @@
 
 namespace std {
 
-Scene::Scene(): Camera(), time(0) {
+Scene::Scene(): time(0) {
 	playing = false;
 	selectedBone = 0;
 	clickx = clicky = 0;
@@ -31,14 +31,14 @@ Scene::~Scene() {
 	delete skeleton;
 }
 
-void Scene::getBoneAlignment(Quaternion current, Quaternion *result) {
+void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternion *result) {
 	// reverse all existing rotations in order
 	Quaternion k = cam_angle * *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
 	*result = k.multiplicativeInverse() * current * k;
 }
 
-int Scene::clickInner(int x, int y) {
-	if (button_state[0]) {
+int Scene::mouseClicked(ViewInterface *, int button, int state, int x, int y) {
+	if (button == 1 && state == 0) {
 		if ( selectedBone >= 0 ) {
 			GLdouble *p = skeleton->selectionCenter();
 			int dx = x - p[0], dy = y - p[1];
@@ -72,7 +72,7 @@ int Scene::clickInner(int x, int y) {
 	return selectedBone >= 0;
 }
 
-int Scene::dragInner(int x, int y) {
+int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 	if ( selectedBone >= 0 ) {
 		GLdouble *p = skeleton->selectionCenter();
 		Quaternion temp;
@@ -80,13 +80,13 @@ int Scene::dragInner(int x, int y) {
 		// use old mouse position to find starting quaternion
 		if (clickx > 0 && clicky > 0) {
 			getArc( p[0], p[1], clickx, clicky, 200.0, &temp );
-			getBoneAlignment(temp, &click_old);
+			getBoneAlignment(temp, in->cameraAngle(), &click_old);
 			clickx = clicky = 0;
 		}
 
 		// modify bone orientation
 		getArc( p[0], p[1], x, y, 200.0, &temp );
-		getBoneAlignment(temp, &click_new);
+		getBoneAlignment(temp, in->cameraAngle(), &click_new);
 		Quaternion drag = click_new * click_old.multiplicativeInverse();
 		animation->modSelection(selectedBone, drag);
 		click_old = click_new;
@@ -124,7 +124,8 @@ void Scene::keyPressed(unsigned char c) {
 	}
 }
 
-void Scene::display(chrono::duration<double> tick) {
+// TODO : scene manage own clock
+void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 	if (playing) {
 		time += tick * 25;
 	}

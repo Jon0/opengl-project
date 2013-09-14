@@ -27,7 +27,8 @@ float Spline::getArcLength() {
 }
 
 void Spline::displayline() {
-	glColor3f(1.0, 0.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
+	glPointSize(2.0);
 	glBegin(GL_POINTS);
 	int length = getNumKeyFrames() + 1;
 	for (int i = -1; i < length; ++i) {
@@ -40,7 +41,7 @@ void Spline::displayline() {
 	length = getNumKeyFrames() - 1;
 	for (float u = 0; u < length; u += 0.02) {
 		Vec3D v = getPoint(u);
-		glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
+		//glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
 		glVertex3f(v.getX(), v.getY(), v.getZ());
 	}
 	glEnd();
@@ -52,8 +53,7 @@ void Spline::displayline() {
 Vec3D Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
-	int length = getNumKeyFrames();
-	int v = ((int) part ) % (length - 1);
+	int v = ((int) part ) % (getNumKeyFrames() - 1);
 	return catmull_rom(getKeyPoint(v-1), getKeyPoint(v), getKeyPoint(v+1), getKeyPoint(v+2), frac);
 }
 
@@ -72,6 +72,7 @@ float Spline::calcPointInc(float u, float dist_inc) {
 	Vec3D v1, v2 = getPoint(u);
 	float dist = 0, u_inc = 0;
 
+	// TODO: binary search
 	// move along arc
 	while(dist < dist_inc) {
 		u_inc += 0.005;

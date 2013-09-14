@@ -16,24 +16,29 @@
 
 namespace std {
 
+class MainWindow;
+class SceneInterface;
+
+void drawString(string message);
+
 class Ortho: public ViewInterface {
 public:
-	Ortho();
+	Ortho( SceneInterface *, MainWindow * );
 	virtual ~Ortho();
 
-	void drawString(string message);
-
-	virtual void setView(GLuint, chrono::duration<double>);
-	virtual void resize(GLuint, int, int);
-	virtual void keyPressed(GLuint, unsigned char);
-	virtual int mouseClicked(GLuint, int, int, int, int) = 0;
-	virtual int mouseDragged(GLuint, int x, int y) = 0;
+	virtual void setView( chrono::duration<double> );
+	virtual void resize(int, int);
+	virtual void keyPressed(unsigned char);
+	virtual int mouseClicked(int, int, int, int);
+	virtual int mouseDragged(int, int);
+	virtual Quaternion cameraAngle();
 
 protected:
+	MainWindow *wnd;
+	SceneInterface *scene;
 	int view_width, view_height;
-	string message;
-	virtual void display(GLuint view, chrono::duration<double>) = 0;
-	virtual void messageSent(string) = 0;
+
+	string message; // TODO need a message?
 };
 
 } /* namespace std */

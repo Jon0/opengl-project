@@ -7,37 +7,23 @@
 
 #include <iostream>
 #include <string>
-#include <GL/glut.h>
 #include "../geometry/Teapot.h"
 #include "../window/MainWindow.h"
+#include "../view/Ortho.h"
 #include "ViewSpline.h"
 
 namespace std {
 
-ViewSpline::ViewSpline():
-		Ortho(),
-		primary(800, 600) {
-	d = new Teapot();
+ViewSpline::ViewSpline() {
+	teapot = Teapot();
+	message = "Skeleton";
 
-	primary.addView(this);
-
-	MainWindow *s = new MainWindow(300, 200);
-	s->addView(this);
-
+	view = new Ortho( this, new MainWindow(800, 600) );
+	acc = new Ortho( this, new MainWindow(400, 300) );
 }
 
 ViewSpline::~ViewSpline() {
 	// TODO Auto-generated destructor stub
-}
-
-int ViewSpline::mouseClicked(GLuint wnd, int button, int state, int x, int y) {
-	if (wnd == primary.g_mainWnd) {
-		clickPrimary(button, state, x, y);
-	}
-	else {
-		clickSecondary(button, state, x, y);
-	}
-	return 0;
 }
 
 int ViewSpline::clickPrimary(int button, int state, int x, int y) {
@@ -75,14 +61,25 @@ int ViewSpline::clickSecondary(int button, int state, int x, int y) {
 	return 0;
 }
 
-int ViewSpline::mouseDragged(GLuint, int x, int y) {
+int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
+	if (v == view) {
+		clickPrimary(button, state, x, y);
+	}
+	else {
+		clickSecondary(button, state, x, y);
+	}
 	return 0;
 }
 
-void ViewSpline::display(GLuint view, chrono::duration<double> tick) {
-	if (view == primary.g_mainWnd) {
+int ViewSpline::mouseDragged(ViewInterface *v, int x, int y) {
+	return 0;
+}
+
+void ViewSpline::display( ViewInterface *v, chrono::duration<double> tick ) {
+	if (v == view) {
 		path.displayline();
-		path.translate(tick, d);
+		path.translate(tick, &teapot);
+		drawString(message);
 	}
 	else {
 		speed.displayline();

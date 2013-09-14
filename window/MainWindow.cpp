@@ -5,8 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
-#include <GL/glut.h>
 #include "MainWindow.h"
 
 namespace std {
@@ -51,25 +49,27 @@ void MainWindow::display() {
 	chrono::time_point<chrono::high_resolution_clock> newTime = chrono::system_clock::now();
 	chrono::duration<double> tick = newTime - time;
 	time = newTime;
+	glViewport(0, 0, wnd_width, wnd_height);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
 	for (auto &view: g_view) {
-		((ViewInterface *) view )->setView( g_mainWnd, tick );
+		((ViewInterface *) view )->setView( tick );
 	}
 	glutSwapBuffers();
 }
 
 void MainWindow::reshape(int x, int y) {
 	for (auto view : g_view) {
-		((ViewInterface *) view )->resize( g_mainWnd, x, y);
+		((ViewInterface *) view )->resize( x, y );
 	}
 	wnd_width = x;
 	wnd_height = y;
-	glViewport(0, 0, wnd_width, wnd_height);
 }
 
 void MainWindow::keyboard(unsigned char key, int x, int y) {
 	for (auto view: g_view) {
-		((ViewInterface *) view )->keyPressed( g_mainWnd, key);
+		((ViewInterface *) view )->keyPressed( key );
 		//if (((ViewInterface *) view )->keyPressed(key)) break;
 	}
 	//glutPostRedisplay();
@@ -78,14 +78,14 @@ void MainWindow::keyboard(unsigned char key, int x, int y) {
 // TODO: send GLuint of window
 void MainWindow::mouseClick(int button, int state, int x, int y) {
 	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseClicked( g_mainWnd, button, state, x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseClicked( button, state, x, wnd_height - y )) break;
 	}
 	//glutPostRedisplay();
 }
 
 void MainWindow::mouseDrag(int x, int y) {
 	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseDragged( g_mainWnd, x, wnd_height - y)) break;
+		if (((ViewInterface *) view )->mouseDragged( x, wnd_height - y )) break;
 	}
 	//glutPostRedisplay();
 }

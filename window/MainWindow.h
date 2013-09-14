@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <chrono>
+#include <GL/glut.h>
 #include "KeyListener.h"
 #include "MouseListener.h"
 #include "../view/ViewInterface.h"

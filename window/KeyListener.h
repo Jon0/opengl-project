@@ -12,7 +12,7 @@ namespace std {
 
 class KeyListener {
 public:
-	virtual void keyPressed(GLuint, unsigned char) = 0;
+	virtual void keyPressed(unsigned char) = 0;
 	virtual ~KeyListener() {};
 };
 

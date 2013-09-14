@@ -17,17 +17,19 @@
 
 namespace std {
 
-class Scene: public Camera {
+class Scene: public SceneInterface {
 public:
 	Scene();
 	virtual ~Scene();
 
-	void getBoneAlignment(Quaternion, Quaternion *);
-	virtual int clickInner(int, int);
-	virtual int dragInner(int, int);
+	void getBoneAlignment(Quaternion, Quaternion, Quaternion *);
 	void keyPressed(unsigned char);
-	virtual void display(chrono::duration<double>);
+
+	virtual void display( ViewInterface *, chrono::duration<double> );
+	virtual int mouseClicked( ViewInterface *, int, int, int, int );
+	virtual int mouseDragged( ViewInterface *, int, int );
 protected:
+	Quaternion click_old, click_new;
 	chrono::duration<double> time;
 	int selectedBone, clickx, clicky;
 	SkeletonLoader *loader;

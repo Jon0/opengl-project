@@ -17,18 +17,19 @@ namespace std {
 
 class Path: public Spline {
 public:
-	bool play;
+	Path();
+	virtual ~Path();
+
 	vector<Vec3D> points;
 	Vec3D trans_point, trans_point_n;
 	Quaternion rot_point;
 	chrono::duration<double> time;
+	bool play;
 
 
-	Path();
-	virtual ~Path();
+
 
 	void append(Vec3D);
-	Vec3D *getPoint(int);
 	bool getNearestPoint(Vec3D, int *, float *);
 	void translate(chrono::duration<double>, Drawable *);
 	virtual Vec3D getKeyPoint(int);

@@ -20,7 +20,6 @@ Path::Path():
 		rot_point(1.0, 0.0, 0.0, 0.0),
 		time(0) {
 	play = false;
-	glPointSize(2.0);
 }
 
 Path::~Path() {
@@ -30,10 +29,6 @@ Path::~Path() {
 void Path::append(Vec3D point) {
 	points.push_back(point);
 	equalise();
-}
-
-Vec3D *Path::getPoint(int index) {
-	return &points.data()[index];
 }
 
 bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
@@ -48,10 +43,7 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 	return false;
 }
 
-
 void Path::translate(chrono::duration<double> tick, Drawable *d) {
-	displayline();
-
 	if (play && getNumKeyFrames() >= 2) {
 		time += tick * 25; // TODO: fix time multiplier
 		Vec3D newpoint = getDistPoint(time.count());
