@@ -5,27 +5,26 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
-#include "Animation.h"
+#include "DynamicPose.h"
 
 namespace std {
 
-Animation::Animation(Skeleton *s) {
+DynamicPose::DynamicPose(shared_ptr<Skeleton> s) {
 	numBones = s->getNumBones();
 	addFrame();
 }
 
-Animation::Animation( int numPoses, pose **states, Skeleton *s) {
+DynamicPose::DynamicPose( int numPoses, pose **states, shared_ptr<Skeleton> s) {
 	numBones = s->getNumBones();
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
 	}
 }
 
-Animation::~Animation() {}
+DynamicPose::~DynamicPose() {}
 
-void Animation::update(float time, pose *current) {
+void DynamicPose::update(float time, pose *current) {
 
 	// set correct pose base on keyframes
 	float animate_frame = fmod( time, v_pose.size() ) ;
@@ -33,13 +32,13 @@ void Animation::update(float time, pose *current) {
 	pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 	float t = fmod(animate_frame, 1.0);
 
-	//current.position = getPoint(animate_frame);;
+	current->adjust = a->adjust * (1 - t) + b->adjust * t;
 	for (int i = 0; i < numBones; ++i) {
-		current->data()[i] = slerp(a->data()[i], b->data()[i], t);
+		current->q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
 	}
 }
 
-void Animation::addFrame() {
+void DynamicPose::addFrame() {
 	pose newPose;
 	if (v_pose.size() > 0) {
 		copyState( numBones, (pose *)&v_pose.back(), &newPose);
@@ -50,9 +49,11 @@ void Animation::addFrame() {
 	v_pose.push_back( newPose );
 }
 
-void Animation::insertFrame(float time) {
+void DynamicPose::insertFrame(float time) {
 	pose newPose;
 	makeState( numBones, &newPose );
+
+	// TODO: repeated code....
 
 	// insert at current position
 	float animate_frame = fmod( time, v_pose.size() ) ;
@@ -61,35 +62,32 @@ void Animation::insertFrame(float time) {
 	float t = fmod(animate_frame, 1.0);
 
 	for (int i = 0; i < numBones; ++i) {
-		newPose.data()[i] = slerp(a->data()[i], b->data()[i], t);
+		newPose.q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
 	}
 
 
 	//v_pose.insert()
 }
 
-void Animation::rollSelection(int id, float f) {
+void DynamicPose::rollSelection(int id, float f) {
 	if ( id < 0 ) {
 		return;
 	}
 	// TODO: something
 }
 
-void Animation::modSelection(int frame_index, int id, float x, float y, float z) {
+void DynamicPose::modSelection(int frame_index, int id, float x, float y, float z) {
 	Quaternion q = *fromEular(x, y, z);
 	modSelection( frame_index, id, q );
 }
 
-void Animation::modSelection(int frame_index, int id, Quaternion &q) {
+void DynamicPose::modSelection(int frame_index, int id, Quaternion &q) {
 	if ( id < 0 ) {
 		return;
 	}
+	v_pose[frame_index].q[id].rotate( q );
 
-	pose *p = &v_pose.at(frame_index);
-	p->data()[id].rotate( q );
-
-	// quaternion to eular angle, ensure bone is within limits
-
+	// TODO ensure bone is within limits?
 	//DOF dof = skeleton->getDof(id);
 	//if ((dof & DOF_RX) == DOF_RX) {
 	//	drawnState->part[id]->degree[0] += x;

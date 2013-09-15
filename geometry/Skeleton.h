@@ -35,14 +35,16 @@ typedef int DOF;
 #define DOF_RZ 4
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
-typedef vector<Quaternion> pose;
+struct pose {
+	Vec3D adjust;
+	vector<Quaternion> q;
+};
 
 //Type to represent a bone
 struct bone {
 	int index;
 	char* name;
 	float dirx, diry, dirz;
-	float rotx, roty, rotz;	// TODO : remove rot
 	Quaternion *rotation;
 	DOF dof;
 	float length;
@@ -68,10 +70,12 @@ public:
 	~Skeleton();
 
 	virtual void display();
+	virtual int selectMouse(int, int);
+
 	int getNumBones();
 	bone *getBone(char *);
 	bone *getBone(int);
-	int selectMouse(int, int);
+
 	void setSelection(int);
 	bool hasSelection();
 	DOF getDof(int);

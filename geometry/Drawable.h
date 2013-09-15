@@ -14,6 +14,7 @@ class Drawable {
 public:
 	virtual ~Drawable() {}
 	virtual void display() = 0;
+	virtual int selectMouse(int, int) = 0;
 };
 
 } /* namespace std */

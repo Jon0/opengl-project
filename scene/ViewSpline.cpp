@@ -14,16 +14,16 @@
 
 namespace std {
 
-ViewSpline::ViewSpline(): sp() {
+ViewSpline::ViewSpline():
+		teapot{ new Teapot() },
+		sp{}
+{
 	play = false;
-	teapot = Teapot();
 	message = "Skeleton";
-	view = new Ortho( this, new MainWindow(800, 600) );
+	view = new Ortho( this, new MainWindow(800, 600, "Spline") );
 }
 
-ViewSpline::~ViewSpline() {
-	// TODO Auto-generated destructor stub
-}
+ViewSpline::~ViewSpline() {}
 
 int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
@@ -60,7 +60,12 @@ void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
 	sp.setTimeDisplay(time.count());
 	float d = sp.getDistanceValue(time.count()) * path.getArcLength() / sp.getTotalDistance();
 	path.displayline();
-	path.translate(d, &teapot);
+
+	glPushMatrix();
+	path.translate( d );
+	teapot->display();
+	glPopMatrix();
+
 	drawString(message);
 }
 

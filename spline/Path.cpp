@@ -38,7 +38,7 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 	return false;
 }
 
-void Path::translate(float distance, Drawable *d) {
+void Path::translate(float distance) {
 	if (getNumKeyFrames() >= 2) {
 		Vec3D newpoint = getDistPoint(distance);
 		Quaternion k =  Quaternion(0, newpoint-trans_point) * Quaternion(0, trans_point-trans_point_n).multiplicativeInverse();
@@ -47,16 +47,10 @@ void Path::translate(float distance, Drawable *d) {
 		trans_point = newpoint;
 	}
 
-	glPushMatrix();
 	glTranslatef(trans_point.getX(), trans_point.getY(), trans_point.getZ());
-
 	GLfloat mat[16];
 	rot_point.toMatrix(mat);
 	glMultMatrixf(mat);
-
-	d->display();
-
-	glPopMatrix();
 }
 
 Vec3D Path::getKeyPoint(int i) {

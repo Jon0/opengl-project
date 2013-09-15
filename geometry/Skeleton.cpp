@@ -97,10 +97,13 @@ void Skeleton::display() {
 		printf("Not enough memory to allocate space to draw\n");
 		return;
 	}
+	//gluQuadricDrawStyle(q, r);
 
 	//Actually draw the skeleton
-	//gluQuadricDrawStyle(q, r);
+	glPushMatrix();
+	glTranslatef(current_pose->adjust.getX(), current_pose->adjust.getY(), current_pose->adjust.getZ());
 	display(root, quad);
+	glPopMatrix();
 
 	gluDeleteQuadric(quad);
 }
@@ -113,10 +116,6 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	color *cl = (this->*cf)(root);
 
 	glPushMatrix();
-	if ((root->dof & DOF_ROOT) == DOF_ROOT) {
-		//glTranslatef(p->position.getX(), p->position.getY(), p->position.getZ());
-	}
-
 	root->rotation->toMatrix(temp_mat);
 	glMultMatrixf(temp_mat);
 
@@ -128,7 +127,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	current_pose->data()[root->index].toMatrix(temp_mat);
+	current_pose->q.data()[root->index].toMatrix(temp_mat);
 	glMultMatrixf(temp_mat);
 
 	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
@@ -149,7 +148,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 		selQuat = new Quaternion( 1, 0, 0, 0 );
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = current_pose->data()[b->index];
+			Quaternion q = current_pose->q.data()[b->index];
 			Quaternion bri = b->rotation->multiplicativeInverse();
 			selQuat->rotate( bri );
 			selQuat->rotate( q );
@@ -260,21 +259,22 @@ color *Skeleton::colorStandard(bone *b) {
 }
 
 pose *makeState( int numBones, pose *next ) {
-	*next = pose();
-	next->reserve(numBones);
+	next->adjust = Vec3D{0, 0, 0};
+	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
-		next->push_back( Quaternion(1, 0, 0, 0) );
+		next->q.push_back({1, 0, 0, 0});
 	}
 	return next;
 }
 
+// TODO: does this work?
 pose *copyState( int numBones, pose *other, pose *next ) {
-	*next = pose();
-	next->reserve(numBones);
+	next->adjust = other->adjust;
+	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
-		next->push_back( other->data()[i] );
+		next->q.push_back( other->q.data()[i] );
 	}
 	return next;
 }

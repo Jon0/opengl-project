@@ -8,6 +8,7 @@
 #ifndef PATH_H_
 #define PATH_H_
 
+#include <memory>
 #include <vector>
 #include <chrono>
 #include "../geometry/Skeleton.h"
@@ -26,7 +27,7 @@ public:
 
 	void append(Vec3D);
 	bool getNearestPoint(Vec3D, int *, float *);
-	void translate(float, Drawable *);
+	void translate(float);
 	virtual Vec3D getKeyPoint(int);
 	virtual int getNumKeyFrames();
 };

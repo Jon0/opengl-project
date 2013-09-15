@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <chrono>
+#include <string>
 #include <GL/glut.h>
 #include "KeyListener.h"
 #include "MouseListener.h"
@@ -21,7 +22,7 @@ namespace std {
 class MainWindow {
 public:
 	GLuint g_mainWnd;
-	MainWindow(int, int);
+	MainWindow(int, int, string);
 	virtual ~MainWindow();
 	void addView(ViewInterface *vi);
 protected:

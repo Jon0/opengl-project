@@ -8,6 +8,7 @@
 #ifndef ANIMATION_H_
 #define ANIMATION_H_
 
+#include <memory>
 #include <vector>
 #include "Spline.h"
 #include "../geometry/Skeleton.h"
@@ -15,11 +16,11 @@
 
 namespace std {
 
-class Animation {
+class DynamicPose {
 public:
-	Animation(Skeleton *);
-	Animation(int, pose **, Skeleton *);
-	virtual ~Animation();
+	DynamicPose(shared_ptr<Skeleton>);
+	DynamicPose(int, pose **, shared_ptr<Skeleton>);
+	virtual ~DynamicPose();
 
 	void update(float, pose *);
 	void addFrame();

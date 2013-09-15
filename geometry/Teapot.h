@@ -17,6 +17,7 @@ public:
 	Teapot();
 	virtual ~Teapot();
 	virtual void display();
+	virtual int selectMouse(int, int);
 };
 
 } /* namespace std */

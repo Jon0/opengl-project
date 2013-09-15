@@ -8,10 +8,10 @@
 #ifndef ANIMATIONLOADER_H_
 #define ANIMATIONLOADER_H_
 
-#include <stdio.h>
+#include <memory>
 #include "SkeletonLoader.h"
 #include "../spline/Path.h"
-#include "../spline/Animation.h"
+#include "../spline/DynamicPose.h"
 
 namespace std {
 
@@ -19,11 +19,11 @@ class AnimationLoader {
 public:
 	AnimationLoader();
 	virtual ~AnimationLoader();
-	Animation *readAMC( const char *, Skeleton *, Path *path);
+	DynamicPose *readAMC( const char *, shared_ptr<Skeleton> );
 
 private:
 	int buffSize, maxStates;
-	void loadAMCStateBone( char *buff, pose *current, Skeleton *, Path *path );
+	void loadAMCStateBone( char *buff, pose *current, shared_ptr<Skeleton> );
 };
 
 } /* namespace std */

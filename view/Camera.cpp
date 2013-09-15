@@ -11,12 +11,12 @@
 namespace std {
 
 Camera::Camera( SceneInterface *s, MainWindow *mw ):
-		focus(0, 0, 0),
-		cam_angle(1, 0, 0, 0),
-		cam_angle_d(1, 0, 0, 0),
-		click_old(1, 0, 0, 0),
-		click_new(1, 0, 0, 0),
-		button_state() {
+		focus{0, 0, 0},
+		cam_angle{1, 0, 0, 0},
+		cam_angle_d{1, 0, 0, 0},
+		click_old{1, 0, 0, 0},
+		click_new{1, 0, 0, 0},
+		button_state{} {
 	scene = s;
 	cam_aspect = 1.0;
 	viewzoom = 100.0;
@@ -32,8 +32,8 @@ Camera::Camera( SceneInterface *s, MainWindow *mw ):
 Camera::~Camera() {}
 
 void Camera::setView( chrono::duration<double> tick ) {
-	cam_angle.rotate(cam_angle_d);
-	cam_angle_d = slerp(Quaternion(1,0,0,0), cam_angle_d, (1 - tick.count() * 10));
+	cam_angle.rotate( cam_angle_d );
+	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, (1 - tick.count() * 10) );
 
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);

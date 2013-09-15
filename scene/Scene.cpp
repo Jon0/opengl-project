@@ -11,29 +11,18 @@
 
 namespace std {
 
-Scene::Scene(): time(0), sp() {
+Scene::Scene(string filename):
+		camera{ new Camera( this, new MainWindow(800, 600, "Scene") ) },
+		loader{ new SkeletonLoader() },
+		skeleton{ loader->readASF( filename.c_str() ) },
+		player(skeleton, "assets/walk.amc"),
+		time() {
 	playing = false;
-	selectedBone = 0;
-	clickx = clicky = 0;
-	const char *filename = "assets/priman.asf";
-	const char *filename_a = "assets/walk.amc";
-	loader = new SkeletonLoader();
-	aloader = new AnimationLoader();
-	skeleton = loader->readASF((char *)filename);
-
-	//animation = new Animation(skeleton);
-	path = new Path();
-	animation = aloader->readAMC(filename_a, skeleton, path);
-
-	makeState(skeleton->getNumBones(), &current_pose);
-	glPointSize(2.0);
-
-	new Camera( this, new MainWindow(800, 600) );
+	selectedBone = clickx = clicky = 0;
+	player.set_time( 0 );
 }
 
-Scene::~Scene() {
-	delete skeleton;
-}
+Scene::~Scene() {}
 
 void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternion *result) {
 	// reverse all existing rotations in order
@@ -41,26 +30,27 @@ void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternio
 	*result = k.multiplicativeInverse() * current * k;
 }
 
+void Scene::mouseSelect(int x, int y) {
+	glPushMatrix();
+	player.apply_transform();
+	selectedBone = skeleton->selectMouse(x, y);
+	glPopMatrix();
+}
+
 int Scene::mouseClicked(ViewInterface *, int button, int state, int x, int y) {
-
-
 	if (button == 0 && state) {
 		if ( selectedBone >= 0 ) {
 			GLdouble *p = skeleton->selectionCenter();
 			int dx = x - p[0], dy = y - p[1];
 			int d = sqrt(dx*dx + dy*dy);
 			if ( d > 200.0 ) {
-				//*skeleton->getPose() = *animation->currentPose();
-				selectedBone = skeleton->selectMouse(x, y);
+				mouseSelect(x, y);
 			}
 		}
 		else {
-			//*skeleton->getPose() = *animation->currentPose();
-			selectedBone = skeleton->selectMouse(x, y);
+			mouseSelect(x, y);
 		}
-
 	}
-
 	clickx = x;
 	clicky = y;
 
@@ -92,7 +82,7 @@ int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 		getArc( p[0], p[1], x, y, 200.0, &temp );
 		getBoneAlignment(temp, in->cameraAngle(), &click_new);
 		Quaternion drag = click_new * click_old.multiplicativeInverse();
-		animation->modSelection(time.count(), selectedBone, drag);
+		player.animation[0].modSelection( time.count(), selectedBone, drag );
 		click_old = click_new;
 		return true;
 	}
@@ -102,7 +92,7 @@ int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 void Scene::keyPressed(unsigned char c) {
 	if (c == 'a') {
 		cout << "add frame" << endl;
-		animation->addFrame();
+		player.animation[0].addFrame();
 	}
 	else if (c == 's') {
 		cout << "insert frame" << endl;
@@ -122,22 +112,30 @@ void Scene::keyPressed(unsigned char c) {
 		//animation->setFrame(i);
 	}
 	else if (c == 'b') {
-		path->append(Vec3D(rand() % 80 - 40, rand() % 80 - 40, rand() % 80 - 40));
+		player.path->append(Vec3D(rand() % 80 - 40, rand() % 80 - 40, rand() % 80 - 40));
+	}
+	else if (c == 'x') {
+		player.set_pose_seq(0);
+	}
+	else if (c == 'c') {
+		player.set_pose_seq(1);
 	}
 }
 
 void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 	if (playing) {
-		time += tick * 20;
+		time += tick * 30;
 	}
 	if (skeleton) {
-		sp.setTimeDisplay(time.count());
-		float d = sp.getDistanceValue(time.count()) * path->getArcLength() / sp.getTotalDistance();
-		animation->update( time.count(), &current_pose );
+		player.set_time( time.count() );
 		skeleton->setSelection( selectedBone );
-		skeleton->setCurrentPose( &current_pose );
-		path->translate( d, skeleton );
-		path->displayline();
+
+		glPushMatrix();
+		player.apply_transform();
+		skeleton->display();
+		glPopMatrix();
+
+		player.path->displayline();
 	}
 }
 

@@ -18,4 +18,8 @@ void Teapot::display() {
 	glutSolidTeapot(12.0);
 }
 
+int Teapot::selectMouse(int, int) {
+	return false;
+}
+
 } /* namespace std */

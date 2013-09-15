@@ -17,7 +17,7 @@ SpeedCurve::SpeedCurve(): values(), distance() {
 	total_distance = 0.0;
 	time = 0.0;
 	values_dx = 10.0;
-	view = new Ortho( this, new MainWindow(1000, 200) );
+	view = new Ortho( this, new MainWindow(1000, 200, "Speed Curve") );
 }
 
 SpeedCurve::~SpeedCurve() {
@@ -112,7 +112,7 @@ void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
 	glPointSize(8.0);
 	glBegin(GL_POINTS);
 	for (unsigned int i = 0; i < speed.points.size(); ++i) {
-		float *v = speed.points.data()[i].v;
+		auto *v = speed.points.data()[i].v;
 		glVertex3f(v[0], v[1], v[2]);
 	}
 	glEnd();
@@ -126,7 +126,7 @@ int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int
 
 		// sort new values, so order has increasing x
 		speed.points.push_back( click );
-		inplace_merge(speed.points.begin(), speed.points.end() - 1, speed.points.end(), vec_comp_x);
+		inplace_merge(begin(speed.points), speed.points.end() - 1, speed.points.end(), vec_comp_x);
 		calculateValues();
 		return 1;
 	}

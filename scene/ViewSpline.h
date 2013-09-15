@@ -8,6 +8,7 @@
 #ifndef VIEWSPLINE_H_
 #define VIEWSPLINE_H_
 
+#include <memory>
 #include <vector>
 #include <chrono>
 
@@ -32,13 +33,15 @@ public:
 	virtual void keyPressed(unsigned char);
 
 private:
+	shared_ptr<Teapot> teapot;
+
 	bool play;
 	chrono::duration<double> time;
 
 	ViewInterface *view;
 	SpeedCurve sp;
 
-	Teapot teapot;
+
 	Path path;
 
 	string message;

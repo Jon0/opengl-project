@@ -12,12 +12,12 @@ namespace std {
 /* pointer to the running instance */
 map<int, MainWindow *> instances;
 
-MainWindow::MainWindow(int width, int height) {
+MainWindow::MainWindow(int width, int height, string title) {
 	wnd_width = width;
 	wnd_height = height;
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowSize(wnd_width, wnd_height);
-	g_mainWnd = glutCreateWindow("COMP308 Assignment 3");
+	g_mainWnd = glutCreateWindow( title.c_str() );
 	glutDisplayFunc(displayCallback);
 	glutReshapeFunc(reshapeCallback);
 	glutKeyboardFunc(keyboardCallback);
@@ -59,34 +59,29 @@ void MainWindow::display() {
 }
 
 void MainWindow::reshape(int x, int y) {
-	for (auto view : g_view) {
-		((ViewInterface *) view )->resize( x, y );
+	for (auto &view : g_view) {
+		view->resize( x, y );
 	}
 	wnd_width = x;
 	wnd_height = y;
 }
 
 void MainWindow::keyboard(unsigned char key, int x, int y) {
-	for (auto view: g_view) {
-		((ViewInterface *) view )->keyPressed( key );
-		//if (((ViewInterface *) view )->keyPressed(key)) break;
+	for (auto &view: g_view) {
+		view->keyPressed( key );
 	}
-	//glutPostRedisplay();
 }
 
-// TODO: send GLuint of window
 void MainWindow::mouseClick(int button, int state, int x, int y) {
-	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseClicked( button, state, x, wnd_height - y )) break;
+	for (auto &view: g_view) {
+		if ( view->mouseClicked( button, state, x, wnd_height - y ) ) break;
 	}
-	//glutPostRedisplay();
 }
 
 void MainWindow::mouseDrag(int x, int y) {
-	for (auto view: g_view) {
-		if (((ViewInterface *) view )->mouseDragged( x, wnd_height - y )) break;
+	for (auto &view: g_view) {
+		if ( view->mouseDragged( x, wnd_height - y ) ) break;
 	}
-	//glutPostRedisplay();
 }
 
 void MainWindow::displayCallback() {

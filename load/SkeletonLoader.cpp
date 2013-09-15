@@ -33,9 +33,6 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 		root[i].dirx = 0;
 		root[i].diry = 0;
 		root[i].dirz = 0;
-		root[i].rotx = 0;
-		root[i].roty = 0;
-		root[i].rotz = 0;
 		root[i].rotation = NULL;
 		root[i].dof = DOF_NONE;
 		root[i].length = 0;
@@ -318,9 +315,6 @@ void SkeletonLoader::readBone(char* buff, FILE* file, int &numBones, bone *root 
 						printf("Got: %s", p);
 						exit(EXIT_FAILURE);
 					}
-					root[numBones].rotx = x;
-					root[numBones].roty = y;
-					root[numBones].rotz = z;
 					root[numBones].rotation = fromEular(x, y, z);
 				}
 				//There are more things but they are not needed for the core

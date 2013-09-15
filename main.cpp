@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
-	Scene view = Scene();
+	auto view = Scene("assets/priman.asf");
 
 	// start running
 	glutMainLoop();

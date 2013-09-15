@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include "../spline/DynamicPose.h"
 #include "AnimationLoader.h"
 
 namespace std {
@@ -20,7 +21,7 @@ AnimationLoader::AnimationLoader() {
 
 AnimationLoader::~AnimationLoader() {}
 
-Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton, Path *path) {
+DynamicPose *AnimationLoader::readAMC( const char *filename, shared_ptr<Skeleton> skeleton ) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
 		printf("Failed to open file %s\n", filename);
@@ -50,27 +51,36 @@ Animation *AnimationLoader::readAMC( const char *filename, Skeleton *skeleton, P
 				numStates++;
 			}
 			else {
-				loadAMCStateBone( start, current, skeleton, path );
+				loadAMCStateBone( start, current, skeleton );
 			}
 		}
 	}
-	path->equaliseLength();
+
+	// adjust pose movements
+	Vec3D start = state_list[0]->adjust, end = state_list[numStates - 1]->adjust;
+	for (int i = 0; i < numStates; ++i) {
+		float percent = (float) i / (float) numStates;
+		Vec3D current = start * (1 - percent) + end * percent;
+		state_list[i]->adjust = state_list[i]->adjust - current;
+	}
+
+
 
 	delete[] buff;
 	fclose(file);
 	printf("Read %d frames\n", numStates);
-	Animation *a = new Animation(numStates, state_list, skeleton);
+	DynamicPose *a = new DynamicPose(numStates, state_list, skeleton);
 
 	// TODO: make speed curve
 	delete state_list; // hopefully it gets copied by animation
 	return a;
 }
 
-void AnimationLoader::loadAMCStateBone( char *buff, pose *current, Skeleton *skeleton, Path *path ) {
+void AnimationLoader::loadAMCStateBone( char *buff, pose *current, shared_ptr<Skeleton> skeleton ) {
 	char *start = buff;
 	// read line as a set of angles, to apply to a particular part
 	char n[32];
-	float eularAngle[3];
+	float eularAngle[3]{0, 0, 0};
 	sscanf(start, "%s ", n);
 	start += strlen(n);
 	trim(&start);
@@ -91,8 +101,7 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, Skeleton *ske
 				start += strlen(next);
 				trim(&start);
 			}
-			Vec3D vect(v);
-			path->points.push_back(vect);
+			current->adjust = Vec3D(v);
 
 			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
 				eularAngle[j] = atof(next);
@@ -121,7 +130,7 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, Skeleton *ske
 			}
 		}
 
-		current->data()[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
+		current->q.data()[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
 	}
 	else {
 		cout << n << " not found" << endl;
