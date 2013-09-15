@@ -65,6 +65,18 @@ Quaternion Ortho::cameraAngle() {
 	return r;
 }
 
+Vec3D Ortho::unProject(int x, int y) {
+	GLdouble point[3];
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+	gluUnProject(x, y, 0, modelview, projection, viewport, &point[0], &point[1], &point[2]);
+	return Vec3D(point[0], point[1], point[2]);
+}
+
 void drawString(string message) {
 	// draw text
 	glColor3f(1.0, 1.0, 1.0);

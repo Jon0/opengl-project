@@ -10,8 +10,9 @@
 
 namespace std {
 
-class Vec3D {
+class Quaternion;
 
+class Vec3D {
 public:
 	float v[3];
 	Vec3D();
@@ -29,6 +30,7 @@ public:
 	friend Vec3D operator+(const Vec3D&, const Vec3D&);
 	friend Vec3D operator-(const Vec3D&, const Vec3D&);
 	friend Vec3D operator*(const Vec3D&, const float&);
+	friend Vec3D operator*(const Quaternion&, const Vec3D&);
 	friend Vec3D operator/(const Vec3D&, const float&);
 };
 

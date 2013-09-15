@@ -32,6 +32,7 @@ public:
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int, int);
 	virtual Quaternion cameraAngle();
+	virtual Vec3D unProject(int, int);
 
 protected:
 	MainWindow *wnd;

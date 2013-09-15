@@ -24,7 +24,7 @@ public:
 	virtual ~Scene();
 
 	void getBoneAlignment(Quaternion, Quaternion, Quaternion *);
-	void mouseSelect(int, int);
+	int mouseSelect(int, int);
 
 
 	virtual void display( ViewInterface *, chrono::duration<double> );
@@ -38,18 +38,12 @@ protected:
 	shared_ptr<Skeleton> skeleton;
 
 	SkeletonTransform player;
+	Quaternion click_old, click_new;
 
-	bool playing;
+	bool playing, drag_bone;
 	chrono::duration<double> time;
 
 	int selectedBone, clickx, clicky;
-
-
-
-
-
-	Quaternion click_old, click_new;
-
 };
 
 } /* namespace std */

@@ -8,11 +8,11 @@
 #ifndef QUATERNION_H_
 #define QUATERNION_H_
 
-#include "Vec3D.h"
-
 namespace std {
 
 extern float rad_to_deg;
+
+class Vec3D;
 
 class Quaternion {
 private:

@@ -14,6 +14,7 @@
 
 namespace std {
 
+class Vec3D;
 class Quaternion;
 
 class ViewInterface: public KeyListener, public MouseListener {
@@ -26,6 +27,7 @@ public:
 	virtual int mouseClicked(int, int, int, int) = 0;
 	virtual int mouseDragged(int, int) = 0;
 	virtual Quaternion cameraAngle() = 0;
+	virtual Vec3D unProject(int, int) = 0;
 };
 
 } /* namespace std */

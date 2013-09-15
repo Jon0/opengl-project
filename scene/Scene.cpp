@@ -16,9 +16,12 @@ Scene::Scene(string filename):
 		loader{ new SkeletonLoader() },
 		skeleton{ loader->readASF( filename.c_str() ) },
 		player(skeleton, "assets/walk.amc"),
+		click_old{1, 0, 0, 0},
+		click_new{1, 0, 0, 0},
 		time() {
-	playing = false;
-	selectedBone = clickx = clicky = 0;
+	playing = drag_bone = false;
+	selectedBone = -1;
+	clickx = clicky = 0;
 	player.set_time( 0 );
 }
 
@@ -30,44 +33,44 @@ void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternio
 	*result = k.multiplicativeInverse() * current * k;
 }
 
-void Scene::mouseSelect(int x, int y) {
+int Scene::mouseSelect(int x, int y) {
+	int sbone;
 	glPushMatrix();
 	player.apply_transform();
-	selectedBone = skeleton->selectMouse(x, y);
+	sbone = skeleton->selectMouse(x, y);
 	glPopMatrix();
+	return sbone;
 }
 
-int Scene::mouseClicked(ViewInterface *, int button, int state, int x, int y) {
-	if (button == 0 && state) {
-		if ( selectedBone >= 0 ) {
-			GLdouble *p = skeleton->selectionCenter();
-			int dx = x - p[0], dy = y - p[1];
-			int d = sqrt(dx*dx + dy*dy);
-			if ( d > 200.0 ) {
-				mouseSelect(x, y);
-			}
-		}
-		else {
-			mouseSelect(x, y);
-		}
+int Scene::mouseClicked(ViewInterface *view, int button, int state, int x, int y) {
+	if (state) {
+		drag_bone = false;
+		clickx = 0;
+		clicky = 0;
+		return false;
 	}
-	clickx = x;
-	clicky = y;
+
+	if ((glutGetModifiers() & GLUT_ACTIVE_CTRL) == GLUT_ACTIVE_CTRL) {
+		if (button == 0) {
+			int bone = mouseSelect(x, y);
+			selectedBone = (selectedBone == bone)? -1: bone;
+		}
+		return true;
+	} else if (button == 0) {
+		drag_bone = true;
+		clickx = x;
+		clicky = y;
+	}
+	else if (button == 2) {
 
 
-	// mouse wheel
-	//if (button_state[3]) {
-	//	animation->rollSelection(selectedBone, 5.0);
-	//}
-	//else if (button_state[4]) {
-	//	animation->rollSelection(selectedBone, -5.0);
-	//}
-
-	return selectedBone >= 0;
+		player.path->append( view->unProject(x, y) );
+	}
+	return true;
 }
 
 int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
-	if ( selectedBone >= 0 ) {
+	if ( drag_bone && selectedBone >= 0 ) {
 		GLdouble *p = skeleton->selectionCenter();
 		Quaternion temp;
 
@@ -110,9 +113,6 @@ void Scene::keyPressed(unsigned char c) {
 		cout << "set frame" << endl;
 		//int i = animation->getFrame() + 1;
 		//animation->setFrame(i);
-	}
-	else if (c == 'b') {
-		player.path->append(Vec3D(rand() % 80 - 40, rand() % 80 - 40, rand() % 80 - 40));
 	}
 	else if (c == 'x') {
 		player.set_pose_seq(0);

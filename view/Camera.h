@@ -18,7 +18,8 @@
 
 namespace std {
 
-void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result);
+void getArc(int, int, int, int, float, Quaternion *);
+void getUnitCircle(int, int, int, int, Quaternion *);
 
 class Camera: public ViewInterface {
 public:
@@ -31,6 +32,7 @@ public:
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int, int);
 	virtual Quaternion cameraAngle();
+	virtual Vec3D unProject(int, int);
 
 	void setupMatrix();
 	GLfloat *getProjMatrix();
@@ -41,11 +43,11 @@ private:
 	SceneInterface *scene;
 	Vec3D focus;
 	Quaternion cam_angle, cam_angle_d, click_old, click_new;
-	bool button_state[5];
+	bool control[3];
+	int click_x, click_y;
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
-	GLfloat temp_matrix [16];
-	GLfloat proj_matrix [16];
-	GLfloat model_matrix [16];
+	GLfloat temp_matrix [16], proj_matrix [16], model_matrix [16];
+	GLdouble proj_matrixd [16], model_matrixd [16];
 };
 
 } /* namespace std */

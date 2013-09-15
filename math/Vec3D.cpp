@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include "Quaternion.h"
 #include "Vec3D.h"
 
 namespace std {
@@ -79,6 +80,11 @@ Vec3D operator-(const Vec3D &a, const Vec3D &b) {
 Vec3D operator*(const Vec3D &a, const float &f) {
 	Vec3D p(a.v[0]*f, a.v[1]*f, a.v[2]*f);
 	return p;
+}
+
+Vec3D operator*(const Quaternion &q, const Vec3D &v) {
+	Vec3D t = q.vector().crossProduct(v) * 2;
+	return v + t * q.firstValue() + q.vector().crossProduct(t);
 }
 
 Vec3D operator/(const Vec3D &a, const float &f) {

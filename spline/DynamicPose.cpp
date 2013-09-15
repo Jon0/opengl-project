@@ -85,7 +85,7 @@ void DynamicPose::modSelection(int frame_index, int id, Quaternion &q) {
 	if ( id < 0 ) {
 		return;
 	}
-	v_pose[frame_index].q[id].rotate( q );
+	v_pose[frame_index % v_pose.size()].q[id].rotate( q );
 
 	// TODO ensure bone is within limits?
 	//DOF dof = skeleton->getDof(id);

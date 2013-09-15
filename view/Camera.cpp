@@ -16,7 +16,7 @@ Camera::Camera( SceneInterface *s, MainWindow *mw ):
 		cam_angle_d{1, 0, 0, 0},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
-		button_state{} {
+		control{} {
 	scene = s;
 	cam_aspect = 1.0;
 	viewzoom = 100.0;
@@ -24,6 +24,8 @@ Camera::Camera( SceneInterface *s, MainWindow *mw ):
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
+
+	click_x = click_y = 0;
 
 	wnd = mw;
 	wnd->addView(this);
@@ -40,6 +42,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glLoadIdentity();
 	gluPerspective(20.0, cam_aspect, 1.0, 1000.0);
 	glGetFloatv(GL_PROJECTION_MATRIX, proj_matrix);
+	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrixd);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -53,6 +56,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	float x = focus.getX(), y = focus.getY(), z = focus.getZ();
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
+	glGetDoublev(GL_PROJECTION_MATRIX, model_matrixd);
 
 	scene->display( this, tick );
 	glPopMatrix();
@@ -70,44 +74,83 @@ void Camera::keyPressed(unsigned char c) {
 }
 
 int Camera::mouseClicked(int button, int state, int x, int y) {
-	setupMatrix();
-	button_state[button] = !state;
-	if ( scene->mouseClicked( this, button, state, x, y ) ) return true;
-	if (button_state[3]) {
-		viewzoom /= 1.05;	// scroll back
-		return true;
-	}
-	else if (button_state[4]) {
-		viewzoom *= 1.05;	// scroll forward
-		return true;
-	}
-	else if (!state) {
-		getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_new ); // initial click down
-		click_old = click_new;
-		return true;
+	if (state) {
+		control[0] = control[1] = control[2] = false;
+		setupMatrix();
+		return scene->mouseClicked( this, button, state, x, y );
 	}
 
-	//TODO: other controls
+	/* controls while holding shift */
+	if ((glutGetModifiers() & GLUT_ACTIVE_SHIFT) == GLUT_ACTIVE_SHIFT) {
+		if (button == 0) {
+			control[0] = true;
+			getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_new ); // initial click down
+			click_old = click_new;
+		}
+		else if (button == 2) {
+			// panning
+			control[1] = true;
+			click_x = x;
+			click_y = y;
+		}
+		else if (button == 3) {
+			viewzoom /= 1.05;	// scroll back
+		}
+		else if (button == 4) {
+			viewzoom *= 1.05;	// scroll forward
+		}
+		//TODO: other controls
 
-	return false;
+		return true;
+	}
+	else  {
+		setupMatrix();
+		return scene->mouseClicked( this, button, state, x, y );
+	}
 }
 
 int Camera::mouseDragged(int x, int y) {
-	setupMatrix();
-	if ( scene->mouseDragged( this, x, y ) ) return true;
-
-	if (button_state[0]) {
+	if (control[0]) {
 		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
 		cam_angle_d = click_new * click_old.multiplicativeInverse();
 		click_old = click_new;
 		return true;
 	}
-	return false;
+	else if (control[1]) {
+		float xn = click_x - x;
+		float yn = click_y - y;
+		float len_sq = xn*xn + yn*yn;
+		if (len_sq > 0.1) {
+			float len = sqrt(len_sq);
+			Vec3D add = (cam_angle.multiplicativeInverse() * Quaternion{0, xn, yn, 0} * cam_angle).vector();
+			focus = focus + add * (len / arcball_radius);
+			click_x = x;
+			click_y = y;
+		}
+		return true;
+	}
+	else {
+		setupMatrix();
+		return scene->mouseDragged( this, x, y );
+	}
 }
 
 Quaternion Camera::cameraAngle() {
 	return cam_angle;
 }
+
+Vec3D Camera::unProject(int x, int y) {
+	GLdouble point[3];
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+	gluUnProject(x, y, 0.99, modelview, projection, viewport, &point[0], &point[1], &point[2]);
+	return Vec3D(point[0], point[1], point[2]);
+}
+
 
 void Camera::setupMatrix() {
 	glMatrixMode(GL_PROJECTION);
@@ -142,5 +185,11 @@ void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
 	}
 }
 
+void getUnitCircle(int arcx, int arcy, int ix, int iy, Quaternion *result) {
+	float x = ix - arcx;
+	float y = iy - arcy;
+	float len = sqrt(x*x + y*y);
+	*result = Quaternion(0, x / len, y / len, 0);
+}
 
 } /* namespace std */
