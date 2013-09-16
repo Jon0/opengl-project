@@ -111,6 +111,9 @@ void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 
 			player.path->displayline();
 
+			/*
+			 * highlight points on spline spaced equally in time
+			 */
 			if (player.path->getArcLength() > 0) {
 				glColor3f(1.0, 0.0, 0.0);
 				glPointSize(4.0);
@@ -127,6 +130,20 @@ void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 				glEnd();
 			}
 
+		}
+	}
+	if (in == ortho.get()) {
+		/*
+		 * print out status
+		 */
+		string m = "Number of Poses: " + to_string(player.animation[0].numFrames());
+		drawString(m, 5, 580);
+
+
+		if (selectedBone >= 0) {
+			m = "Selected: ";
+			m += skeleton->getBone(selectedBone)->name;
+			drawString(m, 5, 550);
 		}
 	}
 }

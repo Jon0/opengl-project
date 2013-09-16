@@ -30,6 +30,7 @@ public:
 	void modSelection(int, int, float, float, float);
 	void modSelection(int, int id, Quaternion &q);
 	void setPathLength(float);
+	int numFrames();
 
 private:
 	float path_length; // the length of arc the pose should run over

@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <string.h>
 #include <GL/glut.h>
 #include "../math/Quaternion.h"

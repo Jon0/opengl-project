@@ -112,4 +112,8 @@ void DynamicPose::setPathLength(float l) {
 	path_length = l;
 }
 
+int DynamicPose::numFrames() {
+	return v_pose.size();
+}
+
 } /* namespace std */
