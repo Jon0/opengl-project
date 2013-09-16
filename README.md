@@ -7,7 +7,9 @@ animation
 
 * make
 
-* Run ./animation
+* must be run from base folder:
+
+* ./Debug/animation
 
 Mouse Control
 =============
