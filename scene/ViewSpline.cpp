@@ -15,12 +15,13 @@
 namespace std {
 
 ViewSpline::ViewSpline():
+		mWnd{new MainWindow(800, 600, "Spline")},
 		teapot{ new Teapot() },
 		sp{}
 {
 	play = false;
 	message = "Skeleton";
-	view = new Ortho( this, new MainWindow(800, 600, "Spline") );
+	view = new Ortho( this, mWnd );
 }
 
 ViewSpline::~ViewSpline() {}

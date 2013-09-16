@@ -8,6 +8,7 @@
 #ifndef ORTHO_H_
 #define ORTHO_H_
 
+#include <memory>
 #include <string>
 #include "ViewInterface.h"
 #include "../spline/Spline.h"
@@ -23,7 +24,7 @@ void drawString(string message);
 
 class Ortho: public ViewInterface {
 public:
-	Ortho( SceneInterface *, MainWindow * );
+	Ortho( SceneInterface *, shared_ptr<MainWindow> );
 	virtual ~Ortho();
 
 	virtual void setView( chrono::duration<double> );
@@ -35,11 +36,10 @@ public:
 	virtual Vec3D unProject(int, int);
 
 protected:
-	MainWindow *wnd;
-	SceneInterface *scene;
 	int view_width, view_height;
-
-	string message; // TODO need a message?
+	shared_ptr<MainWindow> wnd;
+	SceneInterface *scene;
+	string message;
 };
 
 } /* namespace std */

@@ -11,11 +11,13 @@
 namespace std {
 
 DynamicPose::DynamicPose(shared_ptr<Skeleton> s) {
+	path_length = 1.0;
 	numBones = s->getNumBones();
 	addFrame();
 }
 
 DynamicPose::DynamicPose( int numPoses, pose **states, shared_ptr<Skeleton> s) {
+	path_length = 1.0;
 	numBones = s->getNumBones();
 	for (int i = 0; i < numPoses; ++i) {
 		v_pose.push_back( *states[i] );
@@ -24,13 +26,22 @@ DynamicPose::DynamicPose( int numPoses, pose **states, shared_ptr<Skeleton> s) {
 
 DynamicPose::~DynamicPose() {}
 
-void DynamicPose::update(float time, pose *current) {
+void DynamicPose::update(float position, pose *current) {
 
-	// set correct pose base on keyframes
+	/*
+	 *	set correct pose base on keyframes
+	 *	position is units traveled along some arc
+	 */
+
+	float time = (position * v_pose.size()) / path_length;
 	float animate_frame = fmod( time, v_pose.size() ) ;
 	pose *a = &v_pose.at( (int) animate_frame );
 	pose *b = &v_pose.at( ((int) animate_frame + 1) % v_pose.size() );
 	float t = fmod(animate_frame, 1.0);
+
+	/*
+	 *	set values on given pose
+	 */
 
 	current->adjust = a->adjust * (1 - t) + b->adjust * t;
 	for (int i = 0; i < numBones; ++i) {
@@ -98,6 +109,10 @@ void DynamicPose::modSelection(int frame_index, int id, Quaternion &q) {
 	//if ((dof & DOF_RZ) == DOF_RZ) {
 	//	drawnState->part[id]->degree[2] += z;
 	//}
+}
+
+void DynamicPose::setPathLength(float l) {
+	path_length = l;
 }
 
 } /* namespace std */

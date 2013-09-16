@@ -67,6 +67,20 @@ Vec3D Vec3D::crossProduct(Vec3D q) const {
 	return cross;
 }
 
+float Vec3D::length() const {
+	return sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+}
+
+Vec3D Vec3D::normalise() const {
+	float l = length();
+	if (l > 0) {
+		return (*this)/l;
+	}
+	else {
+		return *this;
+	}
+}
+
 Vec3D operator+(const Vec3D &a, const Vec3D &b) {
 	Vec3D p(a.v[0]+b.v[0], a.v[1]+b.v[1], a.v[2]+b.v[2]);
 	return p;

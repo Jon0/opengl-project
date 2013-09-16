@@ -33,6 +33,7 @@ public:
 	virtual void keyPressed(unsigned char);
 
 private:
+	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Teapot> teapot;
 
 	bool play;

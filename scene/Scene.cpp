@@ -12,10 +12,12 @@
 namespace std {
 
 Scene::Scene(string filename):
-		camera{ new Camera( this, new MainWindow(800, 600, "Scene") ) },
+		mWnd{new MainWindow(800, 600, "Scene")},
+		camera{ new Camera( this, mWnd ) },
+		ortho{ new Ortho( this, mWnd ) },
 		loader{ new SkeletonLoader() },
 		skeleton{ loader->readASF( filename.c_str() ) },
-		player(skeleton, "assets/walk.amc"),
+		player{skeleton, "assets/walk.amc"},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		time() {
@@ -93,54 +95,60 @@ int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 }
 
 void Scene::keyPressed(unsigned char c) {
-	if (c == 'a') {
-		cout << "add frame" << endl;
-		player.animation[0].addFrame();
-	}
-	else if (c == 's') {
-		cout << "insert frame" << endl;
-		//animation->insertFrame();
-	}
-	else if (c == 'p') {
-		cout << "play" << endl;
-		playing = !playing;
-	}
-	else if (c == 'q') {
-		cout << "reset" << endl;
-		time = time.zero();
-	}
-	else if (c == 'w') {
-		cout << "set frame" << endl;
-		//int i = animation->getFrame() + 1;
-		//animation->setFrame(i);
-	}
-	else if (c == 'x') {
-		player.set_pose_seq(0);
-	}
-	else if (c == 'c') {
-		player.set_pose_seq(1);
-	}
+
 }
 
 void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
-	if (playing) {
-		time += tick * 30;
-	}
-	if (skeleton) {
-		player.set_time( time.count() );
-		skeleton->setSelection( selectedBone );
+	if (in == camera.get()) {
+		if (playing) {
+			time += tick * 30;
+		}
+		if (skeleton) {
+			player.set_time(time.count());
+			skeleton->setSelection(selectedBone);
 
-		glPushMatrix();
-		player.apply_transform();
-		skeleton->display();
-		glPopMatrix();
+			glPushMatrix();
+			player.apply_transform();
+			skeleton->display();
+			glPopMatrix();
 
-		player.path->displayline();
+			player.path->displayline();
+		}
 	}
 }
 
 void Scene::messageSent(string str) {
+	cout << str << endl;
+	if (str == "add") {
+		player.animation[0].addFrame();
+	}
+	else if (str == "play") {
+		playing = !playing;
+	}
+	else if (str == "reset") {
+		time = time.zero();
+		player.reset();
+	}
+	else if (str.substr(0, 4) == "load") {
+		string name = "assets/"+str.substr(5)+".amc";
+		cout << name << endl;
+		player.loadFile(name);
+	}
 
+	else if (str == "x") {
+		player.set_pose_seq(0);
+	}
+	else if (str == "c") {
+		player.set_pose_seq(1);
+	}
+
+	else if (str == "set frame") {
+		//int i = animation->getFrame();
+		//animation->setFrame(i);
+	}
+	else if (str == "insert frame") {
+		//animation->insertFrame();
+	}
 }
 
 

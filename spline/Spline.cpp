@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
 #include <GL/glut.h>
 #include "Spline.h"
@@ -30,6 +29,7 @@ void Spline::displayline() {
 	glColor3f(1.0, 1.0, 1.0);
 	glPointSize(2.0);
 	glBegin(GL_POINTS);
+
 	int length = getNumKeyFrames() + 1;
 	for (int i = -1; i < length; ++i) {
 		Vec3D vec = getKeyPoint(i);

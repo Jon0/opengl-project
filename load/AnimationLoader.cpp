@@ -64,12 +64,11 @@ DynamicPose *AnimationLoader::readAMC( const char *filename, shared_ptr<Skeleton
 		state_list[i]->adjust = state_list[i]->adjust - current;
 	}
 
-
-
 	delete[] buff;
 	fclose(file);
 	printf("Read %d frames\n", numStates);
 	DynamicPose *a = new DynamicPose(numStates, state_list, skeleton);
+	a->setPathLength( start.getDistance(end) );
 
 	// TODO: make speed curve
 	delete state_list; // hopefully it gets copied by animation

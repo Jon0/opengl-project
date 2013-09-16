@@ -10,7 +10,7 @@
 
 namespace std {
 
-Camera::Camera( SceneInterface *s, MainWindow *mw ):
+Camera::Camera( SceneInterface *s, shared_ptr<MainWindow> mw ):
 		focus{0, 0, 0},
 		cam_angle{1, 0, 0, 0},
 		cam_angle_d{1, 0, 0, 0},

@@ -12,8 +12,10 @@
 #include "SpeedCurve.h"
 #include "play/SkeletonTransform.h"
 #include "../view/Camera.h"
+#include "../view/Ortho.h"
 #include "../load/SkeletonLoader.h"
 #include "../geometry/Skeleton.h"
+#include "../window/MainWindow.h"
 
 namespace std {
 
@@ -26,14 +28,15 @@ public:
 	void getBoneAlignment(Quaternion, Quaternion, Quaternion *);
 	int mouseSelect(int, int);
 
-
 	virtual void display( ViewInterface *, chrono::duration<double> );
 	virtual int mouseClicked( ViewInterface *, int, int, int, int );
 	virtual int mouseDragged( ViewInterface *, int, int );
 	virtual void messageSent(string);
 	virtual void keyPressed(unsigned char);
 protected:
+	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
+	shared_ptr<Ortho> ortho;
 	shared_ptr<SkeletonLoader> loader;
 	shared_ptr<Skeleton> skeleton;
 

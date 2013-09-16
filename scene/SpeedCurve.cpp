@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <algorithm>
 #include "../window/MainWindow.h"
 #include "../view/Ortho.h"
@@ -13,16 +12,18 @@
 
 namespace std {
 
-SpeedCurve::SpeedCurve(): values(), distance() {
+SpeedCurve::SpeedCurve():
+		mWnd{new MainWindow(1000, 200, "Speed Curve")},
+		speed(),
+		values(),
+		distance() {
 	total_distance = 0.0;
 	time = 0.0;
 	values_dx = 10.0;
-	view = new Ortho( this, new MainWindow(1000, 200, "Speed Curve") );
+	view = new Ortho( this, mWnd );
 }
 
-SpeedCurve::~SpeedCurve() {
-	// TODO Auto-generated destructor stub
-}
+SpeedCurve::~SpeedCurve() {}
 
 void SpeedCurve::calculateValues() {
 	if (speed.points.size() < 4) return;

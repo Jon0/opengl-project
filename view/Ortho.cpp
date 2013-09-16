@@ -15,7 +15,7 @@
 
 namespace std {
 
-Ortho::Ortho( SceneInterface *s, MainWindow *mw ): scene(s) {
+Ortho::Ortho( SceneInterface *s, shared_ptr<MainWindow> mw ): scene(s) {
 	view_width = 1;
 	view_height = 1;
 
@@ -35,6 +35,9 @@ void Ortho::setView( chrono::duration<double> tick ) {
 
 	// draw scene
 	scene->display( this, tick );
+
+	// draw message
+	drawString(message);
 }
 
 void Ortho::resize(int x, int y) {

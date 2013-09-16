@@ -24,6 +24,7 @@ public:
 	vector<Vec3D> points;
 	Vec3D trans_point, trans_point_n;
 	Quaternion rot_point;
+	bool test;
 
 	void append(Vec3D);
 	bool getNearestPoint(Vec3D, int *, float *);

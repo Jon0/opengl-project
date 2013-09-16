@@ -8,6 +8,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
+#include <memory>
 #include <GL/glut.h>
 #include "ViewInterface.h"
 #include "../math/Vec3D.h"
@@ -23,7 +24,7 @@ void getUnitCircle(int, int, int, int, Quaternion *);
 
 class Camera: public ViewInterface {
 public:
-	Camera( SceneInterface *, MainWindow * );
+	Camera( SceneInterface *, shared_ptr<MainWindow> );
 	virtual ~Camera();
 
 	virtual void setView( chrono::duration<double> );
@@ -39,7 +40,7 @@ public:
 	GLfloat *getModelMatrix();
 
 private:
-	MainWindow *wnd;
+	shared_ptr<MainWindow> wnd;
 	SceneInterface *scene;
 	Vec3D focus;
 	Quaternion cam_angle, cam_angle_d, click_old, click_new;

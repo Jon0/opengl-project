@@ -37,13 +37,13 @@ SkeletonTransform::~SkeletonTransform() {}
 void SkeletonTransform::set_time(float time) {
 	speed_curve.setTimeDisplay(time);
 
-	/* determine pose */
-	// TODO: blend poses together
-	animation[pose_seq].update( time, &current_pose );
-	skeleton->setCurrentPose( &current_pose );
-
 	/* work percentage of path travelled */
 	path_offset = speed_curve.getDistanceValue(time) * path->getArcLength() / speed_curve.getTotalDistance();
+
+	/* determine pose */
+	// TODO: blend poses together
+	animation[pose_seq].update( path_offset, &current_pose );
+	skeleton->setCurrentPose( &current_pose );
 }
 
 void SkeletonTransform::apply_transform() {
@@ -53,6 +53,16 @@ void SkeletonTransform::apply_transform() {
 
 void SkeletonTransform::set_pose_seq(int ps) {
 	pose_seq = ps;
+}
+
+void SkeletonTransform::reset() {
+	animation.clear();
+	animation.push_back({skeleton});
+}
+
+void SkeletonTransform::loadFile(string filename) {
+	animation.clear();
+	animation.push_back(*aloader->readAMC( filename.c_str(), skeleton ));
 }
 
 } /* namespace std */

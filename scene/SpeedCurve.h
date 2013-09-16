@@ -8,8 +8,10 @@
 #ifndef SPEEDCURVE_H_
 #define SPEEDCURVE_H_
 
+#include <memory>
 #include "../scene/SceneInterface.h"
 #include "../spline/Path.h"
+#include "../window/MainWindow.h"
 
 namespace std {
 
@@ -33,13 +35,15 @@ public:
 	virtual void keyPressed(unsigned char);
 
 private:
+	shared_ptr<MainWindow> mWnd;
+	ViewInterface *view;
+	Path speed;
+	vector<float> values;
+	vector<float> distance;
 	float total_distance;
 	float time;
 	float values_dx;
-	vector<float> values;
-	vector<float> distance;
-	ViewInterface *view;
-	Path speed;
+
 };
 
 } /* namespace std */
