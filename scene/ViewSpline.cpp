@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <string>
 #include "../geometry/Teapot.h"
 #include "../window/MainWindow.h"
@@ -41,7 +40,6 @@ int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int
 		int i = -1;
 		float dist = 5;
 		if ( path.getNearestPoint(click, &i, &dist) ) {
-			cout << "select " << i << endl;
 			return 1;
 		}
 
@@ -53,7 +51,6 @@ int ViewSpline::mouseDragged(ViewInterface *v, int x, int y) {
 	return 0;
 }
 
-// TODO: display speed increments
 void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
 	if (play) {
 		time += tick * 10;
@@ -67,11 +64,10 @@ void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
 	teapot->display();
 	glPopMatrix();
 
-	drawString(message);
+	drawString( message, 10, 10 );
 }
 
 void ViewSpline::messageSent(string s) {
-	cout << s << endl;
 	if (s == "play") {
 		play = true;
 	}

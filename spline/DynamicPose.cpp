@@ -27,12 +27,10 @@ DynamicPose::DynamicPose( int numPoses, pose **states, shared_ptr<Skeleton> s) {
 DynamicPose::~DynamicPose() {}
 
 void DynamicPose::update(float position, pose *current) {
-
 	/*
 	 *	set correct pose base on keyframes
 	 *	position is units traveled along some arc
 	 */
-
 	float time = (position * v_pose.size()) / path_length;
 	float animate_frame = fmod( time, v_pose.size() ) ;
 	pose *a = &v_pose.at( (int) animate_frame );
@@ -42,7 +40,6 @@ void DynamicPose::update(float position, pose *current) {
 	/*
 	 *	set values on given pose
 	 */
-
 	current->adjust = a->adjust * (1 - t) + b->adjust * t;
 	for (int i = 0; i < numBones; ++i) {
 		current->q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
@@ -60,12 +57,14 @@ void DynamicPose::addFrame() {
 	v_pose.push_back( newPose );
 }
 
+void DynamicPose::addFrame( pose newPose ) {
+	v_pose.push_back( newPose );
+}
+
 void DynamicPose::insertFrame(float time) {
 	pose newPose;
 	makeState( numBones, &newPose );
-
 	// TODO: repeated code....
-
 	// insert at current position
 	float animate_frame = fmod( time, v_pose.size() ) ;
 	pose *a = &v_pose.at( (int) animate_frame );
@@ -75,8 +74,6 @@ void DynamicPose::insertFrame(float time) {
 	for (int i = 0; i < numBones; ++i) {
 		newPose.q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
 	}
-
-
 	//v_pose.insert()
 }
 

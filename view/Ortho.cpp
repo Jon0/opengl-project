@@ -37,7 +37,7 @@ void Ortho::setView( chrono::duration<double> tick ) {
 	scene->display( this, tick );
 
 	// draw message
-	drawString(message);
+	drawString(message, 5, 5);
 }
 
 void Ortho::resize(int x, int y) {
@@ -80,8 +80,10 @@ Vec3D Ortho::unProject(int x, int y) {
 	return Vec3D(point[0], point[1], point[2]);
 }
 
-void drawString(string message) {
-	// draw text
+void drawString(string message, float x, float y) {
+	/* translate and draw text */
+	glPushMatrix();
+	glTranslatef(x, y, 0);
 	glColor3f(1.0, 1.0, 1.0);
 	glRasterPos2f(0.0, 0.0);
 	const char *str = message.c_str();
@@ -92,6 +94,7 @@ void drawString(string message) {
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(font, str[i]);
 	}
+	glPopMatrix();
 }
 
 } /* namespace std */

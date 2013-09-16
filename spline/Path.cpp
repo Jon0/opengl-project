@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
 #include <GL/glut.h>
 #include "../geometry/Skeleton.h"
@@ -18,10 +17,18 @@ Path::Path():
 		points(),
 		trans_point(0.0, 0.0, 0.0),
 		trans_point_n(0.0, 0.0, 0.0),
-		rot_point(1.0, 0.0, 0.0, 0.0),
-		test(false) {}
+		rot_point(1.0, 0.0, 0.0, 0.0) {}
 
 Path::~Path() {}
+
+void Path::reset() {
+	trans_point = Vec3D(0.0, 0.0, 0.0);
+	trans_point_n = Vec3D(0.0, 0.0, 0.0);
+	rot_point = Quaternion(1.0, 0.0, 0.0, 0.0);
+	points.clear();
+	spline_length = 0.0;
+	u_delta.clear();
+}
 
 void Path::append(Vec3D point) {
 	points.push_back(point);
@@ -43,20 +50,13 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 void Path::translate(float distance) {
 	if (getNumKeyFrames() >= 2) {
 		Vec3D newpoint =  getDistPoint(distance);
-
 		Vec3D v1 = (newpoint - trans_point).normalise();
 		Vec3D v2 = (trans_point - trans_point_n).normalise();
-
 		if (v1.length() > 0 && v2.length() > 0) {
+			Quaternion k = Quaternion(0, v1.v[0], v1.v[1], v1.v[2]).normalise() * Quaternion(0, v2.v[0], v2.v[1], v2.v[2]).normalise().multiplicativeInverse();
 
-			//cout << v1.v[0] << ", " << v1.v[1] << ", " << v1.v[2] << endl;
-			//cout << v2.v[0] << ", " << v2.v[1] << ", " << v2.v[2] << endl;
-
-			Quaternion k =
-					Quaternion(0, v1.v[0], v1.v[1], v1.v[2])
-							* Quaternion(0, v2.v[0], v2.v[1], v2.v[2]).multiplicativeInverse();
-
-			rot_point.rotate(k);
+			Quaternion s = slerp({1,0,0,0}, k, 0.5);
+			rot_point.rotate( s );
 
 		}
 		trans_point_n = trans_point;

@@ -20,10 +20,13 @@ public:
 	AnimationLoader();
 	virtual ~AnimationLoader();
 	DynamicPose *readAMC( const char *, shared_ptr<Skeleton> );
+	pose loadAMCState( const char *, shared_ptr<Skeleton> );
+	void saveAMCState( const char *, pose *drawnState, shared_ptr<Skeleton> );
 
 private:
 	int buffSize, maxStates;
 	void loadAMCStateBone( char *buff, pose *current, shared_ptr<Skeleton> );
+	void loadAMCQBone( char *, pose *, shared_ptr<Skeleton> );
 };
 
 } /* namespace std */

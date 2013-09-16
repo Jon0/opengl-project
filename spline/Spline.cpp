@@ -12,7 +12,6 @@
 namespace std {
 
 Spline::Spline(): u_delta() {
-	delta  = 0.1;
 	segments = 0.005;
 	spline_length = 0.0;
 }
@@ -26,8 +25,8 @@ float Spline::getArcLength() {
 }
 
 void Spline::displayline() {
-	glColor3f(1.0, 1.0, 1.0);
-	glPointSize(2.0);
+	glColor3f(0.7, 0.7, 0.0);
+	glPointSize(8.0);
 	glBegin(GL_POINTS);
 
 	int length = getNumKeyFrames() + 1;
@@ -37,6 +36,7 @@ void Spline::displayline() {
 	}
 	glEnd();
 
+	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINE_STRIP);
 	length = getNumKeyFrames() - 1;
 	for (float u = 0; u < length; u += 0.02) {

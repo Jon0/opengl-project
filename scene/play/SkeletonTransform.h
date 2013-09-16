@@ -27,8 +27,12 @@ public:
 	void set_time(float);
 	void apply_transform();
 	void set_pose_seq(int);
+	void set_edit(bool);
 	void reset();
 	void loadFile(string);
+	void saveFile(string);
+	void addFile(string);
+	bool edit;
 	int pose_seq;
 	float path_offset;
 	SpeedCurve speed_curve;

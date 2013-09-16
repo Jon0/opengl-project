@@ -22,6 +22,7 @@ public:
 	SpeedCurve();
 	virtual ~SpeedCurve();
 
+	void reset();
 	void calculateValues();
 	void setTimeDisplay(float);
 	float getSpeedValue(float);
@@ -34,7 +35,7 @@ public:
 	virtual void messageSent(string);
 	virtual void keyPressed(unsigned char);
 
-private:
+
 	shared_ptr<MainWindow> mWnd;
 	ViewInterface *view;
 	Path speed;
@@ -43,6 +44,8 @@ private:
 	float total_distance;
 	float time;
 	float values_dx;
+	bool dragSelection;
+	int selection, pmx, pmy;
 
 };
 

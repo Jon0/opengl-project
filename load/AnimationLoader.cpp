@@ -70,7 +70,6 @@ DynamicPose *AnimationLoader::readAMC( const char *filename, shared_ptr<Skeleton
 	DynamicPose *a = new DynamicPose(numStates, state_list, skeleton);
 	a->setPathLength( start.getDistance(end) );
 
-	// TODO: make speed curve
 	delete state_list; // hopefully it gets copied by animation
 	return a;
 }
@@ -134,6 +133,94 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, shared_ptr<Sk
 	else {
 		cout << n << " not found" << endl;
 	}
+}
+
+void AnimationLoader::loadAMCQBone( char *buff, pose *current, shared_ptr<Skeleton> skeleton ) {
+	char *start = buff;
+	// read line as a set of angles, to apply to a particular part
+	char n[32];
+	float q[4]{0, 0, 0, 0};
+	sscanf(start, "%s ", n);
+	start += strlen(n);
+	trim(&start);
+
+	// match name in array
+
+
+	bone *b = skeleton->getBone(n);
+	if (b) {
+
+		// read number of angles, depending on dof
+		char next[32];
+		if ((b->dof & DOF_ROOT) == DOF_ROOT) {
+
+			float v[3];
+			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
+				v[j] = atof(next);
+				start += strlen(next);
+				trim(&start);
+			}
+			current->adjust = Vec3D(v);
+
+
+		}
+		for (int j = 0; sscanf(start, "%s", next) != 0 && j < 4; ++j) {
+			q[j] = atof(next);
+			start += strlen(next);
+			trim(&start);
+		}
+		current->q.data()[b->index] = Quaternion(q[0], q[1], q[2], q[3]);
+	}
+	else {
+		cout << n << " not found" << endl;
+	}
+}
+
+pose AnimationLoader::loadAMCState( const char *filename, shared_ptr<Skeleton> skeleton ) {
+	pose current;
+	makeState(skeleton->getNumBones(), &current);	// get blank state
+
+	FILE* file = fopen(filename, "r");
+	if (!file) {
+		cout << "file not found" << endl;
+		return current;
+	}
+	printf( "Reading pose: %s\n", filename );
+
+
+	char *buff = new char[buffSize];
+	char *p;
+	while ((p = fgets(buff, buffSize, file)) != NULL) {
+		char *start = buff;
+		trim(&start);
+
+		//Check if it is a comment or just empty
+		if (start[0] == '#' || start[0] == ':' || start[0] == '\0'
+				|| isdigit(start[0])) {
+			continue;
+		}
+		if (start != NULL) {
+			cout << "read " << buff << endl;
+			loadAMCQBone(buff, &current, skeleton);
+		}
+	}
+	return current;
+}
+
+void AnimationLoader::saveAMCState( const char *filename, pose *drawnState, shared_ptr<Skeleton> skeleton ) {
+	cout << "save to file: " << filename << endl;
+	FILE* f = fopen(filename, "w");
+	fprintf(f, "root %f %f %f ", drawnState->adjust.v[0], drawnState->adjust.v[1], drawnState->adjust.v[2]);
+	for (int i = 0; i < skeleton->getNumBones(); ++i) {
+		if (i > 0) {
+			fprintf(f, "%s ", skeleton->getBone(i)->name);
+		}
+		float f1 = drawnState->q[i].firstValue();
+		Vec3D v1 = drawnState->q[i].vector();
+		fprintf(f, "%f %f %f %f", f1, v1.v[0], v1.v[1], v1.v[2]);
+		fprintf(f, "\n");
+	}
+	fclose(f);
 }
 
 } /* namespace std */

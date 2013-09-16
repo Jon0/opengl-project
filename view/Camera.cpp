@@ -24,7 +24,6 @@ Camera::Camera( SceneInterface *s, shared_ptr<MainWindow> mw ):
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
-
 	click_x = click_y = 0;
 
 	wnd = mw;
@@ -99,8 +98,6 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 		else if (button == 4) {
 			viewzoom *= 1.05;	// scroll forward
 		}
-		//TODO: other controls
-
 		return true;
 	}
 	else  {

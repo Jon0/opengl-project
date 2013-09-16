@@ -38,13 +38,9 @@ private:
 
 	bool play;
 	chrono::duration<double> time;
-
 	ViewInterface *view;
 	SpeedCurve sp;
-
-
 	Path path;
-
 	string message;
 };
 

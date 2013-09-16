@@ -29,9 +29,7 @@ public:
 
 protected:
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
-
-private:
-	float delta, segments, spline_length;
+	float segments, spline_length;
 	vector<float> u_delta;
 };
 

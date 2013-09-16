@@ -5,7 +5,6 @@
  *      Author: remnanjona
  */
 
-#include <iostream>
 #include <math.h>
 #include "Scene.h"
 
@@ -64,8 +63,6 @@ int Scene::mouseClicked(ViewInterface *view, int button, int state, int x, int y
 		clicky = y;
 	}
 	else if (button == 2) {
-
-
 		player.path->append( view->unProject(x, y) );
 	}
 	return true;
@@ -87,7 +84,7 @@ int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
 		getArc( p[0], p[1], x, y, 200.0, &temp );
 		getBoneAlignment(temp, in->cameraAngle(), &click_new);
 		Quaternion drag = click_new * click_old.multiplicativeInverse();
-		player.animation[0].modSelection( time.count(), selectedBone, drag );
+		player.animation[0].modSelection( time, selectedBone, drag );
 		click_old = click_new;
 		return true;
 	}
@@ -101,10 +98,10 @@ void Scene::keyPressed(unsigned char c) {
 void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 	if (in == camera.get()) {
 		if (playing) {
-			time += tick * 30;
+			time += tick.count() * 30;
 		}
 		if (skeleton) {
-			player.set_time(time.count());
+			player.set_time(time);
 			skeleton->setSelection(selectedBone);
 
 			glPushMatrix();
@@ -113,41 +110,64 @@ void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 			glPopMatrix();
 
 			player.path->displayline();
+
+			if (player.path->getArcLength() > 0) {
+				glColor3f(1.0, 0.0, 0.0);
+				glPointSize(4.0);
+				glBegin(GL_POINTS);
+				for (auto &p : player.speed_curve.distance) {
+					/* work percentage of path travelled */
+					float path_offset = p * player.path->getArcLength()
+							/ player.speed_curve.getTotalDistance();
+
+					Vec3D vc = player.path->getDistPoint(path_offset);
+					glVertex3f(vc.v[0], vc.v[1], vc.v[2]);
+
+				}
+				glEnd();
+			}
+
 		}
 	}
 }
 
 void Scene::messageSent(string str) {
-	cout << str << endl;
-	if (str == "add") {
-		player.animation[0].addFrame();
-	}
-	else if (str == "play") {
+	// cout << str << endl;
+	if (str == "play") {
 		playing = !playing;
 	}
+	else if (str == "stop") {
+		playing = false;
+		player.set_edit(true);
+	}
 	else if (str == "reset") {
-		time = time.zero();
+		playing = false;
+		time = 0.0;
 		player.reset();
 	}
 	else if (str.substr(0, 4) == "load") {
 		string name = "assets/"+str.substr(5)+".amc";
-		cout << name << endl;
 		player.loadFile(name);
 	}
+	else if (str.substr(0, 4) == "save") {
+		string name = "assets/"+str.substr(5)+".amc";
+		player.saveFile(name);
+	}
+	else if (str.substr(0, 3) == "add") {
 
-	else if (str == "x") {
-		player.set_pose_seq(0);
+		if (str.length() > 4) {
+			string name = "assets/"+str.substr(4)+".amc";
+			player.addFile(name);
+		}
+		else {
+			player.animation[0].addFrame();
+		}
 	}
-	else if (str == "c") {
-		player.set_pose_seq(1);
-	}
-
-	else if (str == "set frame") {
-		//int i = animation->getFrame();
-		//animation->setFrame(i);
-	}
-	else if (str == "insert frame") {
-		//animation->insertFrame();
+	else if (str.substr(0, 4) == "show") {
+		int f = atoi(str.substr(5).c_str());
+		playing = false;
+		player.set_edit(true);
+		time = f * 50.0;
 	}
 }
 

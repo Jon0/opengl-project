@@ -258,25 +258,23 @@ color *Skeleton::colorStandard(bone *b) {
 	return cStandard;
 }
 
-pose *makeState( int numBones, pose *next ) {
+void makeState( int numBones, pose *next ) {
 	next->adjust = Vec3D{0, 0, 0};
 	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
 		next->q.push_back({1, 0, 0, 0});
 	}
-	return next;
 }
 
 // TODO: does this work?
-pose *copyState( int numBones, pose *other, pose *next ) {
+void copyState( int numBones, pose *other, pose *next ) {
 	next->adjust = other->adjust;
 	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
 		next->q.push_back( other->q.data()[i] );
 	}
-	return next;
 }
 
 

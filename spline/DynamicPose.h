@@ -24,6 +24,7 @@ public:
 
 	void update(float, pose *);
 	void addFrame();
+	void addFrame( pose newPose );
 	void insertFrame(float);
 	void rollSelection(int, float);
 	void modSelection(int, int, float, float, float);

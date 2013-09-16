@@ -17,13 +17,22 @@ SpeedCurve::SpeedCurve():
 		speed(),
 		values(),
 		distance() {
-	total_distance = 0.0;
-	time = 0.0;
-	values_dx = 10.0;
 	view = new Ortho( this, mWnd );
+	reset();
 }
 
 SpeedCurve::~SpeedCurve() {}
+
+void SpeedCurve::reset() {
+	dragSelection = false;
+	pmx = pmy = 0;
+	total_distance = 0.0;
+	time = 0.0;
+	values_dx = 10.0;
+	values.clear();
+	distance.clear();
+	speed.points.clear();
+}
 
 void SpeedCurve::calculateValues() {
 	if (speed.points.size() < 4) return;
@@ -76,12 +85,11 @@ float SpeedCurve::getDistanceValue(float time) {
 }
 
 float SpeedCurve::getTotalDistance() {
-	return total_distance > 0 ? total_distance : 1.0;
+	return total_distance;
 }
 
 void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
 	speed.displayline();
-
 
 	if (speed.getNumKeyFrames() > 1) {
 		float modTime = fmod(time, values_dx * (values.size() - 1));
@@ -106,7 +114,7 @@ void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
 		}
 		glEnd();
 
-		drawString("Speed: "+to_string( getSpeedValue(modTime) ) );
+		drawString("Speed: "+to_string( getSpeedValue(modTime)), 5, 180 );
 	}
 
 	glColor3f(0.7, 0.0, 0.7);
@@ -117,25 +125,54 @@ void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
 		glVertex3f(v[0], v[1], v[2]);
 	}
 	glEnd();
-
-
 }
 
 int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
-	if (state) {
+	if (!state) {
 
-		// sort new values, so order has increasing x
-		speed.points.push_back( click );
-		inplace_merge(begin(speed.points), speed.points.end() - 1, speed.points.end(), vec_comp_x);
-		calculateValues();
+		/* get nearby points */
+		float distance = 30;
+		selection = -1;
+		for ( unsigned int i = 0; i < speed.points.size(); ++i ) {
+			float dt = speed.points[i].getDistance({x, y, 0});
+			if (dt < distance) {
+				selection = i;
+				distance = dt;
+			}
+		}
+		if (selection < 0) {
+			// sort new values, so order has increasing x
+			speed.points.push_back( click );
+			inplace_merge(begin(speed.points), speed.points.end() - 1, speed.points.end(), vec_comp_x);
+			calculateValues();
+		}
+		else {
+			dragSelection = true;
+			pmx = x;
+			pmy = y;
+
+		}
 		return 1;
+	}
+	else {
+		dragSelection = false;
+		calculateValues();
 	}
 	return 0;
 }
 
-// TODO: drag values
 int SpeedCurve::mouseDragged(ViewInterface *, int x, int y) {
+	/*
+	 * drag selected data point
+	 */
+	if (dragSelection) {
+		speed.points.data()[selection].v[0] += x - pmx;
+		speed.points.data()[selection].v[1] += y - pmy;
+		pmx = x;
+		pmy = y;
+		return true;
+	}
 	return false;
 }
 

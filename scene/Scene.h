@@ -44,7 +44,7 @@ protected:
 	Quaternion click_old, click_new;
 
 	bool playing, drag_bone;
-	chrono::duration<double> time;
+	float time;
 
 	int selectedBone, clickx, clicky;
 };

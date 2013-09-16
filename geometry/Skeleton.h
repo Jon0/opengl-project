@@ -57,8 +57,8 @@ struct color {
 	int *x, *y, *z, *bone, *sphere, *select;
 };
 
-pose *makeState(int, pose *);
-pose *copyState(int, pose *, pose *);
+void makeState(int, pose *);
+void copyState(int, pose *, pose *);
 
 class Skeleton;
 

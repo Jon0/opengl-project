@@ -20,7 +20,7 @@ namespace std {
 class MainWindow;
 class SceneInterface;
 
-void drawString(string message);
+void drawString(string message, float x, float y);
 
 class Ortho: public ViewInterface {
 public:
