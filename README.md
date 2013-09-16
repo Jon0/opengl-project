@@ -1,9 +1,13 @@
 animation
 =========
 
-* Compile with Debug/make from base directory
+* Compile with Debug/makefile from inside directory
 
-* Run ./Debug/animation
+* cd Debug/
+
+* make
+
+* Run ./animation
 
 Mouse Control
 =============
