@@ -152,6 +152,7 @@ void Scene::messageSent(string str) {
 	// cout << str << endl;
 	if (str == "play") {
 		playing = !playing;
+		player.set_edit(false);
 	}
 	else if (str == "stop") {
 		playing = false;

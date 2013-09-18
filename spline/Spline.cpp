@@ -11,8 +11,8 @@
 
 namespace std {
 
-Spline::Spline(): u_delta() {
-	segments = 0.005;
+Spline::Spline(): distance(0.005) {
+
 	spline_length = 0.0;
 }
 
@@ -57,13 +57,8 @@ Vec3D Spline::getPoint(float u) {
 	return catmull_rom(getKeyPoint(v-1), getKeyPoint(v), getKeyPoint(v+1), getKeyPoint(v+2), frac);
 }
 
- Vec3D Spline::getDistPoint(float dist) {
-	float mod = fmod(dist, segments);
-	float percent = mod / segments;
-	int seg_a = (int)( (dist - mod) / segments ) % ( u_delta.size() - 1 );
-
-	float k = u_delta.at(seg_a) * (1 - percent) + u_delta.at(seg_a + 1) * percent;
-	return getPoint( k );
+Vec3D Spline::getDistPoint(float dist) {
+	return getPoint( distance.getPoint(dist) );
  }
 
 /* at point u on the spline find the increment
@@ -94,7 +89,7 @@ Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
  * calculate a map between linear distance and u
  */
 void Spline::equaliseLength() {
-	u_delta.clear();
+	distance.point.clear();
 
 	// distance | u
 	// 0		| 0
@@ -103,12 +98,12 @@ void Spline::equaliseLength() {
 	// etc
 
 	// TODO: only add new parts
-	float ulength = getULength() - segments;
+	float ulength = getULength() - distance.segments;
 	for (float u = 0; u < ulength;) {
-		u_delta.push_back(u);
-		u += calcPointInc(u, segments);
+		distance.point.push_back(u);
+		u += calcPointInc(u, distance.segments);
 	}
-	spline_length = u_delta.size() * segments;
+	spline_length = distance.point.size() * distance.segments;
 }
 
 } /* namespace std */

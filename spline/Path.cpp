@@ -27,7 +27,7 @@ void Path::reset() {
 	rot_point = Quaternion(1.0, 0.0, 0.0, 0.0);
 	points.clear();
 	spline_length = 0.0;
-	u_delta.clear();
+	distance.point.clear();
 }
 
 void Path::append(Vec3D point) {

@@ -9,6 +9,7 @@
 #define SPLINE_H_
 
 #include <vector>
+#include "../math/PointArray.h"
 #include "../math/Vec3D.h"
 
 namespace std {
@@ -29,8 +30,8 @@ public:
 
 protected:
 	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
-	float segments, spline_length;
-	vector<float> u_delta;
+	float spline_length;
+	PointArray<float> distance;
 };
 
 } /* namespace std */
