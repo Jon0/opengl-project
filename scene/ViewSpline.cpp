@@ -14,18 +14,22 @@
 namespace std {
 
 ViewSpline::ViewSpline():
-		mWnd{new MainWindow(800, 600, "Spline")},
+		mWnd{ new MainWindow(800, 600, "Spline") },
 		teapot{ new Teapot() },
-		sp{}
-{
+		sp{} {
+	mWnd->start();
 	play = false;
 	message = "Skeleton";
-	view = new Ortho( this, mWnd );
 }
 
 ViewSpline::~ViewSpline() {}
 
-int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
+void ViewSpline::start() {
+	view = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
+	mWnd->addView( view );
+}
+
+int ViewSpline::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (button == 2 && state) {
 		message.clear();
@@ -47,11 +51,11 @@ int ViewSpline::mouseClicked(ViewInterface *v, int button, int state, int x, int
 	return 0;
 }
 
-int ViewSpline::mouseDragged(ViewInterface *v, int x, int y) {
+int ViewSpline::mouseDragged(shared_ptr<ViewInterface> v, int x, int y) {
 	return 0;
 }
 
-void ViewSpline::display(ViewInterface *v, chrono::duration<double> tick) {
+void ViewSpline::display(shared_ptr<ViewInterface> v, chrono::duration<double> tick) {
 	if (play) {
 		time += tick * 10;
 	}

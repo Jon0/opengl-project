@@ -24,7 +24,7 @@ void getUnitCircle(int, int, int, int, Quaternion *);
 
 class Camera: public ViewInterface {
 public:
-	Camera( SceneInterface *, shared_ptr<MainWindow> );
+	Camera( shared_ptr<SceneInterface>, shared_ptr<MainWindow> );
 	virtual ~Camera();
 
 	virtual void setView( chrono::duration<double> );
@@ -41,7 +41,7 @@ public:
 
 private:
 	shared_ptr<MainWindow> wnd;
-	SceneInterface *scene;
+	shared_ptr<SceneInterface> scene;
 	Vec3D focus;
 	Quaternion cam_angle, cam_angle_d, click_old, click_new;
 	bool control[3];

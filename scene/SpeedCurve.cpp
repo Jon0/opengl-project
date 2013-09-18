@@ -6,8 +6,6 @@
  */
 
 #include <algorithm>
-#include "../window/MainWindow.h"
-#include "../view/Ortho.h"
 #include "SpeedCurve.h"
 
 namespace std {
@@ -17,11 +15,16 @@ SpeedCurve::SpeedCurve():
 		speed(),
 		values(),
 		distance() {
-	view = new Ortho( this, mWnd );
+	mWnd->start();
 	reset();
 }
 
 SpeedCurve::~SpeedCurve() {}
+
+void SpeedCurve::start() {
+	view = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
+	mWnd->addView( view );
+}
 
 void SpeedCurve::reset() {
 	dragSelection = false;
@@ -88,7 +91,7 @@ float SpeedCurve::getTotalDistance() {
 	return total_distance;
 }
 
-void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
+void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	speed.displayline();
 
 	if (speed.getNumKeyFrames() > 1) {
@@ -127,7 +130,7 @@ void SpeedCurve::display( ViewInterface *, chrono::duration<double> ) {
 	glEnd();
 }
 
-int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int y) {
+int SpeedCurve::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (!state) {
 
@@ -135,7 +138,7 @@ int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int
 		float distance = 30;
 		selection = -1;
 		for ( unsigned int i = 0; i < speed.points.size(); ++i ) {
-			float dt = speed.points[i].getDistance({x, y, 0});
+			float dt = speed.points[i].getDistance({ (float)x, (float)y, 0 });
 			if (dt < distance) {
 				selection = i;
 				distance = dt;
@@ -162,7 +165,7 @@ int SpeedCurve::mouseClicked(ViewInterface *v, int button, int state, int x, int
 	return 0;
 }
 
-int SpeedCurve::mouseDragged(ViewInterface *, int x, int y) {
+int SpeedCurve::mouseDragged(shared_ptr<ViewInterface>, int x, int y) {
 	/*
 	 * drag selected data point
 	 */

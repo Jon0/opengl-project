@@ -12,8 +12,8 @@ namespace std {
 SkeletonTransform::SkeletonTransform(shared_ptr<Skeleton> skeleton):
 		speed_curve{},
 		skeleton{skeleton},
-		path{new Path()},
-		aloader{new AnimationLoader()} {
+		path{ new Path() },
+		aloader{ new AnimationLoader() } {
 	edit = true;
 	animation.push_back({skeleton});
 	pose_seq = 0;
@@ -24,8 +24,8 @@ SkeletonTransform::SkeletonTransform(shared_ptr<Skeleton> skeleton):
 SkeletonTransform::SkeletonTransform(shared_ptr<Skeleton> skeleton, string file):
 		speed_curve{},
 		skeleton{skeleton},
-		path{new Path()},
-		aloader{new AnimationLoader()} {
+		path{ new Path() },
+		aloader{ new AnimationLoader() } {
 	edit = true;
 	animation.push_back( *aloader->readAMC("assets/walk.amc", skeleton ) );
 	animation.push_back( *aloader->readAMC("assets/kick.amc", skeleton ) );

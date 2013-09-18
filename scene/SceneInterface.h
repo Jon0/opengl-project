@@ -8,6 +8,7 @@
 #ifndef SCENEINTERFACE_H_
 #define SCENEINTERFACE_H_
 
+#include <memory>
 #include <string>
 #include <chrono>
 
@@ -19,9 +20,9 @@ class SceneInterface {
 public:
 	virtual ~SceneInterface() {};
 
-	virtual void display( ViewInterface *, chrono::duration<double> ) = 0;
-	virtual int mouseClicked( ViewInterface *, int, int, int, int ) = 0;
-	virtual int mouseDragged( ViewInterface *, int, int ) = 0;
+	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> ) = 0;
+	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) = 0;
+	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int ) = 0;
 	virtual void messageSent(string) = 0;
 	virtual void keyPressed(unsigned char) = 0;
 };

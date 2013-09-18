@@ -14,12 +14,11 @@
 
 namespace std {
 
-Ortho::Ortho( SceneInterface *s, shared_ptr<MainWindow> mw ): scene(s) {
+Ortho::Ortho( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ): scene(s) {
 	view_width = 1;
 	view_height = 1;
 
 	wnd = mw;
-	wnd->addView(this);
 }
 
 Ortho::~Ortho() {}
@@ -33,7 +32,7 @@ void Ortho::setView( chrono::duration<double> tick ) {
 	glLoadIdentity();
 
 	// draw scene
-	scene->display( this, tick );
+	scene->display( shared_from_this(), tick );
 
 	// draw message
 	drawString(message, 5, 5);
@@ -55,11 +54,11 @@ void Ortho::keyPressed(unsigned char c) {
 }
 
 int Ortho::mouseClicked(int button, int state, int x, int y) {
-	return scene->mouseClicked( this, button, state, x, y );
+	return scene->mouseClicked( shared_from_this(), button, state, x, y );
 }
 
 int Ortho::mouseDragged(int x, int y) {
-	return scene->mouseDragged( this, x, y );
+	return scene->mouseDragged( shared_from_this(), x, y );
 }
 
 Quaternion Ortho::cameraAngle() {

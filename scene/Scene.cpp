@@ -5,25 +5,33 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <math.h>
 #include "Scene.h"
 
 namespace std {
 
 Scene::Scene(string filename):
-		mWnd{new MainWindow(800, 600, "Scene")},
-		camera{ new Camera( this, mWnd ) },
-		ortho{ new Ortho( this, mWnd ) },
+		mWnd{ new MainWindow(800, 600, "Scene") },
 		loader{ new SkeletonLoader() },
 		skeleton{ loader->readASF( filename.c_str() ) },
 		player{skeleton, "assets/walk.amc"},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		time() {
+	mWnd->start();
 	playing = drag_bone = false;
 	selectedBone = -1;
 	clickx = clicky = 0;
-	player.set_time( 0 );
+
+}
+
+void Scene::start() {
+	camera = shared_ptr<Camera>{ new Camera( shared_from_this(), mWnd ) };
+	ortho = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
+	mWnd->addView( camera );
+	mWnd->addView( ortho );
+	//player.speed_curve.start();
 }
 
 Scene::~Scene() {}
@@ -43,7 +51,7 @@ int Scene::mouseSelect(int x, int y) {
 	return sbone;
 }
 
-int Scene::mouseClicked(ViewInterface *view, int button, int state, int x, int y) {
+int Scene::mouseClicked( shared_ptr<ViewInterface> view, int button, int state, int x, int y ) {
 	if (state) {
 		drag_bone = false;
 		clickx = 0;
@@ -68,7 +76,7 @@ int Scene::mouseClicked(ViewInterface *view, int button, int state, int x, int y
 	return true;
 }
 
-int Scene::mouseDragged( ViewInterface *in, int x, int y ) {
+int Scene::mouseDragged( shared_ptr<ViewInterface> in, int x, int y ) {
 	if ( drag_bone && selectedBone >= 0 ) {
 		GLdouble *p = skeleton->selectionCenter();
 		Quaternion temp;
@@ -95,8 +103,8 @@ void Scene::keyPressed(unsigned char c) {
 
 }
 
-void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
-	if (in == camera.get()) {
+void Scene::display( shared_ptr<ViewInterface> in, chrono::duration<double> tick ) {
+	if (in == camera) {
 		if (playing) {
 			time += tick.count() * 30;
 		}
@@ -132,7 +140,7 @@ void Scene::display( ViewInterface *in, chrono::duration<double> tick ) {
 
 		}
 	}
-	if (in == ortho.get()) {
+	if (in == ortho) {
 		/*
 		 * print out status
 		 */

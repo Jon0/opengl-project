@@ -5,19 +5,20 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include <math.h>
 #include "Camera.h"
 
 namespace std {
 
-Camera::Camera( SceneInterface *s, shared_ptr<MainWindow> mw ):
+Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
+		scene(s),
 		focus{0, 0, 0},
 		cam_angle{1, 0, 0, 0},
 		cam_angle_d{1, 0, 0, 0},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		control{} {
-	scene = s;
 	cam_aspect = 1.0;
 	viewzoom = 100.0;
 
@@ -27,7 +28,6 @@ Camera::Camera( SceneInterface *s, shared_ptr<MainWindow> mw ):
 	click_x = click_y = 0;
 
 	wnd = mw;
-	wnd->addView(this);
 }
 
 Camera::~Camera() {}
@@ -57,7 +57,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, model_matrixd);
 
-	scene->display( this, tick );
+	scene->display( shared_from_this(), tick );
 	glPopMatrix();
 }
 
@@ -76,7 +76,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 	if (state) {
 		control[0] = control[1] = control[2] = false;
 		setupMatrix();
-		return scene->mouseClicked( this, button, state, x, y );
+		return scene->mouseClicked( shared_from_this(), button, state, x, y );
 	}
 
 	/* controls while holding shift */
@@ -102,7 +102,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 	}
 	else  {
 		setupMatrix();
-		return scene->mouseClicked( this, button, state, x, y );
+		return scene->mouseClicked( shared_from_this(), button, state, x, y );
 	}
 }
 
@@ -128,7 +128,7 @@ int Camera::mouseDragged(int x, int y) {
 	}
 	else {
 		setupMatrix();
-		return scene->mouseDragged( this, x, y );
+		return scene->mouseDragged( shared_from_this(), x, y );
 	}
 }
 

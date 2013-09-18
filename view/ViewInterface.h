@@ -8,6 +8,7 @@
 #ifndef VIEWINTERFACE_H_
 #define VIEWINTERFACE_H_
 
+#include <memory>
 #include <chrono>
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
@@ -17,7 +18,10 @@ namespace std {
 class Vec3D;
 class Quaternion;
 
-class ViewInterface: public KeyListener, public MouseListener {
+class ViewInterface:
+		public enable_shared_from_this<ViewInterface>,
+		public KeyListener,
+		public MouseListener {
 public:
 	virtual ~ViewInterface() {};
 

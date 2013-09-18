@@ -21,24 +21,28 @@ namespace std {
 
 class ViewInterface;
 
-class ViewSpline: public SceneInterface {
+class ViewSpline:
+		public enable_shared_from_this<ViewSpline>,
+		public SceneInterface {
 public:
 	ViewSpline();
 	virtual ~ViewSpline();
+	void start();
 
-	virtual void display( ViewInterface *, chrono::duration<double> );
-	virtual int mouseClicked(ViewInterface *, int, int, int, int);
-	virtual int mouseDragged(ViewInterface *, int x, int y);
+	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual int mouseClicked(shared_ptr<ViewInterface>, int, int, int, int);
+	virtual int mouseDragged(shared_ptr<ViewInterface>, int x, int y);
 	virtual void messageSent(string);
 	virtual void keyPressed(unsigned char);
 
 private:
 	shared_ptr<MainWindow> mWnd;
+	shared_ptr<ViewInterface> view;
 	shared_ptr<Teapot> teapot;
 
 	bool play;
 	chrono::duration<double> time;
-	ViewInterface *view;
+
 	SpeedCurve sp;
 	Path path;
 	string message;

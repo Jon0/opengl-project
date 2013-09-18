@@ -10,12 +10,12 @@
 namespace std {
 
 /* pointer to the running instance */
-map<int, MainWindow *> instances;
+map<int, shared_ptr<MainWindow>> instances;
 
 MainWindow::MainWindow(int width, int height, string title) {
 	wnd_width = width;
 	wnd_height = height;
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA);
 	glutInitWindowSize(wnd_width, wnd_height);
 	g_mainWnd = glutCreateWindow( title.c_str() );
 	glutDisplayFunc(displayCallback);
@@ -25,23 +25,22 @@ MainWindow::MainWindow(int width, int height, string title) {
 	glutMotionFunc(mouseCallbackMotionFunc);
 	glutIdleFunc(idleFunc);
 
-	/*
-	 *	keep a reference to this instance
-	 *	available from static methods
-	 */
-	instances[g_mainWnd] = this;
-
 	// get initial time
 	time = chrono::high_resolution_clock::now();
 }
 
-MainWindow::~MainWindow() {
-	for (auto view: g_view) {
-		delete view;
-	}
+MainWindow::~MainWindow() {}
+
+void MainWindow::start() {
+
+	/*
+	 *	keep a reference to this instance
+	 *	available from static methods
+	 */
+	instances[g_mainWnd] = shared_from_this();
 }
 
-void MainWindow::addView(ViewInterface *vi) {
+void MainWindow::addView(shared_ptr<ViewInterface> vi) {
 	g_view.push_back(vi);
 }
 
@@ -53,7 +52,7 @@ void MainWindow::display() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	for (auto &view: g_view) {
-		((ViewInterface *) view )->setView( tick );
+		view->setView( tick );
 	}
 	glutSwapBuffers();
 }
@@ -85,28 +84,23 @@ void MainWindow::mouseDrag(int x, int y) {
 }
 
 void MainWindow::displayCallback() {
-	MainWindow *ins = instances[ glutGetWindow() ];
-	ins->display();
+	instances[ glutGetWindow() ]->display();
 }
 
 void MainWindow::reshapeCallback(int x, int y) {
-	MainWindow *ins = instances[ glutGetWindow() ];
-	ins->reshape(x, y);
+	instances[ glutGetWindow() ]->reshape(x, y);
 }
 
 void MainWindow::keyboardCallback(unsigned char key, int x, int y) {
-	MainWindow *ins = instances[ glutGetWindow() ];
-	ins->keyboard(key, x, y);
+	instances[ glutGetWindow() ]->keyboard(key, x, y);
 }
 
 void MainWindow::mouseCallback(int button, int state, int x, int y) {
-	MainWindow *ins = instances[ glutGetWindow() ];
-	ins->mouseClick(button, state, x, y);
+	instances[ glutGetWindow() ]->mouseClick(button, state, x, y);
 }
 
 void MainWindow::mouseCallbackMotionFunc(int x, int y) {
-	MainWindow *ins = instances[ glutGetWindow() ];
-	ins->mouseDrag(x, y);
+	instances[ glutGetWindow() ]->mouseDrag(x, y);
 }
 
 void MainWindow::idleFunc() {

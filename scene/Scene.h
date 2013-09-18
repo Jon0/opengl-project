@@ -19,20 +19,24 @@
 
 namespace std {
 
-class Scene: public SceneInterface {
+class Scene:
+		public enable_shared_from_this<Scene>,
+		public SceneInterface {
 public:
 	Scene(string);
 	Scene(const Scene &);
+	void start();
 	virtual ~Scene();
 
 	void getBoneAlignment(Quaternion, Quaternion, Quaternion *);
 	int mouseSelect(int, int);
 
-	virtual void display( ViewInterface *, chrono::duration<double> );
-	virtual int mouseClicked( ViewInterface *, int, int, int, int );
-	virtual int mouseDragged( ViewInterface *, int, int );
+	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
+	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int );
 	virtual void messageSent(string);
 	virtual void keyPressed(unsigned char);
+
 protected:
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
@@ -45,7 +49,6 @@ protected:
 
 	bool playing, drag_bone;
 	float time;
-
 	int selectedBone, clickx, clicky;
 };
 

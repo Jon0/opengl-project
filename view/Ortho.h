@@ -24,7 +24,7 @@ void drawString(string message, float x, float y);
 
 class Ortho: public ViewInterface {
 public:
-	Ortho( SceneInterface *, shared_ptr<MainWindow> );
+	Ortho( shared_ptr<SceneInterface>, shared_ptr<MainWindow> );
 	virtual ~Ortho();
 
 	virtual void setView( chrono::duration<double> );
@@ -38,7 +38,7 @@ public:
 protected:
 	int view_width, view_height;
 	shared_ptr<MainWindow> wnd;
-	SceneInterface *scene;
+	shared_ptr<SceneInterface> scene;
 	string message;
 };
 

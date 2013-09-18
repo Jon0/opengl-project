@@ -9,6 +9,7 @@
 #define MAINWINDOW_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 #include <chrono>
 #include <string>
@@ -19,15 +20,17 @@
 
 namespace std {
 
-class MainWindow {
+class MainWindow:
+		public enable_shared_from_this<MainWindow> {
 public:
 	GLuint g_mainWnd;
 	MainWindow(int, int, string);
 	virtual ~MainWindow();
-	void addView(ViewInterface *vi);
+	void addView(shared_ptr<ViewInterface> vi);
+	virtual void start();
 protected:
 	int wnd_width, wnd_height;
-	vector<ViewInterface *> g_view;
+	vector<shared_ptr<ViewInterface>> g_view;
 	void display();
 	void reshape(int, int);
 	void keyboard(unsigned char, int, int);
@@ -43,7 +46,7 @@ private:
 	static void idleFunc();
 };
 
-extern map<int, MainWindow *> instances;
+extern map<int, shared_ptr<MainWindow>> instances;
 
 } /* namespace std */
 #endif /* MAINWINDOW_H_ */
