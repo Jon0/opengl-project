@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <GL/glut.h>
-#include "scene/Scene.h"
+#include "scene/Render.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
-	shared_ptr<Scene> r{ new Scene("assets/priman.asf") };
+	shared_ptr<Render> r{ new Render() };
 	r->start();
 
 	// start running

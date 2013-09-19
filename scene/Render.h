@@ -10,6 +10,7 @@
 
 #include <memory>
 #include "SceneInterface.h"
+#include "../load/G308Geometry.h"
 #include "../view/Camera.h"
 #include "../window/MainWindow.h"
 
@@ -31,6 +32,10 @@ public:
 
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
+
+	G308_Geometry *g;
+
+	vector<GLpolygon> shape;
 };
 
 } /* namespace std */
