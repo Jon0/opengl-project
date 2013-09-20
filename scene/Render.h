@@ -29,8 +29,15 @@ public:
 	virtual ~Render();
 
 	void start();
+	void generateShadowFBO();
+	void setTextureMatrix();
 	void setLight();
 
+	void startTranslate(float,float,float);
+	void endTranslate();
+	void drawObjects();
+
+	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
 	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int );
@@ -42,7 +49,13 @@ public:
 	VertexBuffer vb;
 	GeometryLoader g;
 	Cube env;
-	Shader shader;
+
+	/*
+	 * shaders
+	 */
+	GLhandleARB program;
+	Shader vert;
+	Shader frag;
 
 	Tex *env_tex;
 
@@ -51,6 +64,19 @@ public:
 	DrawList *table;
 	DrawList *teapot;
 	DrawList *torus;
+
+
+	int shadowMapWidth;
+	int shadowMapHeight;
+
+	// Hold id of the framebuffer for light POV rendering
+	GLuint fboId;
+
+	// Z values will be rendered to this texture when using fboId framebuffer
+	GLuint depthTextureId;
+
+	GLuint shadowMapUniform;
+
 
 };
 

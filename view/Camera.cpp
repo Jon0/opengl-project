@@ -36,6 +36,8 @@ void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle.rotate( cam_angle_d );
 	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, (1 - tick.count() * 10) );
 
+	scene->prepare();
+
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

@@ -23,7 +23,6 @@ Scene::Scene(string filename):
 	playing = drag_bone = false;
 	selectedBone = -1;
 	clickx = clicky = 0;
-
 }
 
 void Scene::start() {
@@ -101,6 +100,10 @@ int Scene::mouseDragged( shared_ptr<ViewInterface> in, int x, int y ) {
 
 void Scene::keyPressed(unsigned char c) {
 
+}
+
+void Scene::prepare() {
+	// do nothing
 }
 
 void Scene::display( shared_ptr<ViewInterface> in, chrono::duration<double> tick ) {

@@ -15,7 +15,7 @@
 
 namespace std {
 
-Shader::Shader(char *filename) {
+Shader::Shader(const char *filename, GLenum type) {
 	// load the fragment shader.
 	fstream fragmentShaderFile(filename, std::ios::in);
 	string fragmentShaderSource;
@@ -25,38 +25,27 @@ Shader::Shader(char *filename) {
 		fragmentShaderSource = buffer.str();
 	}
 
-	GLuint fragmentShaderObject = glCreateShader(GL_FRAGMENT_SHADER);
+	ShaderHandle = glCreateShader(type);
 	const char *g = fragmentShaderSource.c_str();
-	glShaderSource(fragmentShaderObject, 1, &g, NULL);
-	glCompileShader(fragmentShaderObject);
+	glShaderSource(ShaderHandle, 1, &g, NULL);
+	glCompileShader(ShaderHandle);
 
 	//Error checking.
 	int result;
-	glGetShaderiv(fragmentShaderObject, GL_COMPILE_STATUS, &result);
+	glGetShaderiv(ShaderHandle, GL_COMPILE_STATUS, &result);
 	if (!result)
 	{
 		GLint blen = 0;
 		GLsizei slen = 0;
-		glGetShaderiv(fragmentShaderObject, GL_INFO_LOG_LENGTH , &blen);
+		glGetShaderiv(ShaderHandle, GL_INFO_LOG_LENGTH , &blen);
 		if (blen > 1)
 		{
 		 GLchar* compiler_log = (GLchar*)malloc(blen);
-		 glGetInfoLogARB(fragmentShaderObject, blen, &slen, compiler_log);
+		 glGetInfoLogARB(ShaderHandle, blen, &slen, compiler_log);
 		 cout << filename  << " compiler_log " << ":\n" << compiler_log;
 		 free (compiler_log);
 		}
 	}
-
-
-	//Create a program handle.
-	program = glCreateProgram();
-
-	//Attach the shaders. Here, assume that fragmentHandle is a handle to a fragment shader object,
-	//and that vertexHandle is a handle to a vertex shader object.
-	glAttachShader(program, fragmentShaderObject);
-
-	//Link the program.
-	glLinkProgram(program);
 }
 
 Shader::~Shader() {

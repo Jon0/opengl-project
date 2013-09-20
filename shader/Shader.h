@@ -12,8 +12,8 @@ namespace std {
 
 class Shader {
 public:
-	GLhandleARB program;
-	Shader(char *);
+	GLuint ShaderHandle;
+	Shader(const char *, GLenum);
 	virtual ~Shader();
 };
 

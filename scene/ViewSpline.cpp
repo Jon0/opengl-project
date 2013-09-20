@@ -55,6 +55,10 @@ int ViewSpline::mouseDragged(shared_ptr<ViewInterface> v, int x, int y) {
 	return 0;
 }
 
+void ViewSpline::prepare() {
+	// do nothing
+}
+
 void ViewSpline::display(shared_ptr<ViewInterface> v, chrono::duration<double> tick) {
 	if (play) {
 		time += tick * 10;

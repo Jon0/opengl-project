@@ -29,6 +29,7 @@ public:
 	virtual ~ViewSpline();
 	void start();
 
+	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual int mouseClicked(shared_ptr<ViewInterface>, int, int, int, int);
 	virtual int mouseDragged(shared_ptr<ViewInterface>, int x, int y);
