@@ -13,7 +13,8 @@ Render::Render():
 			mWnd{new MainWindow(800, 600, "Scene")},
 			vb(9),
 			g(),
-			env(400.0) {
+			env(400.0),
+			shader("shader/white.frag") {
 	mWnd->start();
 	env.init( &vb );
 	vb.store();
@@ -31,6 +32,8 @@ Render::Render():
 	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"), GL_TRIANGLES);
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	glUseProgramObjectARB(shader.program);
 }
 
 

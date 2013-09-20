@@ -14,6 +14,7 @@
 #include "../geometry/Cube.h"
 #include "../geometry/DrawList.h"
 #include "../load/GeometryLoader.h"
+#include "../shader/Shader.h"
 #include "../texture/Tex.h"
 #include "../view/Camera.h"
 #include "../window/MainWindow.h"
@@ -41,6 +42,7 @@ public:
 	VertexBuffer vb;
 	GeometryLoader g;
 	Cube env;
+	Shader shader;
 
 	Tex *env_tex;
 
