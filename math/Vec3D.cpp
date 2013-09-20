@@ -71,6 +71,19 @@ float Vec3D::length() const {
 	return sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
 }
 
+void Vec3D::setLength(float l) {
+	float m = l / length();
+	v[0] *= m;
+	v[1] *= m;
+	v[2] *= m;
+}
+
+void Vec3D::interpolate(Vec3D other, float percent) {
+	for (int i = 0; i < 3; ++i) {
+		v[i] += percent * (other.v[i] - v[i]);
+	}
+}
+
 Vec3D Vec3D::normalise() const {
 	float l = length();
 	if (l > 0) {
@@ -79,6 +92,20 @@ Vec3D Vec3D::normalise() const {
 	else {
 		return *this;
 	}
+}
+
+Vec3D &Vec3D::operator=(const float *vec) {
+	v[0] = vec[0];
+	v[1] = vec[1];
+	v[2] = vec[2];
+	return *this;
+}
+
+Vec3D &Vec3D::operator=(const Vec3D &vec) {
+	v[0] = vec.v[0];
+	v[1] = vec.v[1];
+	v[2] = vec.v[2];
+	return *this;
 }
 
 Vec3D operator+(const Vec3D &a, const Vec3D &b) {

@@ -19,6 +19,7 @@ public:
 	Vec3D(float *);
 	Vec3D(float, float, float);
 	virtual ~Vec3D();
+
 	float getDistance(const Vec3D&) const;
 	float getDistanceSq(const Vec3D &) const;
 	float getX() const;
@@ -27,8 +28,12 @@ public:
 	float dotproduct(Vec3D) const;
 	Vec3D crossProduct(Vec3D) const;
 	float length() const;
+	void setLength(float);
+	void interpolate(Vec3D other, float percent);
 	Vec3D normalise() const;
 
+	Vec3D &operator=(const float *vec);
+	Vec3D &operator=(const Vec3D &);
 	friend Vec3D operator+(const Vec3D&, const Vec3D&);
 	friend Vec3D operator-(const Vec3D&, const Vec3D&);
 	friend Vec3D operator*(const Vec3D&, const float&);

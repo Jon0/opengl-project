@@ -84,8 +84,6 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, shared_ptr<Sk
 	trim(&start);
 
 	// match name in array
-
-
 	bone *b = skeleton->getBone(n);
 	if (b) {
 

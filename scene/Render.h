@@ -10,8 +10,11 @@
 
 #include <memory>
 #include "SceneInterface.h"
+#include "../buffer/VertexBuffer.h"
+#include "../geometry/Cube.h"
 #include "../geometry/DrawList.h"
 #include "../load/GeometryLoader.h"
+#include "../texture/Tex.h"
 #include "../view/Camera.h"
 #include "../window/MainWindow.h"
 
@@ -35,14 +38,18 @@ public:
 
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
-
+	VertexBuffer vb;
 	GeometryLoader g;
+	Cube env;
+
+	Tex *env_tex;
 
 	DrawList *box;
 	DrawList *bunny;
 	DrawList *table;
 	DrawList *teapot;
 	DrawList *torus;
+
 };
 
 } /* namespace std */
