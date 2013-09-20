@@ -10,7 +10,8 @@
 
 #include <memory>
 #include "SceneInterface.h"
-#include "../load/G308Geometry.h"
+#include "../geometry/DrawList.h"
+#include "../load/GeometryLoader.h"
 #include "../view/Camera.h"
 #include "../window/MainWindow.h"
 
@@ -21,8 +22,10 @@ class Render:
 		public SceneInterface {
 public:
 	Render();
-	void start();
 	virtual ~Render();
+
+	void start();
+	void setLight();
 
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
@@ -33,9 +36,13 @@ public:
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
 
-	G308_Geometry *g;
+	GeometryLoader g;
 
-	vector<GLpolygon> shape;
+	DrawList *box;
+	DrawList *bunny;
+	DrawList *table;
+	DrawList *teapot;
+	DrawList *torus;
 };
 
 } /* namespace std */

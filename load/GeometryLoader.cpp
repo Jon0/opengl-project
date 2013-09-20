@@ -1,17 +1,9 @@
-//---------------------------------------------------------------------------
-//
-// Copyright (c) 2012 Taehyun Rhee
-//
-// This software is provided 'as-is' for assignment of COMP308
-// in ECS, Victoria University of Wellington,
-// without any express or implied warranty.
-// In no event will the authors be held liable for any
-// damages arising from the use of this software.
-//
-// The contents of this file may not be copied or duplicated in any form
-// without the prior permission of its owner.
-//
-//----------------------------------------------------------------------------
+/*
+ * GeometryLoader.cpp
+ *
+ *  Created on: 1/09/2013
+ *      Author: remnanjona
+ */
 
 #include <iostream>
 #include <fstream>
@@ -20,20 +12,20 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "LineTokenizer.h"
-#include "G308Geometry.h"
+#include "GeometryLoader.h"
 
 using namespace std;
 
-G308_Geometry::G308_Geometry() {}
+GeometryLoader::GeometryLoader() {}
 
-G308_Geometry::~G308_Geometry() {}
+GeometryLoader::~GeometryLoader() {}
 
 //-------------------------------------------------------
 // This function read obj file having
 // triangle faces consist of vertex v, texture coordinate vt, and normal vn
 // e.g. f v1/vt1/vn1 v2/vt1/vn2 v3/vt3/vn3
 //--------------------------------------------------------
-vector<GLpolygon> G308_Geometry::readOBJ(const char *filename) {
+vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 	ifstream fs(filename);
 	if (fs == NULL)
 			printf("Error reading %s file\n", filename);
@@ -106,21 +98,29 @@ vector<GLpolygon> G308_Geometry::readOBJ(const char *filename) {
 		break;
 		default:
 			fs.ignore(200, '\n');
+			break;
 		}
 	}
-	//TODO close file
+
+	/*
+	 * close file
+	 */
+	fs.close();
+
 	if (normals.empty()) {
+		printf("Calculate Normals\n");
 		normals = CreateNormals(triangles, points);
 	}
 
+	/* copy data to a usable type */
 	vector<GLpolygon> polys;
 	for (auto &pl: triangles) {
 		GLpolygon gpl;
 		for (auto &vt: pl) {
 			GLvertex gvt {};
-			gvt.p = points.data()[vt.p];
-			gvt.c = uvcoords.data()[vt.c];
-			gvt.n = normals.data()[vt.n];
+			if (vt.p >= 0) gvt.p = points.data()[vt.p];
+			if (vt.c >= 0) gvt.c = uvcoords.data()[vt.c];
+			if (vt.n >= 0) gvt.n = normals.data()[vt.n];
 			gpl.push_back(gvt);
 		}
 		polys.push_back(gpl);
@@ -133,12 +133,12 @@ vector<GLpolygon> G308_Geometry::readOBJ(const char *filename) {
 
 
 // TODO integrate into main parsing, since indexs are lost
-vector<GLnormal> G308_Geometry::CreateNormals(vector<OBJpolygon> polys, vector<GLpoint> points) {
+vector<GLnormal> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<GLpoint> points) {
 
 	/* construct array initialise to size of verts */
 	vector<GLnormal> m_pNormalArray( points.size() );
 
-	/* u will be v2 - v1, v will be v3 - v1 used in cross pruducts */
+	/* u will be v2 - v1, v will be v3 - v1 used in cross products */
 	GLnormal u, v;
 	float *uf = (float *) &u, *vf = (float *) &v;
 

@@ -11,29 +11,9 @@
 #include <vector>
 #include <fstream>
 #include <GL/glut.h>
+#include "../geometry/Drawable.h"
 
 namespace std {
-
-struct GLpoint {
-	float x;
-	float y;
-	float z;
-};
-
-typedef GLpoint GLnormal;
-
-struct GLuvcoord {
-	float u;
-	float v;
-};
-
-struct GLvertex {
-	GLpoint p;
-	GLnormal n;
-	GLuvcoord c;
-};
-
-typedef vector<GLvertex> GLpolygon;
 
 struct OBJvertex {
 	int p, n, c;
@@ -41,11 +21,11 @@ struct OBJvertex {
 
 typedef vector<OBJvertex> OBJpolygon;
 
-class G308_Geometry
+class GeometryLoader
 {
 public:
-	G308_Geometry(void);
-	~G308_Geometry(void);
+	GeometryLoader(void);
+	~GeometryLoader(void);
 
 	vector<GLpolygon> readOBJ(const char* filename);
 	vector<GLnormal> CreateNormals(vector<OBJpolygon>, vector<GLpoint>);

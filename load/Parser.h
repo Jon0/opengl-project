@@ -33,7 +33,7 @@ public:
 	}
 
 	void getLineTokens(ifstream &file) {
-		//root.other;
+
 	}
 };
 

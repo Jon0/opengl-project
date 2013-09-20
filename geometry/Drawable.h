@@ -8,7 +8,30 @@
 #ifndef DRAWABLE_H_
 #define DRAWABLE_H_
 
+#include <vector>
+
 namespace std {
+
+struct GLpoint {
+	float x;
+	float y;
+	float z;
+};
+
+typedef GLpoint GLnormal;
+
+struct GLuvcoord {
+	float u;
+	float v;
+};
+
+struct GLvertex {
+	GLpoint p;
+	GLnormal n;
+	GLuvcoord c;
+};
+
+typedef vector<GLvertex> GLpolygon;
 
 class Drawable {
 public:

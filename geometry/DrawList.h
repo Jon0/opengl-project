@@ -8,12 +8,20 @@
 #ifndef DRAWLIST_H_
 #define DRAWLIST_H_
 
+#include <GL/glut.h>
+#include "Drawable.h"
+
 namespace std {
 
-class DrawList {
+class DrawList: public Drawable {
 public:
-	DrawList();
+	DrawList(vector<GLpolygon>, GLenum drawMode);
 	virtual ~DrawList();
+
+	virtual void display();
+	virtual int selectMouse(int, int);
+
+	int m_glGeomListPoly;
 };
 
 } /* namespace std */
