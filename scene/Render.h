@@ -13,6 +13,7 @@
 #include "../buffer/VertexBuffer.h"
 #include "../geometry/Cube.h"
 #include "../geometry/DrawList.h"
+#include "../lighting/LightingModel.h"
 #include "../load/GeometryLoader.h"
 #include "../shader/Shader.h"
 #include "../texture/Tex.h"
@@ -29,12 +30,7 @@ public:
 	virtual ~Render();
 
 	void start();
-	void generateShadowFBO();
-	void setTextureMatrix();
-	void setLight();
 
-	void startTranslate(float,float,float);
-	void endTranslate();
 	void drawObjects();
 
 	virtual void prepare();
@@ -46,16 +42,10 @@ public:
 
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
+	LightingModel lighting;
 	VertexBuffer vb;
 	GeometryLoader g;
 	Cube env;
-
-	/*
-	 * shaders
-	 */
-	GLhandleARB program;
-	Shader vert;
-	Shader frag;
 
 	Tex *env_tex;
 
@@ -64,19 +54,6 @@ public:
 	DrawList *table;
 	DrawList *teapot;
 	DrawList *torus;
-
-
-	int shadowMapWidth;
-	int shadowMapHeight;
-
-	// Hold id of the framebuffer for light POV rendering
-	GLuint fboId;
-
-	// Z values will be rendered to this texture when using fboId framebuffer
-	GLuint depthTextureId;
-
-	GLuint shadowMapUniform;
-
 
 };
 

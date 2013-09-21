@@ -8,6 +8,8 @@
 #ifndef SHADER_H_
 #define SHADER_H_
 
+#include <GL/gl.h>
+
 namespace std {
 
 class Shader {
