@@ -236,10 +236,6 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 		Basis b = textureBasis(&v1, &v2, &v3);
 		for ( int &k: index.data()[i] ) {
 			basisArray.data()[k] += b;
-
-			if (!poly.data()[k].basis)
-			cout << k << ", " << poly.data()[k].basis << endl;
-			poly.data()[k].basis = new Basis();
 		}
 	}
 
@@ -248,29 +244,13 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 		basis.normalise();
 	}
 
-	cout << "hello1" << endl;
-
 	// final assignment of basis
 	for (unsigned int i = 0; i < polys.size(); ++i) {
-		//cout << "i = " << i << " / " << polys.size() << " -- " << index.size() << endl;
 		GPolygon poly = polys.data()[i];
-
-
-		for (unsigned int j = 0; j < 1; ++j) {
+		for (unsigned int j = 0; j < poly.size(); ++j) {
 			int offset = index.data()[i].data()[j];
-
-			//cout << "off = " << offset << " / " << poly.size() << endl;
-
-			//cout << poly.data()[offset].e[UV].length() << endl;
-			//poly.data()[offset].b = Basis();
-					//basisArray.data()[offset];
+			poly.data()[j].basis = basisArray.data()[offset];
 		}
-
-
-		//for ( int k: index.data()[i] ) {
-		//	if (k < 10000)
-		//	cout << "k = " << k << " / " << index.data()[i].size() << endl;
-		//}
 	}
 
 }
