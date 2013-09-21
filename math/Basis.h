@@ -20,6 +20,11 @@ public:
 	Basis();
 	Basis(Vec3D a, Vec3D b, Vec3D c);
 	virtual ~Basis();
+
+	void normalise();
+
+	Basis &operator=(const Basis &);
+	Basis &operator+=(const Basis &);
 };
 
 Basis textureBasis( GVertex *primary, GVertex *a, GVertex *b );

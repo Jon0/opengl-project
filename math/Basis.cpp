@@ -10,7 +10,7 @@
 
 namespace std {
 
-Basis::Basis() {}
+Basis::Basis(): v() {}
 
 Basis::Basis(Vec3D a, Vec3D b, Vec3D c) {
 	v[0] = a;
@@ -20,6 +20,26 @@ Basis::Basis(Vec3D a, Vec3D b, Vec3D c) {
 
 Basis::~Basis() {
 	// TODO Auto-generated destructor stub
+}
+
+void Basis::normalise() {
+	v[0].normalise();
+	v[1].normalise();
+	v[2].normalise();
+}
+
+Basis &Basis::operator=(const Basis &b) {
+	v[0] = b.v[0];
+	v[1] = b.v[1];
+	v[2] = b.v[2];
+	return *this;
+}
+
+Basis &Basis::operator+=(const Basis &b) {
+	v[0] = v[0] + b.v[0];
+	v[1] = v[1] + b.v[1];
+	v[2] = v[2] + b.v[2];
+	return *this;
 }
 
 Basis textureBasis( GVertex *primary, GVertex *a, GVertex *b ) {

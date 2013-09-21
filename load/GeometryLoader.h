@@ -29,7 +29,7 @@ public:
 
 	vector<GPolygon> readOBJ(const char* filename);
 	vector<Vec3D> CreateNormals(vector<OBJpolygon>, vector<Vec3D>);
-	vector<Basis> CreateBasis(vector<OBJpolygon>, vector<Vec3D>, vector<Vec3D>);
+	void CreateBasis(vector<GPolygon> polys, int, vector<vector<int>>);
 };
 
 } /* namespace std */

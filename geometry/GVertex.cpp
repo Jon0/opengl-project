@@ -12,20 +12,25 @@
 
 namespace std {
 
-GVertex::GVertex() {}
+GVertex::GVertex(): e() {
+	basis = new Basis();
+}
 
 GVertex::GVertex( Vec3D d ) {
 	e[POS] = d;
+	basis = new Basis();
 }
 
 GVertex::GVertex(float a, float b, float c) {
 	setPos(a, b, c);
+	basis = new Basis();
 }
 
 GVertex::GVertex(float a, float b, float c, float na, float nb, float nc, float ta, float tb, float tc) {
 	setPos(a, b, c);
 	setNormal(na, nb, nc);
 	setTexCoord(ta, tb, tc);
+	basis = new Basis();
 }
 
 float GVertex::getX() {

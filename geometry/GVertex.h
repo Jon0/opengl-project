@@ -20,7 +20,7 @@ namespace std {
 class GVertex {
 public:
 	Vec3D e[3];
-	Basis b;
+	Basis *basis;
 
 	GVertex();
 	GVertex( Vec3D d );
