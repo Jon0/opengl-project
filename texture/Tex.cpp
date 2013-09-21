@@ -10,6 +10,8 @@
 #include <string>
 #include <stdio.h>
 #include <iostream>
+#include <png.h>
+#include <jpeglib.h>
 #include "../load/LineTokenizer.h"
 #include "Tex.h"
 

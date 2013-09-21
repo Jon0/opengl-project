@@ -43,16 +43,13 @@ Render::Render():
 	cout << r << endl;
 	cout << s << endl;
 
-
-
-
 	shadowMapWidth = 800 * 2;
 	shadowMapHeight = 600 * 2;
 	generateShadowFBO();
 
 	glEnable(GL_CULL_FACE);
 
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	//Create a program handle.
 	program = glCreateProgram();
@@ -178,7 +175,7 @@ void Render::startTranslate(float x,float y,float z)
 	glTranslatef(x,y,z);
 
 	glMatrixMode(GL_TEXTURE);
-	glActiveTextureARB(GL_TEXTURE7);
+	glActiveTexture(GL_TEXTURE7);
 	glPushMatrix();
 	glTranslatef(x,y,z);
 }
@@ -265,18 +262,26 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+
+	glMatrixMode(GL_TEXTURE);
+		glActiveTexture(GL_TEXTURE0);
+
+		glLoadIdentity();
+
+
+		// Go back to normal matrix mode
+		glMatrixMode(GL_MODELVIEW);
+
 	/*
 	 * draw sky without lighting
 	 */
 	glDisable(GL_LIGHTING);
 	glDisable(GL_COLOR_MATERIAL);
 
-
-
-
 	glColor3f(1.0f,1.0f,1.0f);
 	glEnable(GL_TEXTURE_CUBE_MAP);
 	glBindTexture( GL_TEXTURE_CUBE_MAP, env_tex->getAddr() );
+	glActiveTexture(GL_TEXTURE0);
 	env.draw();
 	glDisable(GL_TEXTURE_CUBE_MAP);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
