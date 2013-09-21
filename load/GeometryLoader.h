@@ -11,12 +11,12 @@
 #include <vector>
 #include <fstream>
 #include <GL/glut.h>
-#include "../geometry/Drawable.h"
+#include "../geometry/GVertex.h"
 
 namespace std {
 
 struct OBJvertex {
-	int p, n, c;
+	int p, n, c, b;
 };
 
 typedef vector<OBJvertex> OBJpolygon;
@@ -27,8 +27,9 @@ public:
 	GeometryLoader(void);
 	~GeometryLoader(void);
 
-	vector<GLpolygon> readOBJ(const char* filename);
-	vector<GLnormal> CreateNormals(vector<OBJpolygon>, vector<GLpoint>);
+	vector<GPolygon> readOBJ(const char* filename);
+	vector<Vec3D> CreateNormals(vector<OBJpolygon>, vector<Vec3D>);
+	vector<Basis> CreateBasis(vector<OBJpolygon>, vector<Vec3D>, vector<Vec3D>);
 };
 
 } /* namespace std */

@@ -25,7 +25,7 @@ GeometryLoader::~GeometryLoader() {}
 // triangle faces consist of vertex v, texture coordinate vt, and normal vn
 // e.g. f v1/vt1/vn1 v2/vt1/vn2 v3/vt3/vn3
 //--------------------------------------------------------
-vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
+vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	ifstream fs(filename);
 	if (fs == NULL)
 			printf("Error reading %s file\n", filename);
@@ -33,9 +33,10 @@ vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 			printf("Reading %s file\n", filename);
 	fs.seekg(0, ios::beg);
 
-	vector<GLpoint> points;
-	vector<GLnormal> normals;
-	vector<GLuvcoord> uvcoords;
+	vector<Vec3D> points;
+	vector<Vec3D> normals;
+	vector<Vec3D> uvcoords;
+	vector<Basis> textureb;
 	vector<OBJpolygon> triangles;
 
 	//-----------------------------------------------------------
@@ -49,16 +50,16 @@ vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 		case 'v': {	/* vertex, uv, normal */
 			fs.get(vmode);
 			if (vmode == 't') {			// uv coordinate
-				GLuvcoord uv;
-				fs >> uv.u >> uv.v;
+				Vec3D uv;
+				fs >> uv.v[0] >> uv.v[1];
 				uvcoords.push_back(uv);
 			} else if (vmode == 'n') {	// normal
-				GLnormal n;
-				fs >> n.x >> n.y >> n.z;
+				Vec3D n;
+				fs >> n.v[0] >> n.v[1] >> n.v[2];
 				normals.push_back(n);
 			} else if (vmode == ' ') {	// vertex
-				GLpoint p;
-				fs >> p.x >> p.y >> p.z;
+				Vec3D p;
+				fs >> p.v[0] >> p.v[1] >> p.v[2];
 				points.push_back(p);
 			}
 			fs.ignore(200, '\n');
@@ -75,6 +76,8 @@ vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 				OBJvertex vertex{};
 				vector<string> part = stringSplit(vt, "/");
 
+				/* basis isnt loaded directly */
+				vertex.b = -1;
 				vertex.p = atoi(part[0].c_str()) - 1;
 				if (part.size() == 2) {
 					vertex.c = atoi(part[1].c_str()) - 1;
@@ -112,15 +115,19 @@ vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 		normals = CreateNormals(triangles, points);
 	}
 
+	//textureb = CreateBasis(triangles, points, uvcoords);
+
+
 	/* copy data to a usable type */
-	vector<GLpolygon> polys;
+	vector<GPolygon> polys;
 	for (auto &pl: triangles) {
-		GLpolygon gpl;
+		GPolygon gpl;
 		for (auto &vt: pl) {
-			GLvertex gvt {};
-			if (vt.p >= 0) gvt.p = points.data()[vt.p];
-			if (vt.c >= 0) gvt.c = uvcoords.data()[vt.c];
-			if (vt.n >= 0) gvt.n = normals.data()[vt.n];
+			GVertex gvt;
+			if (vt.p >= 0) gvt.e[POS] = points.data()[vt.p];
+			if (vt.c >= 0) gvt.e[UV] = uvcoords.data()[vt.c];
+			if (vt.n >= 0) gvt.e[NORM] = normals.data()[vt.n];
+			if (vt.b >= 0) gvt.b = textureb.data()[vt.b];
 			gpl.push_back(gvt);
 		}
 		polys.push_back(gpl);
@@ -133,13 +140,13 @@ vector<GLpolygon> GeometryLoader::readOBJ(const char *filename) {
 
 
 // TODO integrate into main parsing, since indexs are lost
-vector<GLnormal> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<GLpoint> points) {
+vector<Vec3D> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<Vec3D> points) {
 
 	/* construct array initialise to size of verts */
-	vector<GLnormal> m_pNormalArray( points.size() );
+	vector<Vec3D> m_pNormalArray( points.size() );
 
 	/* u will be v2 - v1, v will be v3 - v1 used in cross products */
-	GLnormal u, v;
+	Vec3D u, v;
 	float *uf = (float *) &u, *vf = (float *) &v;
 
 
@@ -147,9 +154,9 @@ vector<GLnormal> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<
 		OBJpolygon poly = polys.data()[i];
 
 		// get address of vertices this triangle uses
-		GLpoint v1 = points.data()[poly.data()[0].p];
-		GLpoint v2 = points.data()[poly.data()[1].p];
-		GLpoint v3 = points.data()[poly.data()[2].p];
+		Vec3D v1 = points.data()[poly.data()[0].p];
+		Vec3D v2 = points.data()[poly.data()[1].p];
+		Vec3D v3 = points.data()[poly.data()[2].p];
 
 		// u = v2 - v1 and v = v3 - v1
 		for (int a = 0; a < 3; ++a) {
@@ -180,6 +187,26 @@ vector<GLnormal> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<
 		}
 	}
 	return m_pNormalArray;
+}
+
+vector<Basis> GeometryLoader::CreateBasis(vector<OBJpolygon> polys, vector<Vec3D> points, vector<Vec3D> uvs) {
+	/* construct array initialise to size of verts */
+	vector<Basis> basisArray( points.size() );
+	for (unsigned int i = 0; i < polys.size(); ++i) {
+		OBJpolygon poly = polys.data()[i];
+
+		// get address of vertices this triangle uses
+		Vec3D v1 = points.data()[poly.data()[0].p];
+		Vec3D v2 = points.data()[poly.data()[1].p];
+		Vec3D v3 = points.data()[poly.data()[2].p];
+
+		// get address of vertices this triangle uses
+		Vec3D uv1 = uvs.data()[poly.data()[0].c];
+		Vec3D uv2 = uvs.data()[poly.data()[1].c];
+		Vec3D uv3 = uvs.data()[poly.data()[2].c];
+
+	}
+	return basisArray;
 }
 
 

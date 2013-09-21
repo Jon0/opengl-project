@@ -127,29 +127,6 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	lighting.setLight();
 
 	drawObjects();
-
-	/*glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-800.0 / 2, 800.0 / 2, -600.0 / 2, 600.0 / 2, 1, 20);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glColor4f(1, 1, 1, 1);
-	glActiveTextureARB(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId);
-	glEnable(GL_TEXTURE_2D);
-	glTranslated(0, 0, -1);
-	glBegin(GL_QUADS);
-	glTexCoord2d(0, 0);
-	glVertex3f(0, 0, 0);
-	glTexCoord2d(1, 0);
-	glVertex3f(800.0 / 2, 0, 0);
-	glTexCoord2d(1, 1);
-	glVertex3f(800.0 / 2, 600.0 / 2, 0);
-	glTexCoord2d(0, 1);
-	glVertex3f(0, 600.0 / 2, 0);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);*/
 }
 
 int Render::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {

@@ -10,12 +10,13 @@
 
 #include <GL/glut.h>
 #include "Drawable.h"
+#include "GVertex.h"
 
 namespace std {
 
 class DrawList: public Drawable {
 public:
-	DrawList(vector<GLpolygon>, GLenum drawMode);
+	DrawList(vector<GPolygon>, GLenum drawMode);
 	virtual ~DrawList();
 
 	virtual void display();

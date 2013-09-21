@@ -9,7 +9,7 @@
 
 namespace std {
 
-DrawList::DrawList(vector<GLpolygon> shape, GLenum drawMode) {
+DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 
 	// Assign a display list; return 0 if err
 	m_glGeomListPoly = glGenLists(1);
@@ -21,8 +21,12 @@ DrawList::DrawList(vector<GLpolygon> shape, GLenum drawMode) {
 	glBegin(drawMode);
 	for (unsigned int i = 0; i < shape.size(); ++i) {
 		for (unsigned int v = 0; v < shape[i].size(); ++v) {
-			glNormal3fv((float *)&shape[i][v].n);
-			glVertex3fv((float *)&shape[i][v].p);
+			float *uv = shape[i][v].getTexCoord().v;
+			float *norm = shape[i][v].getNormal().v;
+			float *pos = shape[i][v].getPosition().v;
+			glTexCoord3fv(uv);
+			glNormal3fv(norm);
+			glVertex3fv(pos);
 		}
 	}
 	glEnd();

@@ -17,7 +17,7 @@ Cube::Cube(float s) {
 }
 
 void Cube::init(VertexBuffer *vb) {
-	vector<V3D> verts;
+	vector<GVertex> verts;
 	verts.push_back({-size,-size,-size, -0.577,-0.577,-0.577, 1,1,1});
 	verts.push_back({size,-size,-size, 0.577,-0.577,-0.577, -1,1,1});
 	verts.push_back({size,-size,size, 0.577,-0.577,0.577, -1,1,-1});

@@ -10,18 +10,18 @@
 
 #include <vector>
 #include <GL/glut.h>
-#include "V3D.h"
+#include "../geometry/GVertex.h"
 
 namespace std {
 
 class VertexBuffer {
 	int stride;
 	GLuint vb;
-	vector<V3D> vert;
+	vector<GVertex> vert;
 public:
 	VertexBuffer(int);
 	GLuint addr();
-	long add( vector<V3D> & );
+	long add( vector<GVertex> & );
 	void store();
 	virtual ~VertexBuffer();
 };

@@ -8,7 +8,8 @@
 #ifndef V3D_H_
 #define V3D_H_
 
-#include "../math/Vec3D.h"
+#include <vector>
+#include "../math/Basis.h"
 
 #define POS 0
 #define NORM 1
@@ -16,13 +17,16 @@
 
 namespace std {
 
-class V3D {
+class GVertex {
 public:
 	Vec3D e[3];
+	Basis b;
 
-	V3D( Vec3D d );
-	V3D(float, float, float);
-	V3D(float, float, float, float, float, float, float, float, float);
+	GVertex();
+	GVertex( Vec3D d );
+	GVertex(float, float, float);
+	GVertex(float, float, float, float, float, float, float, float, float);
+	virtual ~GVertex();
 
 	float getX();
 	float getY();
@@ -39,27 +43,11 @@ public:
 	void setNormal( float * );
 	void setTexCoord( float * );
 
-	void add(V3D *other);
-	void sub(V3D *other);
-	float length();
-
-	/**
-	 * modifies the length, but maintains the direction
-	 */
-	void setLength(float);
-
-	float distance(V3D *);
-
-	void interpolate(V3D *other, float percent);
-
-	float dot( V3D *other);
-	float dot( float, float, float );
-	float *cross( float * );
-
 	void toArray( float *array, int offset );
 	void print();
-	virtual ~V3D();
 };
+
+typedef vector<GVertex> GPolygon;
 
 } /* namespace std */
 #endif /* V3D_H_ */
