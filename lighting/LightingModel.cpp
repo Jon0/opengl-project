@@ -174,7 +174,7 @@ void LightingModel::prepareShadow() {
 
 void LightingModel::setLight() {
 	// set lighting
-
+	GLfloat lightPos[] = { -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f };
 	GLfloat lightColorDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	//GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat lightColorAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };

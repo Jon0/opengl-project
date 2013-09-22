@@ -27,13 +27,19 @@ Render::Render():
 	env_tex->make3DTex("assets/image/sky2.png");
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	box = new DrawList(g.readOBJ("assets/obj/Box.obj"), GL_TRIANGLES);
-	bunny = new DrawList(g.readOBJ("assets/obj/Bunny.obj"), GL_TRIANGLES);
-	table = new DrawList(g.readOBJ("assets/obj/Table.obj"), GL_TRIANGLES);
-	teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"), GL_TRIANGLES);
-	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"), GL_TRIANGLES);
+	box = new DrawList(g.readOBJ("assets/obj/Box.obj"));
+	bunny = new DrawList(g.readOBJ("assets/obj/Bunny.obj"));
+	table = new DrawList(g.readOBJ("assets/obj/Table.obj"));
+	teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"));
+	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"));
 
+	torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
 
+	box->compile(GL_TRIANGLES);
+	bunny->compile(GL_TRIANGLES);
+	table->compile(GL_TRIANGLES);
+	teapot->compile(GL_TRIANGLES);
+	torus->compile(GL_TRIANGLES);
 
 	/* versions */
 	cout << glGetString(GL_VENDOR) << endl;
@@ -73,26 +79,26 @@ void Render::drawObjects() {
 }
 
 void Render::prepare() {
-	lighting.prepareShadow();
+	//lighting.prepareShadow();
 
-	drawObjects();
+	//drawObjects();
 
 	//Save modelview/projection matrice into texture7, also add a bias
-	lighting.setTextureMatrix();
+	//lighting.setTextureMatrix();
 }
 
 void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	// Now rendering from the camera POV, using the FBO to generate shadows
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
+	//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
 
-	glViewport(0, 0, 800, 600);
+	//glViewport(0, 0, 800, 600);
 
 	//Enabling color write (previously disabled for light POV z-buffer rendering)
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 
-	glUseProgram(0);
+	//glUseProgram(0);
 
 	//glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
 	//glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices

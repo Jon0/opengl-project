@@ -17,13 +17,14 @@ namespace std {
 
 class DrawList: public Drawable {
 public:
-	DrawList(vector<GPolygon>, GLenum);
+	DrawList( vector<GPolygon> );
 	virtual ~DrawList();
 
 	virtual void display();
-	virtual int selectMouse(int, int);
+	virtual int selectMouse( int, int );
 
-	void setBumpMap(const char *, const char *, GLuint);
+	void compile( GLenum );
+	void setBumpMap( const char *, const char *, GLuint );
 	void setupBump();
 
 	unsigned int s;
