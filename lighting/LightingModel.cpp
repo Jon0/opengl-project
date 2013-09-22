@@ -15,7 +15,7 @@
 namespace std {
 
 LightingModel::LightingModel():
-		lightPos{ -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f },
+		lightPos{ -7.5f * 10, 2.0f * 10, -6.5f * 10, 0.0f },
 		vert("shader/bump.vert", GL_VERTEX_SHADER),
 		frag("shader/bump.frag", GL_FRAGMENT_SHADER) {
 
@@ -168,8 +168,6 @@ void LightingModel::prepareShadow() {
 
 	// Culling switching, rendering only backface, this is done to avoid self-shadowing
 	glCullFace(GL_FRONT);
-
-
 }
 
 void LightingModel::setLight() {
@@ -200,13 +198,10 @@ void LightingModel::setLight() {
 	glBindTexture(GL_TEXTURE_2D, depthTextureId);
 
 	// setup bump mapping
-	GLint viewport[4];
 	GLfloat modelview[16];
 	GLfloat projection[16];
 	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
 	glGetFloatv( GL_PROJECTION_MATRIX, projection );
-	glGetIntegerv( GL_VIEWPORT, viewport );
-
 
 	glm::mat4 ProjectionMatrix = glm::make_mat4(projection);
 	glm::mat4 ViewMatrix = glm::make_mat4(modelview);
