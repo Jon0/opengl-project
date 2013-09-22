@@ -104,9 +104,10 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	//glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
 	//glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
 	//glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_INDEX_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	/*
 	 * draw sky without lighting

@@ -106,7 +106,7 @@ void DrawList::compile(GLenum drawMode) {
 
 	/* settings */
 	//glEnable(GL_NORMALIZE);
-	glShadeModel(GL_SMOOTH);
+	//glShadeModel(GL_SMOOTH);
 
 	/*
 	 * draw the shape

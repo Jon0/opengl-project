@@ -188,14 +188,14 @@ void LightingModel::setLight() {
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, material_diffuse);
-
 	glEnable(GL_LIGHT0);
 
-	//Using the shadow shader
 	glUseProgram(program);
-	glUniform1i(shadowMapUniform, 7);
-	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId);
+
+	//Using the shadow shader
+	//glUniform1i(shadowMapUniform, 7);
+	//glActiveTexture(GL_TEXTURE7);
+	//glBindTexture(GL_TEXTURE_2D, depthTextureId);
 
 	// setup bump mapping
 	GLfloat modelview[16];
