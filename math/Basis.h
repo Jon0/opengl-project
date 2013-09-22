@@ -22,6 +22,7 @@ public:
 	virtual ~Basis();
 
 	void normalise();
+	void print();
 
 	Basis &operator=(const Basis &);
 	Basis &operator+=(const Basis &);

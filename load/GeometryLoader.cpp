@@ -36,12 +36,7 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	vector<Vec3D> points;
 	vector<Vec3D> normals;
 	vector<Vec3D> uvcoords;
-	vector<OBJpolygon> triangles;
-
 	vector<GPolygon> g_polys;
-
-	// point index -> number -> ...
-	vector<vector<GVertex *>> g_v;
 
 	// polygon -> number -> array position
 	vector<vector<int>> index;
@@ -72,8 +67,7 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 		}
 		break;
 		case 'f': {	/* faces */
-			OBJpolygon polygon {};
-			GPolygon plg {};
+			GPolygon plg;
 			vector<int> sub_index;
 			vector<string> g = getLineTokens(fs);
 			for (auto &vt: g) {
@@ -81,43 +75,26 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 				/*
 				 * read a vertex
 				 */
-				OBJvertex vertex;
 				GVertex vrt;
 				vector<string> part = stringSplit(vt, "/");
 
-				/* basis isnt loaded directly */
-				vertex.b = -1;
-
-
 				int index = atoi(part[0].c_str()) - 1;
-				vertex.p = index;
 				vrt.e[POS] = points.data()[index];
 
 				if (part.size() == 2) {
-					vertex.c = atoi(part[1].c_str()) - 1;
 					vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
-					vertex.n = -1;
 				}
 				else if (part.size() == 3) {
 					if (part[1].length() == 0) {
-						vertex.c = -1;
-						vertex.n = atoi(part[2].c_str()) - 1;
 						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
 					}
 					else {
-						vertex.c = atoi(part[1].c_str()) - 1;
 						vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
-						vertex.n = atoi(part[2].c_str()) - 1;
 						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
 					}
 				}
-
 				plg.push_back(vrt);
 				sub_index.push_back(index);
-				//g_v.data()[index].push_back( &plg.data()[plg.size() - 1] );
-
-				polygon.push_back(vertex);
-
 			}
 
 			/*
@@ -126,10 +103,6 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 			if (plg.size() > 2) {
 				g_polys.push_back(plg);
 				index.push_back( sub_index );
-			}
-
-			if (polygon.size() > 2) {
-				triangles.push_back(polygon);
 			}
 		}
 		break;
@@ -146,20 +119,6 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	//if (normals.empty()) {
 	//	printf("Calculate Normals\n");
 	//	normals = CreateNormals(triangles, points);
-	//}
-
-	/* copy data to a usable type */
-	//vector<GPolygon> polys;
-	//for (auto &pl: triangles) {
-	//	GPolygon gpl;
-	//	for (auto &vt: pl) {
-	//		GVertex gvt;
-	//		if (vt.p >= 0) gvt.e[POS] = points.data()[vt.p];
-	//		if (vt.c >= 0) gvt.e[UV] = uvcoords.data()[vt.c];
-	//		if (vt.n >= 0) gvt.e[NORM] = normals.data()[vt.n];
-	//		gpl.push_back(gvt);
-	//	}
-	//	polys.push_back(gpl);
 	//}
 
 	if (uvcoords.size() > 0) CreateBasis(g_polys, points.size(), index);
@@ -225,6 +184,8 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 	/* one basis per vertex */
 	vector<Basis> basisArray( size );
 
+	basisArray.data()[0].print();
+
 	for (unsigned int i = 0; i < polys.size(); ++i) {
 		GPolygon poly = polys.data()[i];
 
@@ -234,6 +195,10 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 		GVertex v3 = poly.data()[2];
 
 		Basis b = textureBasis(&v1, &v2, &v3);
+
+		b.print();
+
+
 		for ( int &k: index.data()[i] ) {
 			basisArray.data()[k] += b;
 		}

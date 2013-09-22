@@ -22,6 +22,8 @@ public:
 	virtual void display();
 	virtual int selectMouse(int, int);
 
+	void setBumpMap(const char *filename);
+
 	int m_glGeomListPoly;
 };
 

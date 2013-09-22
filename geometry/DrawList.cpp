@@ -10,13 +10,13 @@
 namespace std {
 
 DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
-
-
-	//float *t = new float(shape.size() * 3 * 3);
-	//float *b = new float(shape.size() * 3 * 3);
+	float *t = new float(shape.size() * 3 * 3);
+	float *b = new float(shape.size() * 3 * 3);
 
 	for (unsigned int i = 0; i < shape.size(); ++i) {
 		for (unsigned int v = 0; v < shape[i].size(); ++v) {
+			//shape.data()[i].data()[v].basis.print();
+
 			//t[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].basis.v[0].v[0];
 			//t[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].basis.v[0].v[1];
 			//t[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].basis.v[0].v[2];
@@ -77,6 +77,10 @@ void DrawList::display() {
 
 int DrawList::selectMouse(int, int) {
 	return false;
+}
+
+void setBumpMap(const char *filename) {
+	// TODO yeaaaaah
 }
 
 } /* namespace std */
