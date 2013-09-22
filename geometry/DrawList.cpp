@@ -11,12 +11,25 @@
 namespace std {
 
 DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
-	unsigned int s = shape.size();
+	s = shape.size();
+	float *p = new float [s * 3 * 3];
+	float *c = new float [s * 3 * 2];
+	float *n = new float [s * 3 * 3];
 	float *t = new float [s * 3 * 3];
 	float *b = new float [s * 3 * 3];
 
 	for (unsigned int i = 0; i < s; ++i) {
 		for (unsigned int v = 0; v < 3; ++v) {
+			p[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[POS].v[0];
+			p[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[POS].v[1];
+			p[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[POS].v[2];
+			c[i * 3 * 2 + v * 2 + 0] = shape.data()[i].data()[v].e[UV].v[0];
+			c[i * 3 * 2 + v * 2 + 1] = shape.data()[i].data()[v].e[UV].v[1];
+			n[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[NORM].v[0];
+			n[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[NORM].v[1];
+			n[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[NORM].v[2];
+
+
 			t[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].basis.v[0].v[0];
 			t[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].basis.v[0].v[1];
 			t[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].basis.v[0].v[2];
@@ -25,6 +38,18 @@ DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 			b[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].basis.v[1].v[2];
 		}
 	}
+
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, s * 3 * 3 * sizeof(float), p, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, s * 3 * 3 * sizeof(float), c, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, s * 3 * 2 * sizeof(float), n, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &tangentbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, tangentbuffer);
@@ -35,28 +60,59 @@ DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 	glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);
 	glBufferData(GL_ARRAY_BUFFER, s * 3 * 3 * sizeof(float), b, GL_STATIC_DRAW);
 
+	/* the order verticies get drawn */
+	std::vector<unsigned int> indices;
+	int off = 0;
+	for (unsigned int i = 0; i < shape.size(); ++i) {
+		for (unsigned int v = 0; v < shape[i].size(); ++v) {
+			indices.push_back(off);
+			off++;
+		}
+	}
+
+	// Generate a buffer for the indices
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+	/* default disable texturing */
 	diffuseTex = NULL;
 	normalTex = NULL;
+	DiffuseTextureID  = 0;
+	NormalTextureID  = 0;
+	SpecularTextureID = 0;
 
 	// Assign a display list; return 0 if err
 	m_glGeomListPoly = glGenLists(1);
 	glNewList(m_glGeomListPoly, GL_COMPILE);
 
+	/* settings */
+	//glEnable(GL_NORMALIZE);
+	glShadeModel(GL_SMOOTH);
+
 	/*
 	 * draw the shape
 	 */
-	glBegin(drawMode);
-	for (unsigned int i = 0; i < shape.size(); ++i) {
-		for (unsigned int v = 0; v < shape[i].size(); ++v) {
-			float *uv = shape[i][v].getTexCoord().v;
-			float *norm = shape[i][v].getNormal().v;
-			float *pos = shape[i][v].getPosition().v;
-			glTexCoord3fv(uv);
-			glNormal3fv(norm);
-			glVertex3fv(pos);
-		}
-	}
-	glEnd();
+	//glBegin(drawMode);
+	//for (unsigned int i = 0; i < shape.size(); ++i) {
+	//	for (unsigned int v = 0; v < shape[i].size(); ++v) {
+	//		float *uv = shape[i][v].getTexCoord().v;
+	//		float *norm = shape[i][v].getNormal().v;
+	//		float *pos = shape[i][v].getPosition().v;
+	//		glTexCoord3fv(uv);
+	//		glNormal3fv(norm);
+	//		glVertex3fv(pos);
+	//	}
+	//}
+	//glEnd();
+
+
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+	// Draw the triangles !
+	glDrawElements( drawMode, s, GL_UNSIGNED_SHORT, 0 );
+
 
 	glEndList();
 }
@@ -66,11 +122,13 @@ DrawList::~DrawList() {
 }
 
 void DrawList::display() {
-	//glEnable(GL_NORMALIZE);
-	glShadeModel(GL_SMOOTH);
+	//glCallList(m_glGeomListPoly);
 
-	/* draw */
-	glCallList(m_glGeomListPoly);
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+	// Draw the triangles !
+	glDrawElements( GL_TRIANGLES, s, GL_UNSIGNED_SHORT, 0 );
 }
 
 int DrawList::selectMouse(int, int) {

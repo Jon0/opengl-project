@@ -16,8 +16,8 @@ namespace std {
 
 LightingModel::LightingModel():
 		lightPos{ -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f },
-		vert("shader/shadow.vert", GL_VERTEX_SHADER),
-		frag("shader/shadow.frag", GL_FRAGMENT_SHADER) {
+		vert("shader/bump.vert", GL_VERTEX_SHADER),
+		frag("shader/bump.frag", GL_FRAGMENT_SHADER) {
 
 	shadowMapWidth = 800 * 3;
 	shadowMapHeight = 600 * 3;

@@ -94,27 +94,27 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 
 	glUseProgram(0);
 
-	glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
-	glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
-	glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
-	glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
+	//glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
+	//glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
+	//glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	/*
 	 * draw sky without lighting
 	 */
-	glDisable(GL_LIGHTING);
-	glDisable(GL_COLOR_MATERIAL);
+	//glDisable(GL_LIGHTING);
+	//glDisable(GL_COLOR_MATERIAL);
 
-	glColor3f(1.0f,1.0f,1.0f);
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_TEXTURE_CUBE_MAP);
-	glBindTexture( GL_TEXTURE_CUBE_MAP, env_tex->getAddr() );
-	env.draw();
-	glDisable(GL_TEXTURE_CUBE_MAP);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	//glColor3f(1.0f,1.0f,1.0f);
+	//glActiveTexture(GL_TEXTURE0);
+	//glEnable(GL_TEXTURE_CUBE_MAP);
+	//glBindTexture( GL_TEXTURE_CUBE_MAP, env_tex->getAddr() );
+	//env.draw();
+	//glDisable(GL_TEXTURE_CUBE_MAP);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);

@@ -26,17 +26,24 @@ public:
 	void setBumpMap(const char *, const char *, GLuint);
 	void setupBump();
 
+	unsigned int s;
+
+	/* Indices */
+	GLuint elementbuffer;
+
+	/* Buffers */
 	GLuint vertexbuffer;
 	GLuint uvbuffer;
 	GLuint normalbuffer;
 	GLuint tangentbuffer;
 	GLuint bitangentbuffer;
 
+	/* Draw List */
 	GLuint m_glGeomListPoly;
 
+	/* Textures */
 	Tex *diffuseTex;
 	Tex *normalTex;
-
 	GLuint DiffuseTextureID;
 	GLuint NormalTextureID;
 	GLuint SpecularTextureID;
