@@ -23,12 +23,13 @@ DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 			p[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[POS].v[0];
 			p[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[POS].v[1];
 			p[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[POS].v[2];
+
 			c[i * 3 * 2 + v * 2 + 0] = shape.data()[i].data()[v].e[UV].v[0];
 			c[i * 3 * 2 + v * 2 + 1] = shape.data()[i].data()[v].e[UV].v[1];
+
 			n[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[NORM].v[0];
 			n[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[NORM].v[1];
 			n[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[NORM].v[2];
-
 
 			t[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].basis.v[0].v[0];
 			t[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].basis.v[0].v[1];
@@ -64,7 +65,7 @@ DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 	std::vector<unsigned int> indices;
 	int off = 0;
 	for (unsigned int i = 0; i < shape.size(); ++i) {
-		for (unsigned int v = 0; v < shape[i].size(); ++v) {
+		for (unsigned int v = 0; v < 3; ++v) {
 			indices.push_back(off);
 			off++;
 		}
@@ -105,13 +106,14 @@ DrawList::DrawList(vector<GPolygon> shape, GLenum drawMode) {
 	//	}
 	//}
 	//glEnd();
+	setupBump();
 
 
 	// Index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 	// Draw the triangles !
-	glDrawElements( drawMode, s, GL_UNSIGNED_SHORT, 0 );
+	glDrawElements( drawMode, s, GL_UNSIGNED_INT, 0 );
 
 
 	glEndList();
@@ -122,13 +124,13 @@ DrawList::~DrawList() {
 }
 
 void DrawList::display() {
-	//glCallList(m_glGeomListPoly);
+	glCallList(m_glGeomListPoly);
 
 	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 	// Draw the triangles !
-	glDrawElements( GL_TRIANGLES, s, GL_UNSIGNED_SHORT, 0 );
+	//glDrawElements( GL_TRIANGLES, s, GL_UNSIGNED_SHORT, 0 );
 }
 
 int DrawList::selectMouse(int, int) {
@@ -148,16 +150,16 @@ void DrawList::setBumpMap(const char *diffuse, const char *bump, GLuint program)
 
 void DrawList::setupBump() {
 	// Bind our diffuse texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture( GL_TEXTURE_2D, diffuseTex->getAddr() );
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture( GL_TEXTURE_2D, diffuseTex->getAddr() );
 	// Set our "DiffuseTextureSampler" sampler to user Texture Unit 0
-	glUniform1i(DiffuseTextureID, 0);
+	//glUniform1i(DiffuseTextureID, 0);
 
 	// Bind our normal texture in Texture Unit 1
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture( GL_TEXTURE_2D, normalTex->getAddr() );
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture( GL_TEXTURE_2D, normalTex->getAddr() );
 	// Set our "Normal    TextureSampler" sampler to user Texture Unit 0
-	glUniform1i(NormalTextureID, 1);
+	//glUniform1i(NormalTextureID, 1);
 
 	// 1rst attribute buffer : vertices
 	glEnableVertexAttribArray(0);
