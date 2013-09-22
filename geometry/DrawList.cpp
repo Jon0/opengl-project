@@ -92,7 +92,16 @@ DrawList::~DrawList() {
 }
 
 void DrawList::display() {
-	glCallList(m_glGeomListPoly);
+	//glCallList(m_glGeomListPoly);
+
+	setupBump();
+
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+	// Draw the triangles !
+	glDrawElements( GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0 );
+
 }
 
 int DrawList::selectMouse(int, int) {
@@ -209,6 +218,7 @@ void DrawList::setupBump() {
 				(void*) 0                          // array buffer offset
 				);
 	}
+
 }
 
 } /* namespace std */

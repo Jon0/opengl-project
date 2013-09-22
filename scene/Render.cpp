@@ -33,7 +33,7 @@ Render::Render():
 	//teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"));
 	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"));
 
-	torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
+	//torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
 
 	//box->compile(GL_TRIANGLES);
 	//bunny->compile(GL_TRIANGLES);
@@ -104,10 +104,10 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	//glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
 	//glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
 	//glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
-	glEnableClientState(GL_INDEX_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glEnableClientState(GL_INDEX_ARRAY);
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	/*
 	 * draw sky without lighting
@@ -123,7 +123,6 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	//glDisable(GL_TEXTURE_CUBE_MAP);
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
