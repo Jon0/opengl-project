@@ -16,10 +16,12 @@ namespace std {
 class LightingModel {
 public:
 
+	GLfloat lightPos[4];
+
 	/*
 	 * shaders
 	 */
-	GLhandleARB program;
+	GLuint program;
 	Shader vert;
 	Shader frag;
 
@@ -32,7 +34,15 @@ public:
 	// Z values will be rendered to this texture when using fboId framebuffer
 	GLuint depthTextureId;
 
+	/*
+	 * uniforms
+	 */
 	GLuint shadowMapUniform;
+	GLuint LightID;
+	GLuint ModelView3x3MatrixID;
+    GLuint MatrixID;
+    GLuint ViewMatrixID;
+    GLuint ModelMatrixID;
 
 	LightingModel();
 	virtual ~LightingModel();

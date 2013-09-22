@@ -25,6 +25,7 @@ Render::Render():
 	 */
 	env_tex = new Tex();
 	env_tex->make3DTex("assets/image/sky2.png");
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	box = new DrawList(g.readOBJ("assets/obj/Box.obj"), GL_TRIANGLES);
 	bunny = new DrawList(g.readOBJ("assets/obj/Bunny.obj"), GL_TRIANGLES);
@@ -32,18 +33,13 @@ Render::Render():
 	teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"), GL_TRIANGLES);
 	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"), GL_TRIANGLES);
 
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	const unsigned char *p = glGetString(GL_VENDOR);
-	const unsigned char *q = glGetString(GL_RENDERER);
-	const unsigned char *r = glGetString(GL_VERSION);
-	const unsigned char *s = glGetString(GL_SHADING_LANGUAGE_VERSION);
-	cout << p << endl;
-	cout << q << endl;
-	cout << r << endl;
-	cout << s << endl;
 
 
+	/* versions */
+	cout << glGetString(GL_VENDOR) << endl;
+	cout << glGetString(GL_RENDERER) << endl;
+	cout << glGetString(GL_VERSION) << endl;
+	cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
 }
 
 

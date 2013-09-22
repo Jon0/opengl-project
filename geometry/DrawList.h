@@ -9,6 +9,7 @@
 #define DRAWLIST_H_
 
 #include <GL/glut.h>
+#include "../texture/Tex.h"
 #include "Drawable.h"
 #include "GVertex.h"
 
@@ -16,15 +17,29 @@ namespace std {
 
 class DrawList: public Drawable {
 public:
-	DrawList(vector<GPolygon>, GLenum drawMode);
+	DrawList(vector<GPolygon>, GLenum);
 	virtual ~DrawList();
 
 	virtual void display();
 	virtual int selectMouse(int, int);
 
-	void setBumpMap(const char *filename);
+	void setBumpMap(const char *, const char *, GLuint);
+	void setupBump();
 
-	int m_glGeomListPoly;
+	GLuint vertexbuffer;
+	GLuint uvbuffer;
+	GLuint normalbuffer;
+	GLuint tangentbuffer;
+	GLuint bitangentbuffer;
+
+	GLuint m_glGeomListPoly;
+
+	Tex *diffuseTex;
+	Tex *normalTex;
+
+	GLuint DiffuseTextureID;
+	GLuint NormalTextureID;
+	GLuint SpecularTextureID;
 };
 
 } /* namespace std */

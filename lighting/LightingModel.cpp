@@ -7,11 +7,15 @@
 
 #include <iostream>
 #include <GL/glu.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "LightingModel.h"
 
 namespace std {
 
 LightingModel::LightingModel():
+		lightPos{ -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f },
 		vert("shader/shadow.vert", GL_VERTEX_SHADER),
 		frag("shader/shadow.frag", GL_FRAGMENT_SHADER) {
 
@@ -31,7 +35,16 @@ LightingModel::LightingModel():
 	//Link the program.
 	glLinkProgram(program);
 
+	/*
+	 * set uniforms
+	 */
 	shadowMapUniform = glGetUniformLocation(program,"ShadowMap");
+	LightID = glGetUniformLocation(program, "LightPosition_worldspace");
+	ModelView3x3MatrixID = glGetUniformLocation(program, "MV3x3");
+    MatrixID = glGetUniformLocation(program, "MVP");
+    ViewMatrixID = glGetUniformLocation(program, "V");
+    ModelMatrixID = glGetUniformLocation(program, "M");
+
 
 }
 
@@ -161,7 +174,7 @@ void LightingModel::prepareShadow() {
 
 void LightingModel::setLight() {
 	// set lighting
-	GLfloat lightPos[] = { -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f };
+
 	GLfloat lightColorDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	//GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat lightColorAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -185,6 +198,31 @@ void LightingModel::setLight() {
 	glUniform1i(shadowMapUniform, 7);
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, depthTextureId);
+
+	// setup bump mapping
+	GLint viewport[4];
+	GLfloat modelview[16];
+	GLfloat projection[16];
+	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
+	glGetFloatv( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+
+	glm::mat4 ProjectionMatrix = glm::make_mat4(projection);
+	glm::mat4 ViewMatrix = glm::make_mat4(modelview);
+	glm::mat4 ModelMatrix = glm::mat4(1.0);
+	glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
+	glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix); // Take the upper-left part of ModelViewMatrix
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+	// Send our transformation to the currently bound shader,
+	// in the "MVP" uniform
+	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+	glUniformMatrix3fv(ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
+	glUniform3f(LightID, lightPos[0], lightPos[1], lightPos[2]);
 }
 
 } /* namespace std */

@@ -184,8 +184,6 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 	/* one basis per vertex */
 	vector<Basis> basisArray( size );
 
-	basisArray.data()[0].print();
-
 	for (unsigned int i = 0; i < polys.size(); ++i) {
 		GPolygon poly = polys.data()[i];
 
@@ -196,18 +194,15 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 
 		Basis b = textureBasis(&v1, &v2, &v3);
 
-		b.print();
-
-
 		for ( int &k: index.data()[i] ) {
 			basisArray.data()[k] += b;
 		}
 	}
 
-	// then normalise all basis
-	for ( Basis basis: basisArray ) {
-		basis.normalise();
-	}
+	// TODO then normalise all basis
+	//for ( Basis basis: basisArray ) {
+	//	basis.normalise();
+	//}
 
 	// final assignment of basis
 	for (unsigned int i = 0; i < polys.size(); ++i) {
