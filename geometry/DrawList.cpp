@@ -207,6 +207,7 @@ void DrawList::setupBump() {
 				(void*) 0                          // array buffer offset
 				);
 
+
 		// 5th attribute buffer : bitangents
 		glEnableVertexAttribArray(4);
 		glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);

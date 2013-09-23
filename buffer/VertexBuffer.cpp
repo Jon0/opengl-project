@@ -39,6 +39,14 @@ void VertexBuffer::store() {
 		offset += stride;
 	}
 
+	GLuint vao;
+
+	/* Allocate and assign a Vertex Array Object to our handle */
+	glGenVertexArrays(1, &vao);
+
+	/* Bind our Vertex Array Object as the current used object */
+	glBindVertexArray(vao);
+
 	glGenBuffers(1, &vb);
 	glBindBuffer(GL_ARRAY_BUFFER, vb);
 	glBufferData(GL_ARRAY_BUFFER, 4*vert.size()*stride, vertices, GL_STATIC_DRAW);

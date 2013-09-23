@@ -38,11 +38,11 @@ Render::Render():
 	/*
 	 * TODO with vbo this isnt needed
 	 */
-	box->compile(GL_TRIANGLES);
-	bunny->compile(GL_TRIANGLES);
-	table->compile(GL_TRIANGLES);
-	teapot->compile(GL_TRIANGLES);
-	torus->compile(GL_TRIANGLES);
+	//box->compile(GL_TRIANGLES);
+	//bunny->compile(GL_TRIANGLES);
+	//table->compile(GL_TRIANGLES);
+	//teapot->compile(GL_TRIANGLES);
+	//torus->compile(GL_TRIANGLES);
 
 	/* versions */
 	cout << glGetString(GL_VENDOR) << endl;
@@ -82,49 +82,49 @@ void Render::drawObjects() {
 }
 
 void Render::prepare() {
-	//lighting.prepareShadow();
+	lighting.prepareShadow();
 
-	//drawObjects();
+	drawObjects();
 
-	//Save modelview/projection matrice into texture7, also add a bias
-	//lighting.setTextureMatrix();
+	// Save modelview/projection matrice into texture7, also add a bias
+	lighting.setTextureMatrix();
 }
 
 void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	// Now rendering from the camera POV, using the FBO to generate shadows
-	//glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
 
-	//glViewport(0, 0, 800, 600);
+	glViewport(0, 0, 800, 600);
 
-	//Enabling color write (previously disabled for light POV z-buffer rendering)
-	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	// Enabling color write (previously disabled for light POV z-buffer rendering)
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-	//glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 
-	//glUseProgram(0);
+	glUseProgram(0);
 
-	//glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
-	//glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
-	//glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
-	//glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
-	//glEnableClientState(GL_INDEX_ARRAY);
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
+	glVertexPointer(3, GL_FLOAT, 9 * 4, NULL); //vertices
+	glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
+	glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
+	glEnableClientState(GL_INDEX_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	/*
 	 * draw sky without lighting
 	 */
-	//glDisable(GL_LIGHTING);
-	//glDisable(GL_COLOR_MATERIAL);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_COLOR_MATERIAL);
 
-	//glColor3f(1.0f,1.0f,1.0f);
-	//glActiveTexture(GL_TEXTURE0);
-	//glEnable(GL_TEXTURE_CUBE_MAP);
-	//glBindTexture( GL_TEXTURE_CUBE_MAP, env_tex->getAddr() );
-	//env.draw();
-	//glDisable(GL_TEXTURE_CUBE_MAP);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	glColor3f(1.0f,1.0f,1.0f);
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_CUBE_MAP);
+	glBindTexture( GL_TEXTURE_CUBE_MAP, env_tex->getAddr() );
+	env.draw();
+	glDisable(GL_TEXTURE_CUBE_MAP);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);

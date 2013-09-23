@@ -16,8 +16,8 @@ namespace std {
 
 LightingModel::LightingModel():
 		lightPos{ -7.5f * 10, 2.0f * 10, -6.5f * 10, 0.0f },
-		vert("shader/bump.vert", GL_VERTEX_SHADER),
-		frag("shader/bump.frag", GL_FRAGMENT_SHADER) {
+		vert("shader/shadow.vert", GL_VERTEX_SHADER),
+		frag("shader/shadow.frag", GL_FRAGMENT_SHADER) {
 
 	shadowMapWidth = 800 * 3;
 	shadowMapHeight = 600 * 3;
@@ -44,8 +44,6 @@ LightingModel::LightingModel():
     MatrixID = glGetUniformLocation(program, "MVP");
     ViewMatrixID = glGetUniformLocation(program, "V");
     ModelMatrixID = glGetUniformLocation(program, "M");
-
-
 }
 
 LightingModel::~LightingModel() {
@@ -172,7 +170,7 @@ void LightingModel::prepareShadow() {
 
 void LightingModel::setLight() {
 	// set lighting
-	GLfloat lightPos[] = { -7.5f * 1, 2.0f * 1, -6.5f * 1, 0.0f };
+	GLfloat lightPos[] = { -7.5f * 100, 2.0f * 100, -6.5f * 100, 0.0f };
 	GLfloat lightColorDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	//GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat lightColorAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -193,9 +191,9 @@ void LightingModel::setLight() {
 	glUseProgram(program);
 
 	//Using the shadow shader
-	//glUniform1i(shadowMapUniform, 7);
-	//glActiveTexture(GL_TEXTURE7);
-	//glBindTexture(GL_TEXTURE_2D, depthTextureId);
+	glUniform1i(shadowMapUniform, 7);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, depthTextureId);
 
 	// setup bump mapping
 	GLfloat modelview[16];

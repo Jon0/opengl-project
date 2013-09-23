@@ -8,18 +8,21 @@
 #ifndef CUBE_H_
 #define CUBE_H_
 
+#include "Geometry.h"
 #include "../buffer/VertexBuffer.h"
 
 namespace std {
 
-class Cube {
+class Cube:
+		public Geometry
+{
 	float size;
 	long index;
 	GLuint *indices;
 public:
 	Cube(float);
 	void init(VertexBuffer *);
-	void draw();
+	virtual void draw();
 	virtual ~Cube();
 };
 

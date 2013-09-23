@@ -12,7 +12,6 @@ void main()
 		// Used to lower moiré pattern and self-shadowing
 		shadowCoordinateWdivide.z += 0.0005;
 
-
 		float distanceFromLight = texture2D(ShadowMap,shadowCoordinateWdivide.st).z;
 
 

@@ -20,6 +20,7 @@ class SceneInterface {
 public:
 	virtual ~SceneInterface() {};
 
+	// TODO prepare should get time tick
 	virtual void prepare() = 0;
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> ) = 0;
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) = 0;
