@@ -44,13 +44,6 @@ void Program::enable() {
 	 * attach buffers
 	 */
 	glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
-	//glVertexPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(0*4)); //vertices
-	//glNormalPointer(GL_FLOAT, 9 * 4, (GLvoid *)(3*4));
-	//glTexCoordPointer(3, GL_FLOAT, 9 * 4, (GLvoid *)(6*4));
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_NORMAL_ARRAY);
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(0*4));
     glEnableVertexAttribArray(0);

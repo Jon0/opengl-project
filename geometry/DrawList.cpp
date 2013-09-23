@@ -11,6 +11,7 @@
 namespace std {
 
 DrawList::DrawList(vector<GPolygon> shape) {
+	data = shape;
 	s = shape.size();
 	float *p = new float [s * 3 * 3];
 	float *c = new float [s * 3 * 2];
@@ -89,6 +90,21 @@ DrawList::DrawList(vector<GPolygon> shape) {
 
 DrawList::~DrawList() {
 	glDeleteLists(m_glGeomListPoly, 1);
+}
+
+void DrawList::init(VertexBuffer *vb) {
+	vector<GVertex> verts;
+	for (GPolygon poly: data) {
+		for (GVertex vert: poly) {
+			verts.push_back(vert);
+		}
+	}
+	vb->add(verts);
+}
+
+void DrawList::draw() {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glDrawElements(GL_TRIANGLE_STRIP, s * 3, GL_UNSIGNED_INT, 0);
 }
 
 void DrawList::display() {

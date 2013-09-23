@@ -10,16 +10,18 @@
 
 #include <GL/glut.h>
 #include "../texture/Tex.h"
-#include "Drawable.h"
+#include "Geometry.h"
 #include "GVertex.h"
 
 namespace std {
 
-class DrawList: public Drawable {
+class DrawList: public Geometry {
 public:
 	DrawList( vector<GPolygon> );
 	virtual ~DrawList();
 
+	virtual void init(VertexBuffer *);
+	virtual void draw();
 	virtual void display();
 	virtual int selectMouse( int, int );
 
@@ -27,7 +29,11 @@ public:
 	void setBumpMap( const char *, const char *, GLuint );
 	void setupBump();
 
+	/*
+	 * do these need to be kept?
+	 */
 	unsigned int s;
+	vector<GPolygon> data;
 
 	/* Indices */
 	GLuint elementbuffer;

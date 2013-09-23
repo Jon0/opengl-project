@@ -12,8 +12,9 @@ namespace std {
 
 GRender::GRender():
 		program(),
-		mWnd {new MainWindow(800, 600, "Scene")},
-		obj { new Cube(20.0) }
+		gloader(),
+		mWnd { new MainWindow(800, 600, "Scene") },
+		obj { gloader.readOBJG("assets/obj/Torus.obj") }
 {
 	mWnd->start();
 	program.setup( obj );

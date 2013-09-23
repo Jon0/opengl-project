@@ -20,6 +20,10 @@ GeometryLoader::GeometryLoader() {}
 
 GeometryLoader::~GeometryLoader() {}
 
+shared_ptr<Geometry> GeometryLoader::readOBJG(const char* filename) {
+	return shared_ptr<Geometry>( new DrawList( readOBJ(filename) ) );
+}
+
 //-------------------------------------------------------
 // This function read obj file having
 // triangle faces consist of vertex v, texture coordinate vt, and normal vn

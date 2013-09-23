@@ -24,6 +24,7 @@ class GRender:
 		public SceneInterface {
 public:
 	Program program;
+	GeometryLoader gloader;
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
 	shared_ptr<Geometry> obj;

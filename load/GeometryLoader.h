@@ -8,9 +8,12 @@
 #ifndef GEOMETRYLOADER_H_
 #define GEOMETRYLOADER_H_
 
+#include <memory>
 #include <vector>
 #include <fstream>
 #include <GL/glut.h>
+#include "../geometry/DrawList.h"
+#include "../geometry/Geometry.h"
 #include "../geometry/GVertex.h"
 
 namespace std {
@@ -27,6 +30,7 @@ public:
 	GeometryLoader(void);
 	~GeometryLoader(void);
 
+	shared_ptr<Geometry> readOBJG(const char* filename);
 	vector<GPolygon> readOBJ(const char* filename);
 	vector<Vec3D> CreateNormals(vector<OBJpolygon>, vector<Vec3D>);
 	void CreateBasis(vector<GPolygon> polys, int, vector<vector<int>>);
