@@ -20,7 +20,7 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 		click_new{1, 0, 0, 0},
 		control{} {
 	cam_aspect = 1.0;
-	viewzoom = 100.0;
+	viewzoom = 10.0;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
@@ -41,7 +41,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0, cam_aspect, 2.0, 1000.0);
+	gluPerspective(90.0, cam_aspect, 1.0, 1000.0);
 	glGetFloatv(GL_PROJECTION_MATRIX, proj_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrixd);
 

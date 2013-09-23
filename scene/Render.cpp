@@ -27,18 +27,21 @@ Render::Render():
 	env_tex->make3DTex("assets/image/sky2.png");
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	//box = new DrawList(g.readOBJ("assets/obj/Box.obj"));
-	//bunny = new DrawList(g.readOBJ("assets/obj/Bunny.obj"));
-	//table = new DrawList(g.readOBJ("assets/obj/Table.obj"));
-	//teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"));
+	box = new DrawList(g.readOBJ("assets/obj/Box.obj"));
+	bunny = new DrawList(g.readOBJ("assets/obj/Bunny.obj"));
+	table = new DrawList(g.readOBJ("assets/obj/Table.obj"));
+	teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"));
 	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"));
 
-	//torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
+	torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
 
-	//box->compile(GL_TRIANGLES);
-	//bunny->compile(GL_TRIANGLES);
-	//table->compile(GL_TRIANGLES);
-	//teapot->compile(GL_TRIANGLES);
+	/*
+	 * TODO with vbo this isnt needed
+	 */
+	box->compile(GL_TRIANGLES);
+	bunny->compile(GL_TRIANGLES);
+	table->compile(GL_TRIANGLES);
+	teapot->compile(GL_TRIANGLES);
 	torus->compile(GL_TRIANGLES);
 
 	/* versions */
@@ -59,23 +62,23 @@ void Render::start() {
 }
 
 void Render::drawObjects() {
-	//table->display();
+	table->display();
 
-	//lighting.startTranslate(7.0, 2.0, 0.0);
-	//box->display();
-	//lighting.endTranslate();
+	lighting.startTranslate(7.0, 2.0, 0.0);
+	box->display();
+	lighting.endTranslate();
 
-	//lighting.startTranslate(-5.0, 0.5, -2.0);
-	//bunny->display();
-	//lighting.endTranslate();
+	lighting.startTranslate(-5.0, 0.5, -2.0);
+	bunny->display();
+	lighting.endTranslate();
 
-	//lighting.startTranslate(-1.0, 0.5, 6.0);
-	//teapot->display();
-	//lighting.endTranslate();
+	lighting.startTranslate(-1.0, 0.5, 6.0);
+	teapot->display();
+	lighting.endTranslate();
 
-	//lighting.startTranslate(3.0, 1.0, -6.0);
+	lighting.startTranslate(3.0, 1.0, -6.0);
 	torus->display();
-	//lighting.endTranslate();
+	lighting.endTranslate();
 }
 
 void Render::prepare() {
