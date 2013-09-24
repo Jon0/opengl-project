@@ -31,8 +31,6 @@ Shader::Shader(const char *filename, GLenum type) {
 
 	ShaderHandle = glCreateShader(type);
 	const char *g = fragmentShaderSource.c_str();
-
-	cout << g << endl;
 	glShaderSource(ShaderHandle, 1, &g, NULL);
 	glCompileShader(ShaderHandle);
 

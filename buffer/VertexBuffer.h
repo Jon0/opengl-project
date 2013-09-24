@@ -15,10 +15,11 @@
 namespace std {
 
 class VertexBuffer {
-	int stride;
+public:
+	const int stride;
 	GLuint vb;
 	vector<GVertex> vert;
-public:
+
 	VertexBuffer(int);
 	GLuint addr();
 	long add( vector<GVertex> & );

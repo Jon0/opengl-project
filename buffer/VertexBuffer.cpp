@@ -11,8 +11,7 @@
 
 namespace std {
 
-VertexBuffer::VertexBuffer(int s) {
-	stride = s;
+VertexBuffer::VertexBuffer(int s): stride(s) {
 	vb = -1;
 }
 

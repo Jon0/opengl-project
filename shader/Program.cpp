@@ -11,18 +11,10 @@
 namespace std {
 
 Program::Program():
-		vert("assets/shaders/test.vert", GL_VERTEX_SHADER),
-		frag("assets/shaders/test.frag", GL_FRAGMENT_SHADER),
+		vert("assets/shaders/phong.vert", GL_VERTEX_SHADER),
+		frag("assets/shaders/phong.frag", GL_FRAGMENT_SHADER),
 		vb(9)
 {
-	programID = 0;
-}
-
-Program::~Program() {
-	// TODO Auto-generated destructor stub
-}
-
-void Program::setup( shared_ptr<Geometry> d ) {
 	//Create a program handle.
 	programID = glCreateProgram();
 
@@ -31,9 +23,9 @@ void Program::setup( shared_ptr<Geometry> d ) {
 	glAttachShader(programID, vert.ShaderHandle);
 	glAttachShader(programID, frag.ShaderHandle);
 
-    glBindAttribLocation(programID, 0, "in_Position");
-    glBindAttribLocation(programID, 1, "in_Normal");
-    glBindAttribLocation(programID, 2, "in_Color");
+    //glBindAttribLocation(programID, 0, "in_Position");
+    //glBindAttribLocation(programID, 1, "in_Normal");
+    //glBindAttribLocation(programID, 2, "in_Color");
 
 	//Link the program.
 	glLinkProgram(programID);
@@ -41,14 +33,20 @@ void Program::setup( shared_ptr<Geometry> d ) {
 	int rvalue;
 	glGetProgramiv(programID, GL_LINK_STATUS, &rvalue);
 	if (!rvalue) {
-		fprintf(stderr, "Error in linking compute shader program\n");
+		fprintf(stderr, "Error in linking shader program\n");
 		GLchar log[10240];
 		GLsizei length;
 		glGetProgramInfoLog(programID, 10239, &length, log);
 		fprintf(stderr, "Linker log:\n%s\n", log);
-		exit(41);
 	}
 	glUseProgram (programID);
+}
+
+Program::~Program() {
+	// TODO Auto-generated destructor stub
+}
+
+void Program::setup( shared_ptr<Geometry> d ) {
 
 	// setup VBO
 	d->init(&vb);
@@ -61,13 +59,13 @@ void Program::enable() {
 	 */
 	glBindBuffer( GL_ARRAY_BUFFER, vb.addr() );
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(0*4));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vb.stride * sizeof(float), (void *)(0*4));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(3*4));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vb.stride * sizeof(float), (void *)(6*4));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(6*4));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, vb.stride * sizeof(float), (void *)(3*4));
     glEnableVertexAttribArray(2);
 
 	/*

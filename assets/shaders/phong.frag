@@ -18,5 +18,5 @@ void main (void)
                 * pow(max(dot(R,E),0.0),0.3*gl_FrontMaterial.shininess);
    Ispec = clamp(Ispec, 0.0, 1.0);
    // write Total Color:
-   gl_FragColor = vec4(0,1,0,1); //gl_FrontLightModelProduct.sceneColor + Iamb + Idiff + Ispec;
+   gl_FragColor = gl_FrontLightModelProduct.sceneColor + Iamb + Idiff + Ispec;
 }

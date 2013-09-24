@@ -24,9 +24,9 @@ class GRender:
 		public enable_shared_from_this<GRender>,
 		public SceneInterface {
 public:
+	shared_ptr<MainWindow> mWnd;
 	Program program;
 	GeometryLoader gloader;
-	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
 	shared_ptr<Lighting> light;
 	shared_ptr<Geometry> obj;

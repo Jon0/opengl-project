@@ -83,7 +83,7 @@ void GVertex::setTexCoord( float *v ) {
 /*
  * ordered by position, normal, texture
  */
-void GVertex::toArray( float *array, int offset ) {
+void GVertex::toArray( float *array, int offset) {
 	for (int i = 0; i < 3; ++i) {
 		array[offset + i + 0] = e[POS].v[i];
 		array[offset + i + 3] = e[NORM].v[i];

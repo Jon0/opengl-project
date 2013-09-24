@@ -37,9 +37,9 @@ void Lighting::setup() {
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, material_diffuse);
-	glEnable (GL_LIGHT0);
+	//glEnable (GL_LIGHT0);
 
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glColor3f(1.0f,1.0f,1.0f);

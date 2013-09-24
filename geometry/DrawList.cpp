@@ -39,7 +39,6 @@ void DrawList::init(VertexBuffer *vb) {
 }
 
 void DrawList::draw() {
-	//glColor3f(0.0, 1.0, 0.0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glDrawElements(GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0);
 }
@@ -92,7 +91,6 @@ void DrawList::compile(GLenum drawMode) {
 	glGenBuffers(1, &tangentbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, tangentbuffer);
 	glBufferData(GL_ARRAY_BUFFER, s * 3 * 3 * sizeof(float), t, GL_STATIC_DRAW);
-
 
 	glGenBuffers(1, &bitangentbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, bitangentbuffer);
