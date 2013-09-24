@@ -24,32 +24,39 @@ Shader::Shader(const char *filename, GLenum type) {
 		buffer << fragmentShaderFile.rdbuf();
 		fragmentShaderSource = buffer.str();
 	}
+	else {
+		cout << "file not found" << endl;
+	}
+	fragmentShaderFile.close();
 
 	ShaderHandle = glCreateShader(type);
 	const char *g = fragmentShaderSource.c_str();
+
+	cout << g << endl;
 	glShaderSource(ShaderHandle, 1, &g, NULL);
 	glCompileShader(ShaderHandle);
 
 	//Error checking.
-	int result;
-	glGetShaderiv(ShaderHandle, GL_COMPILE_STATUS, &result);
-	if (!result)
+	int isCompiled;
+	glGetShaderiv(ShaderHandle, GL_COMPILE_STATUS, &isCompiled);
+	if(isCompiled == GL_FALSE)
 	{
-		GLint blen = 0;
-		GLsizei slen = 0;
-		glGetShaderiv(ShaderHandle, GL_INFO_LOG_LENGTH , &blen);
-		if (blen > 1)
-		{
-		 GLchar* compiler_log = (GLchar*)malloc(blen);
-		 glGetInfoLogARB(ShaderHandle, blen, &slen, compiler_log);
-		 cout << filename  << " compiler_log " << ":\n" << compiler_log;
-		 free (compiler_log);
-		}
+	        GLint maxLength = 0;
+	        glGetShaderiv(ShaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
+
+	        //The maxLength includes the NULL character
+	        std::vector<char> errorLog(maxLength);
+	        glGetShaderInfoLog(ShaderHandle, maxLength, &maxLength, &errorLog[0]);
+
+	        //Provide the infolog in whatever manor you deem best.
+	        //Exit with failure.
+	        glDeleteShader(ShaderHandle); //Don't leak the shader.
+	        return;
 	}
 }
 
 Shader::~Shader() {
-	// TODO Auto-generated destructor stub
+	glDeleteShader(ShaderHandle);
 }
 
 } /* namespace std */

@@ -36,7 +36,7 @@ void GRender::prepare() {
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
-	light->setup();
+	//light->setup();
 	program.enable();
 	obj->draw();
 }

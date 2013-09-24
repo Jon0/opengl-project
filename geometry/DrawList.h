@@ -22,7 +22,7 @@ public:
 
 	virtual void init(VertexBuffer *);
 	virtual void draw();
-	virtual void display();
+
 	virtual int selectMouse( int, int );
 
 	void compile( GLenum );

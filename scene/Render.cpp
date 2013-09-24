@@ -62,22 +62,22 @@ void Render::start() {
 }
 
 void Render::drawObjects() {
-	table->display();
+	table->draw();
 
 	lighting.startTranslate(7.0, 2.0, 0.0);
-	box->display();
+	box->draw();
 	lighting.endTranslate();
 
 	lighting.startTranslate(-5.0, 0.5, -2.0);
-	bunny->display();
+	bunny->draw();
 	lighting.endTranslate();
 
 	lighting.startTranslate(-1.0, 0.5, 6.0);
-	teapot->display();
+	teapot->draw();
 	lighting.endTranslate();
 
 	lighting.startTranslate(3.0, 1.0, -6.0);
-	torus->display();
+	torus->draw();
 	lighting.endTranslate();
 }
 

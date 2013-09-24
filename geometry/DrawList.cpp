@@ -39,21 +39,9 @@ void DrawList::init(VertexBuffer *vb) {
 }
 
 void DrawList::draw() {
+	//glColor3f(0.0, 1.0, 0.0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glDrawElements(GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0);
-}
-
-void DrawList::display() {
-	//glCallList(m_glGeomListPoly);
-
-	setupBump();
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-	// Draw the triangles !
-	glDrawElements( GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0 );
-
 }
 
 int DrawList::selectMouse(int, int) {
