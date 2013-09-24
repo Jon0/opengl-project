@@ -14,6 +14,7 @@
 #include "Shader.h"
 #include "../buffer/VertexBuffer.h"
 #include "../geometry/Geometry.h"
+#include "../texture/Tex.h"
 
 
 namespace std {
@@ -31,6 +32,25 @@ private:
 	 * vbo
 	 */
 	VertexBuffer vb;
+
+	/*
+	 * uniforms
+	 */
+	GLuint LightID;
+	GLuint ModelView3x3MatrixID;
+    GLuint MatrixID;
+    GLuint ViewMatrixID;
+    GLuint ModelMatrixID;
+
+	/* Textures */
+	Tex *diffuseTex;
+	Tex *normalTex;
+	GLuint DiffuseTextureID;
+	GLuint NormalTextureID;
+	GLuint SpecularTextureID;
+
+	float t;
+
 
 public:
 	Program();

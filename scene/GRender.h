@@ -14,7 +14,6 @@
 #include "../lighting/Lighting.h"
 #include "../load/GeometryLoader.h"
 #include "../shader/Program.h"
-#include "../texture/Tex.h"
 #include "../view/Camera.h"
 #include "../window/MainWindow.h"
 

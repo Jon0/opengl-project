@@ -34,7 +34,7 @@ Camera::~Camera() {}
 
 void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle.rotate( cam_angle_d );
-	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, (1 - tick.count() * 10) );
+	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, ( 1 - tick.count() * 10 ) );
 
 	scene->prepare();
 
@@ -111,7 +111,9 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 int Camera::mouseDragged(int x, int y) {
 	if (control[0]) {
 		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
-		cam_angle_d = click_new * click_old.multiplicativeInverse();
+		// cam_angle_d = click_new * click_old.multiplicativeInverse();
+		Quaternion q = cam_angle_d = click_new * click_old.multiplicativeInverse();
+		cam_angle_d.rotate( q );
 		click_old = click_new;
 		return true;
 	}

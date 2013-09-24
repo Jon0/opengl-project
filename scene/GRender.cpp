@@ -14,7 +14,6 @@ namespace std {
 GRender::GRender():
 		mWnd { new MainWindow(800, 600, "Scene") },
 		gloader(),
-		light(),
 		obj { gloader.readOBJG("assets/obj/Torus.obj") }
 {
 	mWnd->start();
@@ -35,7 +34,7 @@ void GRender::prepare() {
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
-	light->setup();
+	//light->setup();
 	program.enable();
 	obj->draw();
 }

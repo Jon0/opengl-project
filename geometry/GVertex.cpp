@@ -86,8 +86,10 @@ void GVertex::setTexCoord( float *v ) {
 void GVertex::toArray( float *array, int offset) {
 	for (int i = 0; i < 3; ++i) {
 		array[offset + i + 0] = e[POS].v[i];
-		array[offset + i + 3] = e[NORM].v[i];
-		array[offset + i + 6] = e[UV].v[i];
+		array[offset + i + 3] = e[UV].v[i];
+		array[offset + i + 6] = e[NORM].v[i];
+		array[offset + i + 9] = basis.v[0].v[i];
+		array[offset + i + 12] = basis.v[1].v[i];
 	}
 }
 
