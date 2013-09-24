@@ -13,6 +13,54 @@ namespace std {
 DrawList::DrawList(vector<GPolygon> shape) {
 	data = shape;
 	s = shape.size();
+}
+
+DrawList::~DrawList() {}
+
+void DrawList::init(VertexBuffer *vb) {
+	/* the order verticies get drawn */
+	std::vector<unsigned int> indices;
+	int off = 0;
+
+	vector<GVertex> verts;
+	for (GPolygon poly: data) {
+		for (GVertex vert: poly) {
+			verts.push_back(vert);
+			indices.push_back(off);
+			off++;
+		}
+	}
+	vb->add(verts);
+
+	// Generate a buffer for the indices
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+}
+
+void DrawList::draw() {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glDrawElements(GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0);
+}
+
+void DrawList::display() {
+	//glCallList(m_glGeomListPoly);
+
+	setupBump();
+
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+	// Draw the triangles !
+	glDrawElements( GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0 );
+
+}
+
+int DrawList::selectMouse(int, int) {
+	return false;
+}
+
+void DrawList::compile(GLenum drawMode) {
 	float *p = new float [s * 3 * 3];
 	float *c = new float [s * 3 * 2];
 	float *n = new float [s * 3 * 3];
@@ -21,23 +69,23 @@ DrawList::DrawList(vector<GPolygon> shape) {
 
 	for (unsigned int i = 0; i < s; ++i) {
 		for (unsigned int v = 0; v < 3; ++v) {
-			p[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[POS].v[0];
-			p[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[POS].v[1];
-			p[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[POS].v[2];
+			p[i * 3 * 3 + v * 3 + 0] = data.data()[i].data()[v].e[POS].v[0];
+			p[i * 3 * 3 + v * 3 + 1] = data.data()[i].data()[v].e[POS].v[1];
+			p[i * 3 * 3 + v * 3 + 2] = data.data()[i].data()[v].e[POS].v[2];
 
-			c[i * 3 * 2 + v * 2 + 0] = shape.data()[i].data()[v].e[UV].v[0];
-			c[i * 3 * 2 + v * 2 + 1] = shape.data()[i].data()[v].e[UV].v[1];
+			c[i * 3 * 2 + v * 2 + 0] = data.data()[i].data()[v].e[UV].v[0];
+			c[i * 3 * 2 + v * 2 + 1] = data.data()[i].data()[v].e[UV].v[1];
 
-			n[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].e[NORM].v[0];
-			n[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].e[NORM].v[1];
-			n[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].e[NORM].v[2];
+			n[i * 3 * 3 + v * 3 + 0] = data.data()[i].data()[v].e[NORM].v[0];
+			n[i * 3 * 3 + v * 3 + 1] = data.data()[i].data()[v].e[NORM].v[1];
+			n[i * 3 * 3 + v * 3 + 2] = data.data()[i].data()[v].e[NORM].v[2];
 
-			t[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].basis.v[0].v[0];
-			t[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].basis.v[0].v[1];
-			t[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].basis.v[0].v[2];
-			b[i * 3 * 3 + v * 3 + 0] = shape.data()[i].data()[v].basis.v[1].v[0];
-			b[i * 3 * 3 + v * 3 + 1] = shape.data()[i].data()[v].basis.v[1].v[1];
-			b[i * 3 * 3 + v * 3 + 2] = shape.data()[i].data()[v].basis.v[1].v[2];
+			t[i * 3 * 3 + v * 3 + 0] = data.data()[i].data()[v].basis.v[0].v[0];
+			t[i * 3 * 3 + v * 3 + 1] = data.data()[i].data()[v].basis.v[0].v[1];
+			t[i * 3 * 3 + v * 3 + 2] = data.data()[i].data()[v].basis.v[0].v[2];
+			b[i * 3 * 3 + v * 3 + 0] = data.data()[i].data()[v].basis.v[1].v[0];
+			b[i * 3 * 3 + v * 3 + 1] = data.data()[i].data()[v].basis.v[1].v[1];
+			b[i * 3 * 3 + v * 3 + 2] = data.data()[i].data()[v].basis.v[1].v[2];
 		}
 	}
 
@@ -65,7 +113,7 @@ DrawList::DrawList(vector<GPolygon> shape) {
 	/* the order verticies get drawn */
 	std::vector<unsigned int> indices;
 	int off = 0;
-	for (unsigned int i = 0; i < shape.size(); ++i) {
+	for (unsigned int i = 0; i < data.size(); ++i) {
 		for (unsigned int v = 0; v < 3; ++v) {
 			indices.push_back(off);
 			off++;
@@ -83,68 +131,6 @@ DrawList::DrawList(vector<GPolygon> shape) {
 	DiffuseTextureID  = 0;
 	NormalTextureID  = 0;
 	SpecularTextureID = 0;
-
-	/* not compiled yet */
-	m_glGeomListPoly = 0;
-}
-
-DrawList::~DrawList() {
-	glDeleteLists(m_glGeomListPoly, 1);
-}
-
-void DrawList::init(VertexBuffer *vb) {
-	vector<GVertex> verts;
-	for (GPolygon poly: data) {
-		for (GVertex vert: poly) {
-			verts.push_back(vert);
-		}
-	}
-	vb->add(verts);
-}
-
-void DrawList::draw() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glDrawElements(GL_TRIANGLE_STRIP, s * 3, GL_UNSIGNED_INT, 0);
-}
-
-void DrawList::display() {
-	//glCallList(m_glGeomListPoly);
-
-	setupBump();
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-	// Draw the triangles !
-	glDrawElements( GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0 );
-
-}
-
-int DrawList::selectMouse(int, int) {
-	return false;
-}
-
-void DrawList::compile(GLenum drawMode) {
-	// Assign a display list; return 0 if err
-	m_glGeomListPoly = glGenLists(1);
-	glNewList(m_glGeomListPoly, GL_COMPILE);
-
-	/* settings */
-	//glEnable(GL_NORMALIZE);
-	//glShadeModel(GL_SMOOTH);
-
-	/*
-	 * draw the shape
-	 */
-	setupBump();
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-	// Draw the triangles !
-	glDrawElements( drawMode, s * 3, GL_UNSIGNED_INT, 0 );
-
-	glEndList();
 }
 
 void DrawList::setBumpMap(const char *diffuse, const char *bump, GLuint program) {

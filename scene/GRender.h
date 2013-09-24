@@ -11,6 +11,7 @@
 #include <memory>
 #include "SceneInterface.h"
 #include "../geometry/Geometry.h"
+#include "../lighting/Lighting.h"
 #include "../load/GeometryLoader.h"
 #include "../shader/Program.h"
 #include "../texture/Tex.h"
@@ -27,6 +28,7 @@ public:
 	GeometryLoader gloader;
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Camera> camera;
+	shared_ptr<Lighting> light;
 	shared_ptr<Geometry> obj;
 
 	GRender();

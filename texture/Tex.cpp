@@ -274,7 +274,7 @@ int loadTextureFromPNG(const string filename, TextureInfo* t){
     png_set_sig_bytes(png_ptr, sig_read);
 
     //Yet more magic you shouldn't touch. We -probably- have enough memory to read it all in one go.
-    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, png_voidp_NULL);
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
 
     //Start setting values in the textureinfo struct
     //Note that PNGs -can- have alpha.

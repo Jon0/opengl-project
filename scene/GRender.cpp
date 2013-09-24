@@ -5,6 +5,7 @@
  *      Author: remnanjona
  */
 
+#include <iostream>
 #include "../geometry/Cube.h"
 #include "GRender.h"
 
@@ -14,6 +15,7 @@ GRender::GRender():
 		program(),
 		gloader(),
 		mWnd { new MainWindow(800, 600, "Scene") },
+		light(),
 		obj { gloader.readOBJG("assets/obj/Torus.obj") }
 {
 	mWnd->start();
@@ -34,6 +36,7 @@ void GRender::prepare() {
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
+	light->setup();
 	program.enable();
 	obj->draw();
 }

@@ -45,9 +45,6 @@ public:
 	GLuint tangentbuffer;
 	GLuint bitangentbuffer;
 
-	/* Draw List */
-	GLuint m_glGeomListPoly;
-
 	/* Textures */
 	Tex *diffuseTex;
 	Tex *normalTex;
