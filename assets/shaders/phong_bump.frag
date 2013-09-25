@@ -114,7 +114,7 @@ void main(){
 
 	float visibility = 1.0;
 	for (int i=0;i<16;i++){
-		visibility -= 0.1*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+		visibility -= 0.04*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
 	}
 	visibility = clamp( visibility, 0, 1 );
 
