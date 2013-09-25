@@ -15,7 +15,8 @@ Render::Render():
 			lighting(),
 			vb(9),
 			g(),
-			env(400.0) {
+			env(400.0)
+{
 	mWnd->start();
 	env.init( &vb );
 	vb.store();
@@ -63,31 +64,19 @@ void Render::start() {
 
 void Render::drawObjects() {
 	table->draw();
-
-	lighting.startTranslate(7.0, 2.0, 0.0);
 	box->draw();
-	lighting.endTranslate();
-
-	lighting.startTranslate(-5.0, 0.5, -2.0);
 	bunny->draw();
-	lighting.endTranslate();
-
-	lighting.startTranslate(-1.0, 0.5, 6.0);
 	teapot->draw();
-	lighting.endTranslate();
-
-	lighting.startTranslate(3.0, 1.0, -6.0);
 	torus->draw();
-	lighting.endTranslate();
 }
 
 void Render::prepare() {
-	lighting.prepareShadow();
+	//lighting.prepareShadow();
 
-	drawObjects();
+	//drawObjects();
 
 	// Save modelview/projection matrice into texture7, also add a bias
-	lighting.setTextureMatrix();
+	//lighting.setTextureMatrix();
 }
 
 void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
@@ -130,7 +119,7 @@ void Render::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glEnable(GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glColor3f(1.0f,1.0f,1.0f);
-	lighting.setLight();
+	//lighting.setLight();
 
 	drawObjects();
 }

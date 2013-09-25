@@ -135,6 +135,10 @@ void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) 
 	glEnd();
 }
 
+void SpeedCurve::displayGeometry() {
+
+}
+
 int SpeedCurve::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (!state) {

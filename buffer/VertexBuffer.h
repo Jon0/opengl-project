@@ -22,8 +22,10 @@ public:
 
 	VertexBuffer(int);
 	GLuint addr();
+	long size();
 	long add( vector<GVertex> & );
 	void store();
+	void enable();
 	virtual ~VertexBuffer();
 };
 

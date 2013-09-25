@@ -120,12 +120,17 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	 * close file
 	 */
 	fs.close();
-	//if (normals.empty()) {
+	if (normals.empty()) {
+		cout << filename << " has no normals" << endl;
 	//	printf("Calculate Normals\n");
 	//	normals = CreateNormals(triangles, points);
-	//}
+	}
 
-	if (uvcoords.size() > 0) CreateBasis(g_polys, points.size(), index);
+	/* normals required for uv generation */
+	if (uvcoords.size() == 0) {
+		CreateUV(g_polys, points.size(), index);
+	}
+	CreateBasis(g_polys, points.size(), index);
 	return g_polys;
 }
 
@@ -177,6 +182,22 @@ vector<Vec3D> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<Vec
 		}
 	}
 	return m_pNormalArray;
+}
+
+void GeometryLoader::CreateUV(vector<GPolygon> &polys, int size, vector<vector<int>> index) {
+	for ( GPolygon &poly: polys ) {
+		for ( GVertex &v: poly ) {
+			Vec3D norm = v.e[NORM];
+
+			float theta = acos(norm.v[1])/(M_PI);
+			float phi = (atan(norm.v[0]/norm.v[2])+M_PI)/(2*M_PI);
+
+			v.e[UV].v[0] = phi;
+			v.e[UV].v[1] = theta;
+			v.e[UV].v[2] = 0;
+
+		}
+	}
 }
 
 void GeometryLoader::CreateBasis(vector<GPolygon> &polys, int size, vector<vector<int>> index) {

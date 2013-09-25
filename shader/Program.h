@@ -8,6 +8,7 @@
 #ifndef PROGRAM_H_
 #define PROGRAM_H_
 
+#include <map>
 #include <memory>
 #include <GL/gl.h>
 
@@ -28,35 +29,14 @@ private:
 	Shader vert;
 	Shader frag;
 
-	/*
-	 * vbo
-	 */
-	VertexBuffer vb;
-
-	/*
-	 * uniforms
-	 */
-	GLuint CameraID;
-	GLuint LightID;
-	GLuint ModelView3x3MatrixID;
-    GLuint MatrixID;
-    GLuint ViewMatrixID;
-    GLuint ModelMatrixID;
-
-	/* Textures */
-	Tex *diffuseTex;
-	Tex *normalTex;
-	GLuint DiffuseTextureID;
-	GLuint NormalTextureID;
-	GLuint SpecularTextureID;
-
-	float t;
-
+	map<string, GLuint> uniform;
 
 public:
-	Program();
+	Program(string);
 	virtual ~Program();
 
+	GLuint addUniform(string);
+	GLuint getUniform(string);
 	void setup( shared_ptr<Geometry> d );
 	void enable();
 };

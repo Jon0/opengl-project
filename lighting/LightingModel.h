@@ -47,13 +47,7 @@ public:
 	LightingModel();
 	virtual ~LightingModel();
 
-	void generateShadowFBO();
-	void setTextureMatrix();
-	void prepareShadow();
-	void setLight();
 
-	void startTranslate(float,float,float);
-	void endTranslate();
 
 };
 

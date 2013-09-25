@@ -15,7 +15,7 @@
 
 namespace std {
 
-Shader::Shader(const char *filename, GLenum type) {
+Shader::Shader(string filename, GLenum type) {
 	// load the fragment shader.
 	fstream fragmentShaderFile(filename, std::ios::in);
 	string fragmentShaderSource;

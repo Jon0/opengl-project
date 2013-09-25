@@ -15,7 +15,7 @@ namespace std {
 class Shader {
 public:
 	GLuint ShaderHandle;
-	Shader(const char *, GLenum);
+	Shader(string, GLenum);
 	virtual ~Shader();
 };
 

@@ -35,6 +35,7 @@ public:
 
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual void displayGeometry();
 	virtual int mouseClicked(shared_ptr<ViewInterface>, int, int, int, int);
 	virtual int mouseDragged(shared_ptr<ViewInterface>, int x, int y);
 	virtual void messageSent(string);

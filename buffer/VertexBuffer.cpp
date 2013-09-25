@@ -15,8 +15,17 @@ VertexBuffer::VertexBuffer(int s): stride(s) {
 	vb = -1;
 }
 
+VertexBuffer::~VertexBuffer() {
+	// TODO Auto-generated destructor stub
+}
+
+
 GLuint VertexBuffer::addr() {
 	return vb;
+}
+
+long VertexBuffer::size() {
+	return vert.size();
 }
 
 long VertexBuffer::add( vector<GVertex> &add ) {
@@ -53,8 +62,27 @@ void VertexBuffer::store() {
 	delete vertices;
 }
 
-VertexBuffer::~VertexBuffer() {
-	// TODO Auto-generated destructor stub
+void VertexBuffer::enable() {
+
+	/*
+	 * attach buffers
+	 */
+	glBindBuffer( GL_ARRAY_BUFFER, vb );
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(0*4));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(3*4));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(6*4));
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(9*4));
+    glEnableVertexAttribArray(3);
+
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(12*4));
+    glEnableVertexAttribArray(4);
 }
 
 } /* namespace std */

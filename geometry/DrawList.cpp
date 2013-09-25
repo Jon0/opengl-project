@@ -20,7 +20,7 @@ DrawList::~DrawList() {}
 void DrawList::init(VertexBuffer *vb) {
 	/* the order verticies get drawn */
 	std::vector<unsigned int> indices;
-	int off = 0;
+	int off = vb->size();
 
 	vector<GVertex> verts;
 	for (GPolygon poly: data) {
