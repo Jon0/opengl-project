@@ -126,16 +126,12 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	//}
 
 	if (uvcoords.size() > 0) CreateBasis(g_polys, points.size(), index);
-
-
-	printf("Reading OBJ file is DONE.\n");
 	return g_polys;
 }
 
 
 // TODO integrate into main parsing, since indexs are lost
 vector<Vec3D> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<Vec3D> points) {
-
 	/* construct array initialise to size of verts */
 	vector<Vec3D> m_pNormalArray( points.size() );
 
@@ -183,8 +179,7 @@ vector<Vec3D> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<Vec
 	return m_pNormalArray;
 }
 
-void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector<int>> index) {
-
+void GeometryLoader::CreateBasis(vector<GPolygon> &polys, int size, vector<vector<int>> index) {
 	/* one basis per vertex */
 	vector<Basis> basisArray( size );
 
@@ -203,10 +198,10 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 		}
 	}
 
-	// TODO then normalise all basis
-	//for ( Basis basis: basisArray ) {
-	//	basis.normalise();
-	//}
+	// then normalise all basis
+	for ( Basis &basis: basisArray ) {
+		basis.normalise();
+	}
 
 	// final assignment of basis
 	for (unsigned int i = 0; i < polys.size(); ++i) {
@@ -215,8 +210,8 @@ void GeometryLoader::CreateBasis(vector<GPolygon> polys, int size, vector<vector
 			int offset = index.data()[i].data()[j];
 			poly.data()[j].basis = basisArray.data()[offset];
 		}
+		polys.data()[i] = poly;
 	}
-
 }
 
 

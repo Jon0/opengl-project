@@ -21,9 +21,11 @@ class Cube:
 	GLuint *indices;
 public:
 	Cube(float);
+	virtual ~Cube();
+
 	void init(VertexBuffer *);
 	virtual void draw();
-	virtual ~Cube();
+	virtual void drawDebug();
 };
 
 } /* namespace std */

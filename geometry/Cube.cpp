@@ -55,6 +55,10 @@ void Cube::draw() {
 	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, indices);
 }
 
+void Cube::drawDebug() {
+	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, indices);
+}
+
 Cube::~Cube() {
 	// TODO Auto-generated destructor stub
 }

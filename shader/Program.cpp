@@ -26,8 +26,11 @@ Program::Program():
 	glAttachShader(programID, vert.ShaderHandle);
 	glAttachShader(programID, frag.ShaderHandle);
 
-    //glBindAttribLocation(programID, 0, "in_Position");
-    //glBindAttribLocation(programID, 1, "in_Normal");
+	glBindAttribLocation(programID, 0, "vertexPosition_modelspace");
+	glBindAttribLocation(programID, 1, "vertexUV");
+	glBindAttribLocation(programID, 2, "vertexNormal_modelspace");
+	glBindAttribLocation(programID, 3, "vertexTangent_modelspace");
+    glBindAttribLocation(programID, 4, "vertexBitangent_modelspace");
     //glBindAttribLocation(programID, 2, "in_Color");
 
 	//Link the program.
@@ -42,10 +45,21 @@ Program::Program():
 		glGetProgramInfoLog(programID, 10239, &length, log);
 		fprintf(stderr, "Linker log:\n%s\n", log);
 	}
-	glUseProgram (programID);
+
+	/*
+	 * set uniforms
+	 */
+	//CameraID  = glGetUniformLocation(programID, "CAMERA_POSITION");
+	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+	ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
+	MatrixID = glGetUniformLocation(programID, "MVP");
+    ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 
-
+	DiffuseTextureID  = glGetUniformLocation(programID, "diffuseTexture");
+	NormalTextureID  = glGetUniformLocation(programID, "normalTexture");
+	SpecularTextureID  = glGetUniformLocation(programID, "specularTexture");
 
 	/* texturing... */
 	// TODO delete this
@@ -53,23 +67,7 @@ Program::Program():
 	diffuseTex->make2DTex("assets/image/wood.jpg");
 	normalTex = new Tex();
 	normalTex->make2DTex("assets/image/normal.jpg");
-
-
-	/*
-	 * set uniforms
-	 */
-	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-	ModelView3x3MatrixID = glGetUniformLocation(programID, "MV3x3");
-    MatrixID = glGetUniformLocation(programID, "MVP");
-    ViewMatrixID = glGetUniformLocation(programID, "V");
-    ModelMatrixID = glGetUniformLocation(programID, "M");
-
-	DiffuseTextureID  = glGetUniformLocation(programID, "DiffuseTextureSampler");
-	NormalTextureID  = glGetUniformLocation(programID, "NormalTextureSampler");
-	SpecularTextureID  = glGetUniformLocation(programID, "SpecularTextureSampler");
-
 	t = 0.0;
-
 }
 
 Program::~Program() {
@@ -111,13 +109,13 @@ void Program::enable() {
 	glUniform1i(DiffuseTextureID, 0);
 	glUniform1i(SpecularTextureID, 0);
 
+	//glEnable(GL_TEXTURE_2D);
+
 	// Bind our normal texture in Texture Unit 1
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
 	// Set our "Normal    TextureSampler" sampler to user Texture Unit 0
 	glUniform1i(NormalTextureID, 1);
-
-
 
 	// setup bump mapping
 	GLfloat modelview[16];
@@ -137,14 +135,10 @@ void Program::enable() {
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 	glUniformMatrix3fv(ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
-	GLfloat lightPos[] = { 7.5 * sin(t), 2.0f * 1, 7.5 * cos(t), 0.0f };
+	GLfloat lightPos[] = { 12.5f * sin(t), 2.0f, 12.5f * cos(t), 0.0f };
 	t += 0.01;
 	glUniform3f(LightID, lightPos[0], lightPos[1], lightPos[2]);
-
-
-
 
 	/*
 	 * enable program

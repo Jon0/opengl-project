@@ -33,7 +33,7 @@ public:
 	shared_ptr<Geometry> readOBJG(const char* filename);
 	vector<GPolygon> readOBJ(const char* filename);
 	vector<Vec3D> CreateNormals(vector<OBJpolygon>, vector<Vec3D>);
-	void CreateBasis(vector<GPolygon> polys, int, vector<vector<int>>);
+	void CreateBasis(vector<GPolygon> &polys, int, vector<vector<int>>);
 };
 
 } /* namespace std */

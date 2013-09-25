@@ -22,6 +22,7 @@ public:
 
 	virtual void init(VertexBuffer *);
 	virtual void draw();
+	virtual void drawDebug();
 
 	virtual int selectMouse( int, int );
 

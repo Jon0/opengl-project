@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <GL/glut.h>
+#include <glm/glm.hpp>
 #include "ViewInterface.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
@@ -49,6 +50,7 @@ private:
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16], proj_matrix [16], model_matrix [16];
 	GLdouble proj_matrixd [16], model_matrixd [16];
+	//glm::mat4 modelView;
 };
 
 } /* namespace std */

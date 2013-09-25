@@ -25,7 +25,7 @@ Shader::Shader(const char *filename, GLenum type) {
 		fragmentShaderSource = buffer.str();
 	}
 	else {
-		cout << "file not found" << endl;
+		cerr << "file not found" << endl;
 	}
 	fragmentShaderFile.close();
 
@@ -37,7 +37,7 @@ Shader::Shader(const char *filename, GLenum type) {
 	//Error checking.
 	int isCompiled;
 	glGetShaderiv(ShaderHandle, GL_COMPILE_STATUS, &isCompiled);
-	if(isCompiled == GL_FALSE)
+	if( !isCompiled )
 	{
 	        GLint maxLength = 0;
 	        glGetShaderiv(ShaderHandle, GL_INFO_LOG_LENGTH, &maxLength);
@@ -45,6 +45,8 @@ Shader::Shader(const char *filename, GLenum type) {
 	        //The maxLength includes the NULL character
 	        std::vector<char> errorLog(maxLength);
 	        glGetShaderInfoLog(ShaderHandle, maxLength, &maxLength, &errorLog[0]);
+	        cerr << "error in file " << filename << endl;
+	        cerr << errorLog.data() << endl;
 
 	        //Provide the infolog in whatever manor you deem best.
 	        //Exit with failure.

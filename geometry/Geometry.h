@@ -17,6 +17,7 @@ public:
 	virtual ~Geometry() {}
 	virtual void init(VertexBuffer *) = 0;
 	virtual void draw() = 0;
+	virtual void drawDebug() = 0;
 };
 
 } /* namespace std */

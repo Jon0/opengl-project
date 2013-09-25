@@ -24,9 +24,9 @@ Basis::~Basis() {
 }
 
 void Basis::normalise() {
-	v[0].normalise();
-	v[1].normalise();
-	v[2].normalise();
+	v[0] = v[0].normalise();
+	v[1] = v[1].normalise();
+	v[2] = v[2].normalise();
 }
 
 void Basis::print() {

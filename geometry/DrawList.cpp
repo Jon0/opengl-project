@@ -43,6 +43,29 @@ void DrawList::draw() {
 	glDrawElements(GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0);
 }
 
+void DrawList::drawDebug() {
+	vector<GVertex> verts;
+	for (GPolygon poly: data) {
+		for (GVertex vert: poly) {
+			glBegin(GL_LINES);
+
+			glColor3f(1,1,1);
+			glVertex3fv(vert.e[POS].v);
+			glVertex3fv((vert.e[POS] + vert.e[NORM]*0.1).v);
+			glColor3f(1,0,0);
+			glVertex3fv(vert.e[POS].v);
+			glVertex3fv((vert.e[POS] + vert.basis.v[0]*0.1).v);
+			glColor3f(0,1,0);
+			glVertex3fv(vert.e[POS].v);
+			glVertex3fv((vert.e[POS] + vert.basis.v[1]*0.1).v);
+			glColor3f(0,0,1);
+			glVertex3fv(vert.e[POS].v);
+			glVertex3fv((vert.e[POS] + vert.basis.v[2]*0.1).v);
+			glEnd();
+		}
+	}
+}
+
 int DrawList::selectMouse(int, int) {
 	return false;
 }

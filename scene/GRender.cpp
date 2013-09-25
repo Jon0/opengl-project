@@ -13,6 +13,7 @@ namespace std {
 
 GRender::GRender():
 		mWnd { new MainWindow(800, 600, "Scene") },
+		program(),
 		gloader(),
 		obj { gloader.readOBJG("assets/obj/Torus.obj") }
 {
@@ -34,9 +35,13 @@ void GRender::prepare() {
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
-	//light->setup();
+	light->setup();
 	program.enable();
 	obj->draw();
+
+	//glDisable(GL_LIGHTING);
+	//glUseProgram(0);
+	//obj->drawDebug();
 }
 
 int GRender::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {

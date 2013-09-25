@@ -36,6 +36,7 @@ private:
 	/*
 	 * uniforms
 	 */
+	GLuint CameraID;
 	GLuint LightID;
 	GLuint ModelView3x3MatrixID;
     GLuint MatrixID;
