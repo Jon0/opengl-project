@@ -38,6 +38,7 @@ public:
 	GLuint addUniform(string);
 	GLuint getUniform(string);
 	void setup( shared_ptr<Geometry> d );
+	void setTranslation();
 	void enable();
 };
 

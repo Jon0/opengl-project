@@ -65,6 +65,12 @@ void Program::setup( shared_ptr<Geometry> d ) {
 
 }
 
+// TODO ???
+void Program::setTranslation() {
+
+}
+
+
 void Program::enable() {
 	/*
 	 * enable program

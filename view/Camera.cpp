@@ -38,6 +38,9 @@ void Camera::setView( chrono::duration<double> tick ) {
 
 	scene->prepare();
 
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+	glViewport(0, 0, windowwidth, windowheight);
+
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -64,6 +67,8 @@ void Camera::setView( chrono::duration<double> tick ) {
 }
 
 void Camera::resize(int x, int y) {
+	windowwidth = x;
+	windowheight = y;
 	cam_aspect = (double) x / (double) y;
 	arcball_x = (x / 2.0);
 	arcball_y = (y / 2.0);

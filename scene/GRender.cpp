@@ -69,24 +69,30 @@ void GRender::start() {
 void GRender::prepare() {
 	shadow.enable();
 
-	// Enable depth test
-	//glEnable(GL_DEPTH_TEST);
-
-	// Accept fragment if it closer to the camera than the former one
-	//glDepthFunc(GL_LESS);
-
+	// TODO translatable interface
 	light.getDepthMap();
-	displayGeometry();
+
+	light.setTranslation(glm::vec3(0,0,0));
+	table->draw();
+
+	light.setTranslation(glm::vec3(3,2.5,4));
+	box->draw();
+
+	light.setTranslation(glm::vec3(4,0.75,-5));
+	bunny->draw();
+
+	light.setTranslation(glm::vec3(7,1.5,2));
+	sphere->draw();
+
+	light.setTranslation(glm::vec3(-3,0.75,-5));
+	teapot->draw();
+
+	light.setTranslation(glm::vec3(-5,1,5));
+	torus->draw();
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	program.enable(); // must be first
-
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
 
 	// Bind our diffuse texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -102,14 +108,46 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glUniform1i(useNormTex, true);
 
 	// setup bump mapping
+	// TODO get this from camera
 	GLfloat modelview[16];
 	GLfloat projection[16];
 	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
 	glGetFloatv( GL_PROJECTION_MATRIX, projection );
 
-	glm::mat4 ProjectionMatrix = glm::make_mat4(projection);
-	glm::mat4 ViewMatrix = glm::make_mat4(modelview);
-	glm::mat4 ModelMatrix = glm::mat4(1.0);
+	ProjectionMatrix = glm::make_mat4(projection);
+	ViewMatrix = glm::make_mat4(modelview);
+
+	light.setLight();
+	displayGeometry();
+}
+
+void GRender::displayGeometry() {
+	vb.enable();
+
+	setTranslation(glm::vec3(0,0,0));
+	table->draw();
+
+	setTranslation(glm::vec3(3,2.5,4));
+	box->draw();
+
+	setTranslation(glm::vec3(4,0.75,-5));
+	bunny->draw();
+
+	setTranslation(glm::vec3(7,1.5,2));
+	sphere->draw();
+
+	setTranslation(glm::vec3(-3,0.75,-5));
+	teapot->draw();
+
+	setTranslation(glm::vec3(-5,1,5));
+	torus->draw();
+}
+
+void GRender::setTranslation(glm::vec3 position) {
+	light.setTranslation(position);
+	light.setTranslationB();
+
+	ModelMatrix = glm::translate(glm::mat4(1.0f), position);
 	glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
 	glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix); // Take the upper-left part of ModelViewMatrix
 	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
@@ -120,20 +158,6 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 	glUniformMatrix3fv(ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
-
-
-	light.setLight();
-	displayGeometry();
-}
-
-void GRender::displayGeometry() {
-	vb.enable();
-	box->draw();
-	bunny->draw();
-	sphere->draw();
-	table->draw();
-	teapot->draw();
-	torus->draw();
 }
 
 int GRender::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {

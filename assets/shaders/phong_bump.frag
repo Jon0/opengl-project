@@ -27,12 +27,31 @@ uniform vec3 LightPosition_worldspace;
 uniform bool useDiffTex;
 uniform bool useNormTex;
 
+vec2 poissonDisk[16] = vec2[](
+   vec2( -0.94201624, -0.39906216 ),
+   vec2( 0.94558609, -0.76890725 ),
+   vec2( -0.094184101, -0.92938870 ),
+   vec2( 0.34495938, 0.29387760 ),
+   vec2( -0.91588581, 0.45771432 ),
+   vec2( -0.81544232, -0.87912464 ),
+   vec2( -0.38277543, 0.27676845 ),
+   vec2( 0.97484398, 0.75648379 ),
+   vec2( 0.44323325, -0.97511554 ),
+   vec2( 0.53742981, -0.47373420 ),
+   vec2( -0.26496911, -0.41893023 ),
+   vec2( 0.79197514, 0.19090188 ),
+   vec2( -0.24188840, 0.99706507 ),
+   vec2( -0.81409955, 0.91437590 ),
+   vec2( 0.19984126, 0.78641367 ),
+   vec2( 0.14383161, -0.14100790 )
+);
+
 void main(){
 
 	// Light emission properties
 	// You probably want to put them as uniforms
 	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 100.0;
+	float LightPower = 80.0;
 
 	// Material properties
 	vec3 MaterialDiffuseColor;
@@ -88,7 +107,16 @@ void main(){
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-	float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
+	//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
+
+	float bias = 0.0005*tan(acos(cosTheta));
+	bias = clamp(bias, 0,0.001);
+
+	float visibility = 1.0;
+	for (int i=0;i<16;i++){
+		visibility -= 0.1*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+	}
+	visibility = clamp( visibility, 0, 1 );
 
 	color =
 		// Ambient : simulates indirect lighting

@@ -31,7 +31,10 @@ public:
 	// Z values will be rendered to this texture when using fboId framebuffer
 	GLuint depthTextureId;
 
+	/* matrix */
 	glm::mat4 depthMVP;
+
+	glm::mat4 biasMatrix;
 
 	/*
 	 * uniforms
@@ -46,13 +49,10 @@ public:
 	virtual ~Light();
 
 	void generateShadowFBO();
-	void setTextureMatrix();
-	void prepareShadow();
 	void getDepthMap();
 	void setLight();
-
-	void startTranslate(float,float,float);
-	void endTranslate();
+	void setTranslation(glm::vec3 pos);
+	void setTranslationB();
 };
 
 } /* namespace std */

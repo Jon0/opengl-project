@@ -46,7 +46,7 @@ private:
 	Vec3D focus;
 	Quaternion cam_angle, cam_angle_d, click_old, click_new;
 	bool control[3];
-	int click_x, click_y;
+	int windowwidth, windowheight, click_x, click_y;
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16], proj_matrix [16], model_matrix [16];
 	GLdouble proj_matrixd [16], model_matrixd [16];
