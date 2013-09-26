@@ -90,13 +90,13 @@ void GRender::prepare() {
 	light.setTranslation(glm::vec3(3,2.5,4));
 	box->draw();
 
-	light.setTranslation(glm::vec3(4,0.75,-5));
+	light.setTranslation(glm::vec3(4,0.6,-5));
 	bunny->draw();
 
-	light.setTranslation(glm::vec3(7,1.5,2));
+	light.setTranslation(glm::vec3(7,1.8,2));
 	sphere->draw();
 
-	light.setTranslation(glm::vec3(-3,0.75,-5));
+	light.setTranslation(glm::vec3(-3,0.6,-5));
 	teapot->draw();
 
 	light.setTranslation(glm::vec3(-5,1,5));
@@ -142,7 +142,7 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
 	glUniform1i(NormalTextureID, 1);
-	glUniform1i(useNormTex, false);
+	glUniform1i(useNormTex, true);
 
 	//glEnable(GL_TEXTURE_CUBE_MAP);
 	glActiveTexture(GL_TEXTURE2);
@@ -171,13 +171,13 @@ void GRender::displayGeometry() {
 	setTranslation(glm::vec3(3,2.5,4));
 	box->draw();
 
-	setTranslation(glm::vec3(4,0.75,-5));
+	setTranslation(glm::vec3(4,0.6,-5));
 	bunny->draw();
 
-	setTranslation(glm::vec3(7,1.5,2));
+	setTranslation(glm::vec3(7,1.8,2));
 	sphere->draw();
 
-	setTranslation(glm::vec3(-3,0.75,-5));
+	setTranslation(glm::vec3(-3,0.6,-5));
 	teapot->draw();
 
 	setTranslation(glm::vec3(-5,1,5));

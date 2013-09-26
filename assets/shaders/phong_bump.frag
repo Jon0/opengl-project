@@ -138,14 +138,13 @@ void main(){
 
 	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
 
-	color = ReflectionColor;
-
-	//color =
+	color =
 		// Ambient : simulates indirect lighting
 	//	MaterialAmbientColor +
+		ReflectionColor * 0.3 +
 		// Diffuse : "color" of the object
-	//	MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
+		MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
 		// Specular : reflective highlight, like a mirror
-	//	MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+		MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
 
 }
