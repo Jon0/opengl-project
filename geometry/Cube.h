@@ -18,7 +18,9 @@ class Cube:
 {
 	float size;
 	long index;
-	GLuint *indices;
+
+	/* Indices */
+	GLuint elementbuffer;
 public:
 	Cube(float);
 	virtual ~Cube();

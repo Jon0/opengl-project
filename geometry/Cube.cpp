@@ -13,7 +13,6 @@ namespace std {
 Cube::Cube(float s) {
 	size = s;
 	index = -1;
-	indices = NULL;
 }
 
 void Cube::init(VertexBuffer *vb) {
@@ -28,7 +27,7 @@ void Cube::init(VertexBuffer *vb) {
 	verts.push_back({-size,size,size, -0.577,0.577,0.577, 1,-1,-1});
 	index = vb->add(verts);
 
-	indices = new GLuint[18];
+	GLuint *indices = new GLuint[18];
 	indices[0] = index + 6;
 	indices[1] = index + 2;
 	indices[2] = index + 7;
@@ -49,14 +48,21 @@ void Cube::init(VertexBuffer *vb) {
 	indices[15] = index + 6;
 	indices[16] = index + 4;
 	indices[17] = index + 7;
+
+	// Generate a buffer for the indices
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 }
 
 void Cube::draw() {
-	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, indices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
 }
 
 void Cube::drawDebug() {
-	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, indices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
 }
 
 Cube::~Cube() {

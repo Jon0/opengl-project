@@ -11,15 +11,12 @@ layout(location = 4) in vec3 vertexBitangent_modelspace;
 out vec2 UV;
 out vec4 ShadowCoord;
 out vec3 Position_worldspace;
-
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
-
 out vec3 VertexNormal_tangentspace;
+
 out vec3 LightDirection_tangentspace;
 out vec3 EyeDirection_tangentspace;
-
-out mat3 TBN;
 
 // Values that stay constant for the whole mesh
 uniform mat4 DepthBiasMVP;
@@ -56,7 +53,7 @@ void main(){
 	vec3 vertexBitangent_cameraspace = MV3x3 * vertexBitangent_modelspace;
 	vec3 vertexNormal_cameraspace = MV3x3 * vertexNormal_modelspace;
 
-	TBN = transpose(mat3(
+	mat3 TBN = transpose(mat3(
 		vertexTangent_cameraspace,
 		vertexBitangent_cameraspace,
 		vertexNormal_cameraspace
@@ -64,5 +61,7 @@ void main(){
 
 	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
+
+	// test
 	VertexNormal_tangentspace = TBN * vertexNormal_cameraspace;
 }

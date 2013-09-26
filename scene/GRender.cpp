@@ -15,8 +15,10 @@ GRender::GRender():
 		mWnd { new MainWindow(800, 600, "Scene") },
 		program("phong_bump"),
 		shadow("shadow_depth"),
+		skybox("skybox"),
 		vb(15),
 		gloader(),
+		sky { new Cube(500) },
 		box { gloader.readOBJG("assets/obj/Box.obj") },
 		bunny { gloader.readOBJG("assets/obj/Bunny.obj") },
 		sphere { gloader.readOBJG("assets/obj/Sphere.obj") },
@@ -35,19 +37,26 @@ GRender::GRender():
 	ViewMatrixID = program.addUniform("V");
 	ModelMatrixID = program.addUniform("M");
 
+	CubeTextureID = program.addUniform("cubeTexture");
 	DiffuseTextureID = program.addUniform("diffuseTexture");
 	NormalTextureID = program.addUniform("normalTexture");
 	SpecularTextureID = program.addUniform("specularTexture");
 	useDiffTex = program.addUniform("useDiffTex");
 	useNormTex = program.addUniform("useNormTex");
 
+	SkyCubeTextureID = skybox.addUniform("cubeTexture");
+	SkyMatrixID = skybox.addUniform("MVP");
+
 	/* texturing... */
 	diffuseTex = new Tex();
 	diffuseTex->make2DTex("assets/image/brick.jpg");
 	normalTex = new Tex();
 	normalTex->make2DTex("assets/image/normal.jpg");
+	cubeTex = new Tex();
+	cubeTex->make3DTex("assets/image/sky2.png");
 
 	// setup VBO
+	sky->init(&vb);
 	box->init(&vb);
 	bunny->init(&vb);
 	sphere->init(&vb);
@@ -55,6 +64,9 @@ GRender::GRender():
 	teapot->init(&vb);
 	torus->init(&vb);
 	vb.store();
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 GRender::~GRender() {
@@ -92,6 +104,31 @@ void GRender::prepare() {
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
+	skybox.enable(); // must be first
+
+	// TODO get this from camera
+	GLfloat modelview[16];
+	GLfloat projection[16];
+	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
+	glGetFloatv( GL_PROJECTION_MATRIX, projection );
+
+	ProjectionMatrix = glm::make_mat4(projection);
+	ViewMatrix = glm::make_mat4(modelview);
+	glm::mat4 MVP = ProjectionMatrix * ViewMatrix;
+	glUniformMatrix4fv(SkyMatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex->getAddr());
+	glUniform1i(SkyCubeTextureID, 0);
+
+	/* TODO translate by camera position */
+	glDisable(GL_CULL_FACE);
+	vb.enable();
+	sky->draw();
+
+	/*
+	 * Draw the scene objects
+	 */
 	program.enable(); // must be first
 
 	// Bind our diffuse texture in Texture Unit 0
@@ -105,17 +142,21 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
 	glUniform1i(NormalTextureID, 1);
-	glUniform1i(useNormTex, true);
+	glUniform1i(useNormTex, false);
+
+	//glEnable(GL_TEXTURE_CUBE_MAP);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex->getAddr());
+	glUniform1i(CubeTextureID, 2);
 
 	// setup bump mapping
 	// TODO get this from camera
-	GLfloat modelview[16];
-	GLfloat projection[16];
-	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
-	glGetFloatv( GL_PROJECTION_MATRIX, projection );
-
-	ProjectionMatrix = glm::make_mat4(projection);
-	ViewMatrix = glm::make_mat4(modelview);
+	//GLfloat modelview[16];
+	//GLfloat projection[16];
+	//glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
+	//glGetFloatv( GL_PROJECTION_MATRIX, projection );
+	//ProjectionMatrix = glm::make_mat4(projection);
+	//ViewMatrix = glm::make_mat4(modelview);
 
 	light.setLight();
 	displayGeometry();

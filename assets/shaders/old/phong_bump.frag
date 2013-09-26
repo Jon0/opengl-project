@@ -3,22 +3,19 @@
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
-in vec4 ShadowCoord;
-
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
-
 in vec3 VertexNormal_tangentspace;
+in vec4 ShadowCoord;
+
 in vec3 LightDirection_tangentspace;
 in vec3 EyeDirection_tangentspace;
 
-in mat3 TBN;
 
 // Ouput data
 out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
@@ -52,7 +49,7 @@ vec2 poissonDisk[16] = vec2[](
 void main(){
 
 	// Light emission properties
-	// probably should put them as uniforms
+	// You probably want to put them as uniforms
 	vec3 LightColor = vec3(1,1,1);
 	float LightPower = 80.0;
 
@@ -121,31 +118,12 @@ void main(){
 	}
 	visibility = clamp( visibility, 0, 1 );
 
-
-
-
-	  /*
-	   *    Environment reflections
-	   *	reflect ray around normal from eye to surface
-	   */
-	vec3 incident_eye = normalize ( EyeDirection_tangentspace );
-	vec3 normal = normalize ( TextureNormal_tangentspace );
-	vec3 reflected = reflect (incident_eye, normal);
-
-	// convert from eye to world space
-	reflected =  inverse(TBN) * reflected;
-	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
-
-	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
-
-	color = ReflectionColor;
-
-	//color =
+	color =
 		// Ambient : simulates indirect lighting
-	//	MaterialAmbientColor +
+		MaterialAmbientColor +
 		// Diffuse : "color" of the object
-	//	MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
+		MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
 		// Specular : reflective highlight, like a mirror
-	//	MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+		MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
 
 }

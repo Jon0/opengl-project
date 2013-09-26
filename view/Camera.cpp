@@ -44,7 +44,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90.0, cam_aspect, 1.0, 1000.0);
+	gluPerspective(30.0, cam_aspect, 1.0, 1000.0);
 	glGetFloatv(GL_PROJECTION_MATRIX, proj_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrixd);
 

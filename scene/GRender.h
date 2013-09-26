@@ -26,9 +26,11 @@ public:
 	shared_ptr<MainWindow> mWnd;
 	Program program;
 	Program shadow;
+	Program skybox;
 	VertexBuffer vb;
 	GeometryLoader gloader;
 	shared_ptr<Camera> camera;
+	shared_ptr<Geometry> sky;
 	shared_ptr<Geometry> box;
 	shared_ptr<Geometry> bunny;
 	shared_ptr<Geometry> sphere;
@@ -47,10 +49,18 @@ public:
     GLuint ViewMatrixID;
     GLuint ModelMatrixID;
 
+    GLuint CubeTextureID;
 	GLuint DiffuseTextureID;
 	GLuint NormalTextureID;
 	GLuint SpecularTextureID;
 	GLuint useDiffTex, useNormTex;
+
+	/*
+	 * skybox uniforms
+	 */
+	GLuint SkyCubeTextureID;
+	GLuint SkyMatrixID;
+	GLuint SkyViewMatrixID;
 
 	/* matrix */
 	glm::mat4 ProjectionMatrix;
@@ -60,6 +70,7 @@ public:
 	/* Textures */
 	Tex *diffuseTex;
 	Tex *normalTex;
+	Tex *cubeTex;
 
 
 
