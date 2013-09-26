@@ -43,7 +43,7 @@ GRender::GRender():
 
 	/* texturing... */
 	diffuseTex = new Tex();
-	diffuseTex->make2DTex("assets/image/red.png");
+	diffuseTex->make2DTex("assets/image/brick.jpg");
 	normalTex = new Tex();
 	normalTex->make2DTex("assets/image/normal.jpg");
 
