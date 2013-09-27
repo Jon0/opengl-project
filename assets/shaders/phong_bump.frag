@@ -54,7 +54,7 @@ void main(){
 	// Light emission properties
 	// probably should put them as uniforms
 	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 80.0;
+	float LightPower = 0.0;
 
 	// Material properties
 	vec3 MaterialDiffuseColor;
@@ -68,10 +68,9 @@ void main(){
 	else {
 		MaterialDiffuseColor = vec3(1, 0, 0);
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = vec3(0.9, 0, 0);
+		MaterialSpecularColor = vec3(1, 1, 1);
 	}
-
-
+		
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
 	vec3 TextureNormal_tangentspace;
 	if (useNormTex) {
@@ -80,6 +79,19 @@ void main(){
 	else {
 		TextureNormal_tangentspace = VertexNormal_tangentspace;
 	}
+	
+	  /*
+	   *    Environment reflections
+	   *	reflect ray around normal from eye to surface
+	   */
+	vec3 incident_eye = normalize ( EyeDirection_tangentspace );
+	vec3 normal = normalize ( TextureNormal_tangentspace );
+	vec3 reflected = reflect (incident_eye, normal);
+
+	// convert from eye to world space
+	reflected =  inverse(TBN) * reflected;
+	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
+	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz * MaterialSpecularColor;
 
 
 	// Distance to the light
@@ -110,8 +122,10 @@ void main(){
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
+	/*
+	 *	Shadows
+	 */
 	//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
-
 	float bias = 0.0005*tan(acos(cosTheta));
 	bias = clamp(bias, 0,0.001);
 
@@ -121,27 +135,10 @@ void main(){
 	}
 	visibility = clamp( visibility, 0, 1 );
 
-
-
-
-	  /*
-	   *    Environment reflections
-	   *	reflect ray around normal from eye to surface
-	   */
-	vec3 incident_eye = normalize ( EyeDirection_tangentspace );
-	vec3 normal = normalize ( TextureNormal_tangentspace );
-	vec3 reflected = reflect (incident_eye, normal);
-
-	// convert from eye to world space
-	reflected =  inverse(TBN) * reflected;
-	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
-
-	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
-
 	color =
 		// Ambient : simulates indirect lighting
 	//	MaterialAmbientColor +
-		ReflectionColor * 0.3 +
+		ReflectionColor +
 		// Diffuse : "color" of the object
 		MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
 		// Specular : reflective highlight, like a mirror

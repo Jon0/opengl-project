@@ -136,13 +136,13 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glBindTexture(GL_TEXTURE_2D, diffuseTex->getAddr());
 	glUniform1i(DiffuseTextureID, 0);
 	glUniform1i(SpecularTextureID, 0);
-	glUniform1i(useDiffTex, true);
+	glUniform1i(useDiffTex, false);
 
 	// Bind our normal texture in Texture Unit 1
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
 	glUniform1i(NormalTextureID, 1);
-	glUniform1i(useNormTex, true);
+	glUniform1i(useNormTex, false);
 
 	//glEnable(GL_TEXTURE_CUBE_MAP);
 	glActiveTexture(GL_TEXTURE2);
