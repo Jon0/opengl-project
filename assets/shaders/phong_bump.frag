@@ -54,7 +54,7 @@ void main(){
 	// Light emission properties
 	// probably should put them as uniforms
 	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 0.0;
+	float LightPower = 80.0;
 
 	// Material properties
 	vec3 MaterialDiffuseColor;
@@ -70,7 +70,7 @@ void main(){
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
 		MaterialSpecularColor = vec3(1, 1, 1);
 	}
-		
+
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
 	vec3 TextureNormal_tangentspace;
 	if (useNormTex) {
@@ -79,7 +79,7 @@ void main(){
 	else {
 		TextureNormal_tangentspace = VertexNormal_tangentspace;
 	}
-	
+
 	  /*
 	   *    Environment reflections
 	   *	reflect ray around normal from eye to surface
