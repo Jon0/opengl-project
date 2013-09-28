@@ -121,7 +121,6 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	cubeTex->enable(2);
 
 	program.enable();
-
 	glEnable(GL_CULL_FACE);
 	glUniform1i(useDiffTex, false);
 	glUniform1i(useNormTex, false);
@@ -143,7 +142,6 @@ void GRender::displayGeometry() {
 void GRender::drawObject( shared_ptr<Geometry> g ) {
 	light.setTransform(g->transform());
 	model.setV( g->transform() );
-	program.enable(); // TODO hackish refresh...
 	g->draw();
 }
 

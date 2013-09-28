@@ -105,7 +105,6 @@ void LightingModel::getShadow( shared_ptr<Geometry> g, Program &p ) {
 	glm::mat4 depthViewMatrix = glm::lookAt(LightPosition.getV(), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	glm::mat4 depthModelMatrix = g->transform();
 	modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
-	p.enable(); // TODO fix
 	g->draw();
 }
 

@@ -66,9 +66,9 @@ void main(){
 		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.9;
 	}
 	else {
-		MaterialDiffuseColor = vec3(0.02, 0.98, 0.02);
+		MaterialDiffuseColor = vec3(0.1, 0.9, 0.1);
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = vec3(1, 1, 1);
+		MaterialSpecularColor = vec3(0.8, 0.8, 0.8);
 	}
 
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
@@ -91,8 +91,10 @@ void main(){
 	// convert from eye to world space
 	reflected =  inverse(TBN) * reflected;
 	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
-	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz * MaterialSpecularColor;
-
+	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
+	ReflectionColor = vec3( pow(ReflectionColor.x, 8),
+							pow(ReflectionColor.y, 8),
+							pow(ReflectionColor.z, 8) ) * MaterialSpecularColor;
 
 	// Distance to the light
 	float distance = length( LightPosition_worldspace - Position_worldspace );
