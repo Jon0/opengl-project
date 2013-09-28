@@ -35,7 +35,7 @@ Tex::~Tex() {
 void Tex::enable(GLuint i) {
 	glActiveTexture(GL_TEXTURE0 + i);
 	glBindTexture(type, addr);
-	location.data = i;
+	location.setV( i );
 }
 
 GLuint Tex::getAddr() {
@@ -50,11 +50,11 @@ void Tex::make2DTex(const string filename) {
 void Tex::make3DTex(const string filename) {
 	GLuint textureAddr;
 	glGenTextures(1, &textureAddr);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureAddr);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureAddr);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 

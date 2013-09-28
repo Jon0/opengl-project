@@ -13,6 +13,8 @@
 
 namespace std {
 
+Program *active = NULL;
+
 Program::Program(string file):
 		vert("assets/shaders/"+file+".vert", GL_VERTEX_SHADER),
 		frag("assets/shaders/"+file+".frag", GL_FRAGMENT_SHADER)
@@ -63,6 +65,11 @@ GLuint Program::addUniform(string name) {
 }
 
 void Program::enable() {
+	if (active) {
+		active->disable();
+	}
+	active = this;
+
 	/*
 	 * enable program
 	 */
@@ -73,6 +80,15 @@ void Program::enable() {
 	 */
 	for (auto &value: uniformControl) {
 		value.second->set( value.first );
+	}
+}
+
+void Program::disable() {
+	if (active == this) {
+		for (auto &value: uniformControl) {
+			value.second->unset();
+		}
+		active = NULL;
 	}
 }
 

@@ -58,10 +58,13 @@ public:
 	}
 
 	void enable();
+	void disable();
 
 	/* TODO remove this */
 	GLuint addUniform(string);
 };
+
+extern Program *active;
 
 } /* namespace std */
 #endif /* PROGRAM_H_ */

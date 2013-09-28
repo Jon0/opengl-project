@@ -16,14 +16,12 @@
 #include <GL/gl.h>
 
 #include "../shader/Program.h"
+#include "../shader/UniformControl.h"
 
 namespace std {
 
 class Light {
 public:
-
-	glm::vec3 position;
-
 	int shadowMapWidth;
 	int shadowMapHeight;
 
@@ -34,17 +32,22 @@ public:
 	GLuint depthTextureId;
 
 	/* matrix */
-	glm::mat4 depthMVP;
+	//glm::mat4 depthMVP;
 
 	glm::mat4 biasMatrix;
 
 	/*
 	 * uniforms
 	 */
-	GLuint shadowMapUniform;
-	GLuint modelMatrix;
-	GLuint DepthBias;
-	GLuint LightID;
+	UniformControl<GLuint> shadowMapUniform;
+	UniformControl<glm::mat4> modelMatrix;
+	UniformControl<glm::mat4> DepthBias;
+	UniformControl<glm::vec3> LightPosition;
+
+	UniformControl<glm::mat4> depthMVP;
+
+
+
 	float t;
 
 	Light(Program &shadow, Program &);
@@ -52,10 +55,9 @@ public:
 
 	void generateShadowFBO();
 	void getDepthMap();
-	void getShadow( shared_ptr<Geometry> );
+	void getShadow( shared_ptr<Geometry>, Program & );
 	void setLight();
-	void setTranslation(glm::vec3 pos);
-	void setTranslationB();
+	void setTransform(glm::mat4);
 };
 
 } /* namespace std */

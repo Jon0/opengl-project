@@ -52,7 +52,7 @@ public:
 	virtual ~GRender();
 
 	void start();
-	void setTranslation(glm::vec3 position);
+	void drawObject( shared_ptr<Geometry> );
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual void displayGeometry();

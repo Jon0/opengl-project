@@ -70,9 +70,9 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glGetFloatv( GL_MODELVIEW_MATRIX, modelviewf );
 	glGetFloatv( GL_PROJECTION_MATRIX, projectionf );
 
-	projection.data = glm::make_mat4(projectionf);
-	view.data = glm::make_mat4(modelviewf);
-	VP.data = projection.data * view.data;
+	projection.setV( glm::make_mat4(projectionf) );
+	view.setV( glm::make_mat4(modelviewf) );
+	VP.setV( projection.getV() * view.getV() );
 
 	scene->prepare();
 
@@ -175,11 +175,11 @@ Vec3D Camera::unProject(int x, int y) {
 }
 
 glm::mat4 Camera::viewMatrix() {
-	return view.data;
+	return view.getV();
 }
 
 glm::mat4 Camera::projectionMatrix() {
-	return projection.data;
+	return projection.getV();
 }
 
 

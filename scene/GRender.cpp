@@ -96,12 +96,12 @@ void GRender::prepare() {
 	 * prepare depth map of each light
 	 */
 	light.getDepthMap();
-	light.getShadow(table);
-	light.getShadow(box);
-	light.getShadow(bunny);
-	light.getShadow(sphere);
-	light.getShadow(teapot);
-	light.getShadow(torus);
+	light.getShadow(table, shadow);
+	light.getShadow(box, shadow);
+	light.getShadow(bunny, shadow);
+	light.getShadow(sphere, shadow);
+	light.getShadow(teapot, shadow);
+	light.getShadow(torus, shadow);
 }
 
 void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> ) {
@@ -132,33 +132,19 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 
 void GRender::displayGeometry() {
 	vb.enable();
-
-	setTranslation(glm::vec3(0,0,0));
-	table->draw();
-
-	setTranslation(glm::vec3(3,2.5,4));
-	box->draw();
-
-	setTranslation(glm::vec3(4,0.6,-5));
-	bunny->draw();
-
-	setTranslation(glm::vec3(7,1.8,2));
-	sphere->draw();
-
-	setTranslation(glm::vec3(-3,0.6,-5));
-	teapot->draw();
-
-	setTranslation(glm::vec3(-5,1,5));
-	torus->draw();
+	drawObject(table);
+	drawObject(box);
+	drawObject(bunny);
+	drawObject(sphere);
+	drawObject(teapot);
+	drawObject(torus);
 }
 
-void GRender::setTranslation(glm::vec3 position) {
-	light.setTranslation(position);
-	light.setTranslationB();
-
-	model.data = glm::translate(glm::mat4(1.0f), position);
+void GRender::drawObject( shared_ptr<Geometry> g ) {
+	light.setTransform(g->transform());
+	model.setV( g->transform() );
 	program.enable(); // TODO hackish refresh...
-
+	g->draw();
 }
 
 int GRender::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {

@@ -13,19 +13,25 @@
 namespace std {
 
 Light::Light(Program &shadow, Program &main):
-		position(7.5, 2.0, 7.5)
+		shadowMapUniform { [](GLuint i, GLuint v){ glUniform1i(i, v); } },
+		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		DepthBias { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		LightPosition { [](GLuint i, glm::vec3 v){ glUniform3f(i, v.x, v.y, v.z); } },
+		depthMVP { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } }
 {
+
+	LightPosition.setV( glm::vec3(7.5, 2.0, 7.5) );
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
 	generateShadowFBO();
 
 	/* main shader */
-	shadowMapUniform = main.addUniform("shadowMap");
-	DepthBias  = main.addUniform("DepthBiasMVP");
-	LightID = main.addUniform("LightPosition_worldspace");
+	main.setUniform("shadowMap", &shadowMapUniform);
+	main.setUniform("DepthBiasMVP", &DepthBias);
+	main.setUniform("LightPosition_worldspace", &LightPosition);
 
 	/* depth shader */
-	modelMatrix = shadow.addUniform("depthMVP");
+	shadow.setUniform("depthMVP", &modelMatrix);
 
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
@@ -81,7 +87,7 @@ void Light::generateShadowFBO() {
 }
 
 void Light::getDepthMap() {
-	position = glm::vec3( 12.5f * sin(t), 8.0f, 12.5f * cos(t) );
+	LightPosition.setV( glm::vec3( 12.5f * sin(t), 8.0f, 12.5f * cos(t) ) );
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
@@ -93,18 +99,14 @@ void Light::getDepthMap() {
 
 }
 
-void Light::getShadow( shared_ptr<Geometry> g ) {
+void Light::getShadow( shared_ptr<Geometry> g, Program &p ) {
 
 	// Compute the MVP matrix from the light's point of view
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(position, glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glm::mat4 depthViewMatrix = glm::lookAt(LightPosition.getV(), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	glm::mat4 depthModelMatrix = g->transform();
-	depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-
-	// Send our transformation to the currently bound shader,
-	// in the "MVP" uniform
-	glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, &depthMVP[0][0]);
-
+	modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
+	p.enable(); // TODO fix
 	g->draw();
 }
 
@@ -118,31 +120,16 @@ void Light::setLight() {
 	// Using the shadow shader
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, depthTextureId);
-	glUniform1i(shadowMapUniform, 7);
-
-	glUniform3f(LightID, position.x, position.y, position.z);
+	shadowMapUniform.setV(7);
 }
 
-void Light::setTranslation(glm::vec3 pos) {
+void Light::setTransform(glm::mat4 t) {
 
 	// Compute the MVP matrix from the light's point of view
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(position, glm::vec3(0,0,0), glm::vec3(0,1,0));
-	glm::mat4 depthModelMatrix = glm::translate(glm::mat4(1.0), pos);
-	depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-
-	// Send our transformation to the currently bound shader,
-	// in the "MVP" uniform
-	glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, &depthMVP[0][0]);
-
-}
-
-void Light::setTranslationB() {
-	glm::mat4 depthBiasMVP = biasMatrix*depthMVP;
-
-		// Send our transformation to the currently bound shader,
-		// in the "MVP" uniform
-	glUniformMatrix4fv(DepthBias, 1, GL_FALSE, &depthBiasMVP[0][0]);
+	glm::mat4 depthViewMatrix = glm::lookAt(LightPosition.getV(), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
+	DepthBias.setV( biasMatrix * modelMatrix.getV() );
 }
 
 } /* namespace std */
