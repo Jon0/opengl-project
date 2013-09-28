@@ -9,9 +9,10 @@
 #define GRENDER_H_
 
 #include <memory>
+#include <vector>
 #include "SceneInterface.h"
 #include "../geometry/Geometry.h"
-#include "../lighting/Light.h"
+#include "../lighting/LightingModel.h"
 #include "../load/GeometryLoader.h"
 #include "../shader/Program.h"
 #include "../view/Camera.h"
@@ -37,7 +38,7 @@ public:
 	shared_ptr<Geometry> table;
 	shared_ptr<Geometry> teapot;
 	shared_ptr<Geometry> torus;
-	Light light;
+	LightingModel light;
 
 	UniformControl<glm::mat4> model;
 

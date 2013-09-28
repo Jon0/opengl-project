@@ -1,30 +1,27 @@
 /*
  * LightingModel.h
  *
- *  Created on: 21/09/2013
+ *  Created on: 25/09/2013
  *      Author: remnanjona
  */
 
-#ifndef LIGHTINGMODEL_H_
-#define LIGHTINGMODEL_H_
+#ifndef LIGHTING_MODEL_H_
+#define LIGHTING_MODEL_H_
 
-#include "../shader/Shader.h"
+#include <memory>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
+
+#include "../shader/Program.h"
+#include "../shader/UniformControl.h"
 
 namespace std {
 
 class LightingModel {
 public:
-
-	GLfloat lightPos[4];
-
-	/*
-	 * shaders
-	 */
-	GLuint program;
-	Shader vert;
-	Shader frag;
-
 	int shadowMapWidth;
 	int shadowMapHeight;
 
@@ -34,22 +31,28 @@ public:
 	// Z values will be rendered to this texture when using fboId framebuffer
 	GLuint depthTextureId;
 
+	/* matrix */
+	glm::mat4 biasMatrix;
+
 	/*
 	 * uniforms
 	 */
-	GLuint shadowMapUniform;
-	GLuint LightID;
-	GLuint ModelView3x3MatrixID;
-    GLuint MatrixID;
-    GLuint ViewMatrixID;
-    GLuint ModelMatrixID;
+	UniformControl<GLuint> shadowMapUniform;
+	UniformControl<glm::mat4> modelMatrix;
+	UniformControl<glm::mat4> DepthBias;
+	UniformControl<glm::vec3> LightPosition;
 
-	LightingModel();
+	float t;
+
+	LightingModel(Program &shadow, Program &);
 	virtual ~LightingModel();
 
-
-
+	void generateShadowFBO();
+	void getDepthMap();
+	void getShadow( shared_ptr<Geometry>, Program & );
+	void setLight();
+	void setTransform(glm::mat4);
 };
 
 } /* namespace std */
-#endif /* LIGHTINGMODEL_H_ */
+#endif /* LIGHTING_MODEL_H_ */
