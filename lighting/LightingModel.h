@@ -26,21 +26,23 @@ public:
 	int shadowMapHeight;
 
 	// Hold id of the framebuffer for light POV rendering
-	GLuint fboId;
+	vector<GLuint> fboId;
 
 	// Z values will be rendered to this texture when using fboId framebuffer
-	GLuint depthTextureId;
+	vector<GLuint> depthTextureId;
 
-	/* matrix */
-	glm::mat4 biasMatrix;
 
 	/*
 	 * uniforms
 	 */
-	UniformControl<GLuint> shadowMapUniform;
+	UniformControl<vector<GLuint>> shadowMapUniform;
 	UniformControl<glm::mat4> modelMatrix;
 	UniformControl<glm::mat4> DepthBias;
 	UniformControl<glm::vec3> LightPosition;
+	UniformControl< vector<glm::vec4> > Positions;
+
+	/* temp matrix */
+	glm::mat4 biasMatrix;
 
 	float t;
 
@@ -49,7 +51,7 @@ public:
 
 	void generateShadowFBO();
 	void getDepthMap();
-	void getShadow( shared_ptr<Geometry>, Program & );
+	void getShadow( shared_ptr<Geometry> );
 	void setLight();
 	void setTransform(glm::mat4);
 };
