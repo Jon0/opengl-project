@@ -9,10 +9,6 @@
 #define DRAWLIST_H_
 
 #include <GL/glut.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 
 #include "../texture/Tex.h"
 #include "Geometry.h"
@@ -28,6 +24,8 @@ public:
 	virtual void init(VertexBuffer *);
 	virtual void draw();
 	virtual void drawDebug();
+	virtual glm::mat4 transform();
+	virtual void setTransform(glm::mat4);
 
 	virtual int selectMouse( int, int );
 
@@ -38,7 +36,7 @@ public:
 	vector<GPolygon> data;
 
 	/* Transformation */
-	glm::mat4 transform;
+	glm::mat4 transform_matrix;
 
 	/* Indices */
 	GLuint elementbuffer;

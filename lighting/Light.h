@@ -8,6 +8,8 @@
 #ifndef LIGHT_H_
 #define LIGHT_H_
 
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -50,6 +52,7 @@ public:
 
 	void generateShadowFBO();
 	void getDepthMap();
+	void getShadow( shared_ptr<Geometry> );
 	void setLight();
 	void setTranslation(glm::vec3 pos);
 	void setTranslationB();

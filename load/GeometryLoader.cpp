@@ -42,6 +42,9 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	vector<Vec3D> uvcoords;
 	vector<GPolygon> g_polys;
 
+	// TODO have one basis per normal, not vertex
+	// because verts can be corners.
+
 	// polygon -> number -> array position
 	vector<vector<int>> index;
 
@@ -61,7 +64,7 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 			} else if (vmode == 'n') {	// normal
 				Vec3D n;
 				fs >> n.v[0] >> n.v[1] >> n.v[2];
-				normals.push_back(n);
+				normals.push_back(n.normalise());
 			} else if (vmode == ' ') {	// vertex
 				Vec3D p;
 				fs >> p.v[0] >> p.v[1] >> p.v[2];
@@ -226,12 +229,12 @@ void GeometryLoader::CreateBasis(vector<GPolygon> &polys, int size, vector<vecto
 
 	// final assignment of basis
 	for (unsigned int i = 0; i < polys.size(); ++i) {
-		GPolygon poly = polys.data()[i];
+		GPolygon &poly = polys.data()[i];
 		for (unsigned int j = 0; j < poly.size(); ++j) {
 			int offset = index.data()[i].data()[j];
 			poly.data()[j].basis = basisArray.data()[offset];
 		}
-		polys.data()[i] = poly;
+		//polys.data()[i] = poly;
 	}
 }
 

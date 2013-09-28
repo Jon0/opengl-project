@@ -15,6 +15,10 @@ Cube::Cube(float s) {
 	index = -1;
 }
 
+Cube::~Cube() {
+	// TODO Auto-generated destructor stub
+}
+
 void Cube::init(VertexBuffer *vb) {
 	vector<GVertex> verts;
 	verts.push_back({-size,-size,-size, -0.577,-0.577,-0.577, 1,1,1});
@@ -65,8 +69,12 @@ void Cube::drawDebug() {
 	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
 }
 
-Cube::~Cube() {
-	// TODO Auto-generated destructor stub
+glm::mat4 Cube::transform() {
+	return glm::mat4(1.0);
+}
+
+void Cube::setTransform(glm::mat4) {
+
 }
 
 } /* namespace std */

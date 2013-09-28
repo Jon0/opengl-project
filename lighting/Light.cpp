@@ -93,6 +93,21 @@ void Light::getDepthMap() {
 
 }
 
+void Light::getShadow( shared_ptr<Geometry> g ) {
+
+	// Compute the MVP matrix from the light's point of view
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+	glm::mat4 depthViewMatrix = glm::lookAt(position, glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glm::mat4 depthModelMatrix = g->transform();
+	depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+	// Send our transformation to the currently bound shader,
+	// in the "MVP" uniform
+	glUniformMatrix4fv(modelMatrix, 1, GL_FALSE, &depthMVP[0][0]);
+
+	g->draw();
+}
+
 
 
 void Light::setLight() {

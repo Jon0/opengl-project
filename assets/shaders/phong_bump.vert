@@ -28,6 +28,7 @@ uniform mat4 V;
 uniform mat4 M;
 uniform mat3 MV3x3;
 uniform vec3 LightPosition_worldspace;
+uniform bool useNormTex;
 
 void main(){
 
@@ -56,11 +57,16 @@ void main(){
 	vec3 vertexBitangent_cameraspace = MV3x3 * vertexBitangent_modelspace;
 	vec3 vertexNormal_cameraspace = MV3x3 * vertexNormal_modelspace;
 
-	TBN = transpose(mat3(
-		vertexTangent_cameraspace,
-		vertexBitangent_cameraspace,
-		vertexNormal_cameraspace
-	)); // You can use dot products instead of building this matrix and transposing it. See References for details.
+	if (useNormTex) {
+		TBN = transpose(mat3(
+			vertexTangent_cameraspace,
+			vertexBitangent_cameraspace,
+			vertexNormal_cameraspace
+		)); // You can use dot products instead of building this matrix and transposing it. See References for details.
+	}
+	else {
+		TBN = mat3(1.0);
+	}
 
 	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;

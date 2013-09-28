@@ -49,6 +49,9 @@ Basis &Basis::operator+=(const Basis &b) {
 	return *this;
 }
 
+/*
+ * maybe remove this later
+ */
 Basis textureBasis( GVertex *primary, GVertex *a, GVertex *b ) {
 	Basis basis;
 	Vec3D deltaPos1 = a->getPosition() - primary->getPosition();
@@ -58,22 +61,28 @@ Basis textureBasis( GVertex *primary, GVertex *a, GVertex *b ) {
 
 	float r = 1.0f / (deltaUV1.getX() * deltaUV2.getY() - deltaUV1.getY() * deltaUV2.getX());
 
+	Vec3D norm = deltaPos1.crossProduct(deltaPos2).normalise();
+
+
+
 	/*
 	 * tangent
 	 */
 	basis.v[0] = (deltaPos1 * deltaUV2.getY()   - deltaPos2 * deltaUV1.getY())*r;
-	//basis.v[0].normalise();
+	basis.v[0].normalise();
 
 	/*
 	 * bitangent
 	 */
-	basis.v[1] = (deltaPos2 * deltaUV1.getX()   - deltaPos1 * deltaUV2.getX())*r;
+	//basis.v[1] = (deltaPos2 * deltaUV1.getX()   - deltaPos1 * deltaUV2.getX())*r;
 	//basis.v[1].normalise();
+	basis.v[1] = norm.crossProduct( basis.v[0] );
 
 	/*
 	 * normal
 	 */
-	basis.v[2] = basis.v[0].crossProduct( basis.v[1] );
+	//basis.v[2] = basis.v[0].crossProduct( basis.v[1] );
+	basis.v[2] = norm;
 
 	return basis;
 }

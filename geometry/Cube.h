@@ -28,6 +28,8 @@ public:
 	void init(VertexBuffer *);
 	virtual void draw();
 	virtual void drawDebug();
+	virtual glm::mat4 transform();
+	virtual void setTransform(glm::mat4);
 };
 
 } /* namespace std */

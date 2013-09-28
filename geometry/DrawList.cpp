@@ -15,7 +15,7 @@ DrawList::DrawList(vector<GPolygon> shape) {
 	s = shape.size();
 	elementbuffer = 0;
 
-	transform = glm::mat4(1.0f);
+	transform_matrix = glm::mat4(1.0f);
 }
 
 DrawList::~DrawList() {}
@@ -70,6 +70,14 @@ void DrawList::drawDebug() {
 
 int DrawList::selectMouse(int, int) {
 	return false;
+}
+
+glm::mat4 DrawList::transform() {
+	return transform_matrix;
+}
+
+void DrawList::setTransform(glm::mat4 t) {
+	transform_matrix = t;
 }
 
 } /* namespace std */

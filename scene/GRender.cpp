@@ -65,6 +65,13 @@ GRender::GRender():
 	torus->init(&vb);
 	vb.store();
 
+	table->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)) );
+	box->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(3.0, 2.5, 4.0)) );
+	bunny->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(4,0.6,-5)) );
+	sphere->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(7,1.8,2)) );
+	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-3,0.6,-5)) );
+	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-5,1,5)) );
+
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
@@ -78,29 +85,20 @@ void GRender::start() {
 	mWnd->addView( camera );
 }
 
+/*
+ * TODO only call this once
+ */
 void GRender::prepare() {
 	shadow.enable();
 
 	// TODO translatable interface
 	light.getDepthMap();
-
-	light.setTranslation(glm::vec3(0,0,0));
-	table->draw();
-
-	light.setTranslation(glm::vec3(3,2.5,4));
-	box->draw();
-
-	light.setTranslation(glm::vec3(4,0.6,-5));
-	bunny->draw();
-
-	light.setTranslation(glm::vec3(7,1.8,2));
-	sphere->draw();
-
-	light.setTranslation(glm::vec3(-3,0.6,-5));
-	teapot->draw();
-
-	light.setTranslation(glm::vec3(-5,1,5));
-	torus->draw();
+	light.getShadow(table);
+	light.getShadow(box);
+	light.getShadow(bunny);
+	light.getShadow(sphere);
+	light.getShadow(teapot);
+	light.getShadow(torus);
 }
 
 void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
@@ -142,7 +140,7 @@ void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
 	glUniform1i(NormalTextureID, 1);
-	glUniform1i(useNormTex, true);
+	glUniform1i(useNormTex, false);
 
 	//glEnable(GL_TEXTURE_CUBE_MAP);
 	glActiveTexture(GL_TEXTURE2);

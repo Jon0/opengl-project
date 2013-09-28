@@ -5,6 +5,8 @@
  *      Author: remnanjona
  */
 
+#include <glm/glm.hpp>
+
 #include "../buffer/VertexBuffer.h"
 
 #ifndef GEOMETRY_H_
@@ -18,6 +20,8 @@ public:
 	virtual void init(VertexBuffer *) = 0;
 	virtual void draw() = 0;
 	virtual void drawDebug() = 0;
+	virtual glm::mat4 transform() = 0;
+	virtual void setTransform(glm::mat4) = 0;
 };
 
 } /* namespace std */

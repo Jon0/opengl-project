@@ -60,7 +60,6 @@ public:
 	 */
 	GLuint SkyCubeTextureID;
 	GLuint SkyMatrixID;
-	GLuint SkyViewMatrixID;
 
 	/* matrix */
 	glm::mat4 ProjectionMatrix;
