@@ -37,41 +37,16 @@ public:
 	shared_ptr<Geometry> table;
 	shared_ptr<Geometry> teapot;
 	shared_ptr<Geometry> torus;
-
-
 	Light light;
 
-	/*
-	 * uniforms
-	 */
-	GLuint ModelView3x3MatrixID;
-    GLuint MatrixID;
-    GLuint ViewMatrixID;
-    GLuint ModelMatrixID;
+	UniformControl<glm::mat4> model;
 
-    GLuint CubeTextureID;
-	GLuint DiffuseTextureID;
-	GLuint NormalTextureID;
-	GLuint SpecularTextureID;
 	GLuint useDiffTex, useNormTex;
-
-	/*
-	 * skybox uniforms
-	 */
-	GLuint SkyCubeTextureID;
-	GLuint SkyMatrixID;
-
-	/* matrix */
-	glm::mat4 ProjectionMatrix;
-	glm::mat4 ViewMatrix;
-	glm::mat4 ModelMatrix;
 
 	/* Textures */
 	Tex *diffuseTex;
 	Tex *normalTex;
 	Tex *cubeTex;
-
-
 
 	GRender();
 	virtual ~GRender();

@@ -19,18 +19,26 @@ out vec3 VertexNormal_tangentspace;
 out vec3 LightDirection_tangentspace;
 out vec3 EyeDirection_tangentspace;
 
+out mat4 MVP;
+out mat3 MV3x3;
 out mat3 TBN;
+
+
 
 // Values that stay constant for the whole mesh
 uniform mat4 DepthBiasMVP;
-uniform mat4 MVP;
+
+uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
-uniform mat3 MV3x3;
+
 uniform vec3 LightPosition_worldspace;
 uniform bool useNormTex;
 
 void main(){
+
+	MVP = P * V * M;
+	MV3x3 = mat3(V * M);
 
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4( vertexPosition_modelspace, 1 );

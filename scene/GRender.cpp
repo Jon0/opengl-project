@@ -25,27 +25,10 @@ GRender::GRender():
 		table { gloader.readOBJG("assets/obj/Table.obj") },
 		teapot { gloader.readOBJG("assets/obj/Teapot.obj") },
 		torus { gloader.readOBJG("assets/obj/Torus.obj") },
-		light { shadow, program }
+		light { shadow, program },
+		model { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } }
 {
 	mWnd->start();
-
-	/*
-	 * set uniforms
-	 */
-	ModelView3x3MatrixID = program.addUniform("MV3x3");
-	MatrixID = program.addUniform("MVP");
-	ViewMatrixID = program.addUniform("V");
-	ModelMatrixID = program.addUniform("M");
-
-	CubeTextureID = program.addUniform("cubeTexture");
-	DiffuseTextureID = program.addUniform("diffuseTexture");
-	NormalTextureID = program.addUniform("normalTexture");
-	SpecularTextureID = program.addUniform("specularTexture");
-	useDiffTex = program.addUniform("useDiffTex");
-	useNormTex = program.addUniform("useNormTex");
-
-	SkyCubeTextureID = skybox.addUniform("cubeTexture");
-	SkyMatrixID = skybox.addUniform("MVP");
 
 	/* texturing... */
 	diffuseTex = new Tex();
@@ -54,6 +37,9 @@ GRender::GRender():
 	normalTex->make2DTex("assets/image/normal.jpg");
 	cubeTex = new Tex();
 	cubeTex->make3DTex("assets/image/sky2.png");
+
+	useDiffTex = program.addUniform("useDiffTex");
+	useNormTex = program.addUniform("useNormTex");
 
 	// setup VBO
 	sky->init(&vb);
@@ -83,6 +69,21 @@ GRender::~GRender() {
 void GRender::start() {
 	camera = shared_ptr<Camera>{ new Camera( shared_from_this(), mWnd ) };
 	mWnd->addView( camera );
+
+	/*
+	 * set uniforms
+	 */
+	skybox.setUniform("MVP", &camera->VP);
+
+	program.setUniform("V", &camera->view);
+	program.setUniform("P", &camera->projection);
+	program.setUniform("M", &model);
+	program.setUniform("cubeTexture", &cubeTex->location);
+	program.setUniform("diffuseTexture", &diffuseTex->location);
+	program.setUniform("normalTexture", &normalTex->location);
+	program.setUniform("specularTexture", &diffuseTex->location);
+
+	skybox.setUniform("cubeTexture", &cubeTex->location);
 }
 
 /*
@@ -91,7 +92,9 @@ void GRender::start() {
 void GRender::prepare() {
 	shadow.enable();
 
-	// TODO translatable interface
+	/*
+	 * prepare depth map of each light
+	 */
 	light.getDepthMap();
 	light.getShadow(table);
 	light.getShadow(box);
@@ -101,60 +104,27 @@ void GRender::prepare() {
 	light.getShadow(torus);
 }
 
-void GRender::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
-	skybox.enable(); // must be first
-
-	// TODO get this from camera
-	GLfloat modelview[16];
-	GLfloat projection[16];
-	glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
-	glGetFloatv( GL_PROJECTION_MATRIX, projection );
-
-	ProjectionMatrix = glm::make_mat4(projection);
-	ViewMatrix = glm::make_mat4(modelview);
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix;
-	glUniformMatrix4fv(SkyMatrixID, 1, GL_FALSE, &MVP[0][0]);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex->getAddr());
-	glUniform1i(SkyCubeTextureID, 0);
+void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> ) {
+	cubeTex->enable(0);
 
 	/* TODO translate by camera position */
 	glDisable(GL_CULL_FACE);
+	skybox.enable();
 	vb.enable();
 	sky->draw();
 
 	/*
 	 * Draw the scene objects
 	 */
-	program.enable(); // must be first
+	diffuseTex->enable(0);
+	normalTex->enable(1);
+	cubeTex->enable(2);
 
-	// Bind our diffuse texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuseTex->getAddr());
-	glUniform1i(DiffuseTextureID, 0);
-	glUniform1i(SpecularTextureID, 0);
+	program.enable();
+
+	glEnable(GL_CULL_FACE);
 	glUniform1i(useDiffTex, false);
-
-	// Bind our normal texture in Texture Unit 1
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, normalTex->getAddr());
-	glUniform1i(NormalTextureID, 1);
 	glUniform1i(useNormTex, false);
-
-	//glEnable(GL_TEXTURE_CUBE_MAP);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex->getAddr());
-	glUniform1i(CubeTextureID, 2);
-
-	// setup bump mapping
-	// TODO get this from camera
-	//GLfloat modelview[16];
-	//GLfloat projection[16];
-	//glGetFloatv( GL_MODELVIEW_MATRIX, modelview );
-	//glGetFloatv( GL_PROJECTION_MATRIX, projection );
-	//ProjectionMatrix = glm::make_mat4(projection);
-	//ViewMatrix = glm::make_mat4(modelview);
 
 	light.setLight();
 	displayGeometry();
@@ -186,17 +156,9 @@ void GRender::setTranslation(glm::vec3 position) {
 	light.setTranslation(position);
 	light.setTranslationB();
 
-	ModelMatrix = glm::translate(glm::mat4(1.0f), position);
-	glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
-	glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix); // Take the upper-left part of ModelViewMatrix
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	model.data = glm::translate(glm::mat4(1.0f), position);
+	program.enable(); // TODO hackish refresh...
 
-	// Send our transformation to the currently bound shader,
-	// in the "MVP" uniform
-	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	glUniformMatrix3fv(ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
 }
 
 int GRender::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {

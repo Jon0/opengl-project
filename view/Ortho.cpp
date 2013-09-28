@@ -78,6 +78,14 @@ Vec3D Ortho::unProject(int x, int y) {
 	return Vec3D(point[0], point[1], point[2]);
 }
 
+glm::mat4 Ortho::viewMatrix() {
+
+}
+
+glm::mat4 Ortho::projectionMatrix() {
+
+}
+
 void drawString(string message, float x, float y) {
 	/* translate and draw text */
 	glPushMatrix();

@@ -10,9 +10,11 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 #include <GL/gl.h>
 
 #include "Shader.h"
+#include "UniformControl.h"
 #include "../buffer/VertexBuffer.h"
 #include "../geometry/Geometry.h"
 #include "../texture/Tex.h"
@@ -29,17 +31,36 @@ private:
 	Shader vert;
 	Shader frag;
 
-	map<string, GLuint> uniform;
+	/*
+	 * attached uniforms
+	 */
+	map<string, GLuint> uniformName;
+	map<GLuint, UniformControlBase *> uniformControl;
 
 public:
 	Program(string);
 	virtual ~Program();
 
-	GLuint addUniform(string);
-	GLuint getUniform(string);
-	void setup( shared_ptr<Geometry> d );
-	void setTranslation();
+	/*
+	 * set a uniform to match a control value, the uniform is automatically
+	 * updated when calling enable()
+	 */
+	template<class T> void setUniform(string name, UniformControl<T> *c) {
+		auto value = uniformName.find(name);	// check for existing value
+		if (value == uniformName.end()) {
+			GLuint id = glGetUniformLocation(programID, name.c_str());
+			uniformName[name] = id;
+			uniformControl[id] = c;
+		}
+		else {
+			uniformControl.at( uniformName[name] ) = c;
+		}
+	}
+
 	void enable();
+
+	/* TODO remove this */
+	GLuint addUniform(string);
 };
 
 } /* namespace std */

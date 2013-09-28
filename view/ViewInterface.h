@@ -10,6 +10,8 @@
 
 #include <memory>
 #include <chrono>
+#include <glm/glm.hpp>
+
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
 
@@ -32,6 +34,8 @@ public:
 	virtual int mouseDragged(int, int) = 0;
 	virtual Quaternion cameraAngle() = 0;
 	virtual Vec3D unProject(int, int) = 0;
+	virtual glm::mat4 viewMatrix() = 0;
+	virtual glm::mat4 projectionMatrix() = 0;
 };
 
 } /* namespace std */

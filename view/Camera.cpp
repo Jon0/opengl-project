@@ -7,18 +7,24 @@
 
 #include <iostream>
 #include <math.h>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Camera.h"
 
 namespace std {
 
 Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
+		view { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		projection { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		VP { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		scene(s),
 		focus{0, 0, 0},
 		cam_angle{1, 0, 0, 0},
 		cam_angle_d{1, 0, 0, 0},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
-		control{} {
+		control{}
+{
 	cam_aspect = 1.0;
 	viewzoom = 10.0;
 
@@ -26,6 +32,7 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
 	click_x = click_y = 0;
+	windowwidth = windowheight = 1;
 
 	wnd = mw;
 }
@@ -35,11 +42,6 @@ Camera::~Camera() {}
 void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle.rotate( cam_angle_d );
 	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, ( 1 - tick.count() * 10 ) );
-
-	scene->prepare();
-
-	glBindFramebuffer(GL_FRAMEBUFFER,0);
-	glViewport(0, 0, windowwidth, windowheight);
 
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
@@ -61,6 +63,21 @@ void Camera::setView( chrono::duration<double> tick ) {
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, model_matrixd);
+
+	// get this first
+	GLfloat modelviewf[16];
+	GLfloat projectionf[16];
+	glGetFloatv( GL_MODELVIEW_MATRIX, modelviewf );
+	glGetFloatv( GL_PROJECTION_MATRIX, projectionf );
+
+	projection.data = glm::make_mat4(projectionf);
+	view.data = glm::make_mat4(modelviewf);
+	VP.data = projection.data * view.data;
+
+	scene->prepare();
+
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+	glViewport(0, 0, windowwidth, windowheight);
 
 	scene->display( shared_from_this(), tick );
 	glPopMatrix();
@@ -155,6 +172,14 @@ Vec3D Camera::unProject(int x, int y) {
     glGetIntegerv( GL_VIEWPORT, viewport );
 	gluUnProject(x, y, 0.99, modelview, projection, viewport, &point[0], &point[1], &point[2]);
 	return Vec3D(point[0], point[1], point[2]);
+}
+
+glm::mat4 Camera::viewMatrix() {
+	return view.data;
+}
+
+glm::mat4 Camera::projectionMatrix() {
+	return projection.data;
 }
 
 

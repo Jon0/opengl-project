@@ -19,8 +19,11 @@
 
 namespace std {
 
-Tex::Tex() {
+Tex::Tex():
+		location { [](GLuint i, GLint v){ glUniform1i(i, v); } }
+{
 	addr = 0; //loadTexture(filename, width, height);
+	type = 0;
 	width = 0;
 	height = 0;
 }
@@ -29,12 +32,19 @@ Tex::~Tex() {
 	// TODO Auto-generated destructor stub
 }
 
+void Tex::enable(GLuint i) {
+	glActiveTexture(GL_TEXTURE0 + i);
+	glBindTexture(type, addr);
+	location.data = i;
+}
+
 GLuint Tex::getAddr() {
 	return addr;
 }
 
 void Tex::make2DTex(const string filename) {
 	addr = loadGLTexture(filename);
+	type = GL_TEXTURE_2D;
 }
 
 void Tex::make3DTex(const string filename) {
@@ -96,6 +106,7 @@ void Tex::make3DTex(const string filename) {
 	addr = textureAddr;
 	width = sq;
 	height = sq;
+	type = GL_TEXTURE_CUBE_MAP;
 }
 
 unsigned char *Tex::subImage(unsigned char *imageData, int sq, int sizeX, int x, int y) {

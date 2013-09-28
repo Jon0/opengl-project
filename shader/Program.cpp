@@ -51,31 +51,29 @@ Program::~Program() {
 }
 
 GLuint Program::addUniform(string name) {
-	GLuint id = glGetUniformLocation(programID, name.c_str());
-	uniform[name] = id;
-	return id;
+	auto value = uniformName.find(name);
+	if (value == uniformName.end()) {
+		GLuint id = glGetUniformLocation(programID, name.c_str());
+		uniformName[name] = id;
+		return id;
+	}
+	else {
+		return value->second;
+	}
 }
-
-GLuint Program::getUniform(string name) {
-	return uniform[name];
-}
-
-void Program::setup( shared_ptr<Geometry> d ) {
-
-
-}
-
-// TODO ???
-void Program::setTranslation() {
-
-}
-
 
 void Program::enable() {
 	/*
 	 * enable program
 	 */
 	glUseProgram(programID);
+
+	/*
+	 * set uniform values
+	 */
+	for (auto &value: uniformControl) {
+		value.second->set( value.first );
+	}
 }
 
 } /* namespace std */

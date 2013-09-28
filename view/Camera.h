@@ -11,10 +11,12 @@
 #include <memory>
 #include <GL/glut.h>
 #include <glm/glm.hpp>
+
 #include "ViewInterface.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
 #include "../scene/SceneInterface.h"
+#include "../shader/UniformControl.h"
 #include "../window/MainWindow.h"
 #include "../window/MouseListener.h"
 
@@ -35,10 +37,15 @@ public:
 	virtual int mouseDragged(int, int);
 	virtual Quaternion cameraAngle();
 	virtual Vec3D unProject(int, int);
+	virtual glm::mat4 viewMatrix();
+	virtual glm::mat4 projectionMatrix();
 
+	/* TODO remove these */
 	void setupMatrix();
 	GLfloat *getProjMatrix();
 	GLfloat *getModelMatrix();
+
+	UniformControl<glm::mat4> view, projection, VP;
 
 private:
 	shared_ptr<MainWindow> wnd;
@@ -50,7 +57,8 @@ private:
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16], proj_matrix [16], model_matrix [16];
 	GLdouble proj_matrixd [16], model_matrixd [16];
-	//glm::mat4 modelView;
+
+
 };
 
 } /* namespace std */

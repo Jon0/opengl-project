@@ -66,7 +66,7 @@ void main(){
 		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.9;
 	}
 	else {
-		MaterialDiffuseColor = vec3(1, 0, 0);
+		MaterialDiffuseColor = vec3(0.02, 0.98, 0.02);
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
 		MaterialSpecularColor = vec3(1, 1, 1);
 	}

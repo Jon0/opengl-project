@@ -16,6 +16,9 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include <png.h>
+#include <glm/glm.hpp>
+
+#include "../shader/UniformControl.h"
 
 //Magic defines for libPNG because they removed them from the library
 #define png_infopp_NULL (png_infopp)NULL
@@ -43,12 +46,16 @@ int loadTextureFromJPEG(const string,TextureInfo *);
 int loadTextureFromPNG(const string, TextureInfo *);
 
 class Tex {
-	GLuint addr;
-	int width, height;
 public:
+	GLuint addr;
+	GLenum type;
+	int width, height;
+	UniformControl<GLint> location;
+
 	Tex();
 	virtual ~Tex();
 
+	void enable(GLuint);
 	GLuint getAddr();
 	void make2DTex(const string filename);
 	void make3DTex(const string filename);

@@ -34,6 +34,8 @@ public:
 	virtual int mouseDragged(int, int);
 	virtual Quaternion cameraAngle();
 	virtual Vec3D unProject(int, int);
+	virtual glm::mat4 viewMatrix();
+	virtual glm::mat4 projectionMatrix();
 
 protected:
 	int view_width, view_height;

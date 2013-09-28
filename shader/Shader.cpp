@@ -44,7 +44,7 @@ Shader::Shader(string filename, GLenum type) {
 
 	        //The maxLength includes the NULL character
 	        std::vector<char> errorLog(maxLength);
-	        glGetShaderInfoLog(ShaderHandle, maxLength, &maxLength, &errorLog[0]);
+	        glGetShaderInfoLog(ShaderHandle, maxLength, &maxLength, errorLog.data()); // &errorLog[0]
 	        cerr << "error in file " << filename << endl;
 	        cerr << errorLog.data() << endl;
 
