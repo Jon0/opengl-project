@@ -34,7 +34,7 @@ Render::Render():
 	teapot = new DrawList(g.readOBJ("assets/obj/Teapot.obj"));
 	torus = new DrawList(g.readOBJ("assets/obj/Torus.obj"));
 
-	torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
+	//torus->setBumpMap("assets/image/wood.jpg", "assets/image/normal.jpg", lighting.program);
 
 	/*
 	 * TODO with vbo this isnt needed

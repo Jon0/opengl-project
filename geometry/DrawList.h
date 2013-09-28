@@ -9,6 +9,11 @@
 #define DRAWLIST_H_
 
 #include <GL/glut.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+
 #include "../texture/Tex.h"
 #include "Geometry.h"
 #include "GVertex.h"
@@ -26,32 +31,17 @@ public:
 
 	virtual int selectMouse( int, int );
 
-	void compile( GLenum );
-	void setBumpMap( const char *, const char *, GLuint );
-	void setupBump();
-
 	/*
 	 * do these need to be kept?
 	 */
 	unsigned int s;
 	vector<GPolygon> data;
 
+	/* Transformation */
+	glm::mat4 transform;
+
 	/* Indices */
 	GLuint elementbuffer;
-
-	/* Buffers */
-	GLuint vertexbuffer;
-	GLuint uvbuffer;
-	GLuint normalbuffer;
-	GLuint tangentbuffer;
-	GLuint bitangentbuffer;
-
-	/* Textures */
-	Tex *diffuseTex;
-	Tex *normalTex;
-	GLuint DiffuseTextureID;
-	GLuint NormalTextureID;
-	GLuint SpecularTextureID;
 };
 
 } /* namespace std */
