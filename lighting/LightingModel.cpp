@@ -19,11 +19,15 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } }
 {
 
+	shadowMapWidth = 1024 * 8; //800 * 3;
+	shadowMapHeight = 1024 * 8; //600 * 3;
+	numLights = 1;
 
 	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
 	Positions.data.push_back( glm::vec4(-7.5, 2.0, -7.5, 1.0) );
-	shadowMapWidth = 1024 * 8; //800 * 3;
-	shadowMapHeight = 1024 * 8; //600 * 3;
+
+	depthTextureId.reserve(numLights);
+	fboId.reserve(numLights);
 	generateShadowFBO();
 
 	/* main shader */
@@ -53,35 +57,38 @@ void LightingModel::generateShadowFBO() {
 	GLenum FBOstatus;
 
 	// Try to use a texture depth component
-	glGenTextures(1, &depthTextureId);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadowMapWidth, shadowMapHeight, 0,
-			GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-
+	glGenTextures(numLights, depthTextureId.data());
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, shadowMapWidth, shadowMapHeight, 0,
+				GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// create a framebuffer object
-	glGenFramebuffers(1, &fboId);
-	glBindFramebuffer(GL_FRAMEBUFFER, fboId);
+	glGenFramebuffers(numLights, fboId.data());
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fboId.data()[i]);
 
-	// Instruct openGL that we won't bind a color texture with the currently bound FBO
-	glDrawBuffer(GL_NONE);
-	//glReadBuffer(GL_NONE);
+		// Instruct openGL that we won't bind a color texture with the currently bound FBO
+		glDrawBuffer(GL_NONE);
+		//glReadBuffer(GL_NONE);
 
-	// attach the texture to FBO depth attachment point
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureId, 0);
+		// attach the texture to FBO depth attachment point
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureId.data()[i], 0);
 
-	// check FBO status
-	FBOstatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (FBOstatus != GL_FRAMEBUFFER_COMPLETE)
-		printf("GL_FRAMEBUFFER_COMPLETE failed, CANNOT use FBO\n");
+		// check FBO status
+		FBOstatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (FBOstatus != GL_FRAMEBUFFER_COMPLETE)
+			printf("GL_FRAMEBUFFER_COMPLETE failed, CANNOT use FBO\n");
+	}
 
 	// switch back to window-system-provided framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -92,7 +99,7 @@ void LightingModel::getDepthMap() {
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
-	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId);	//Rendering offscreen
+	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[0]);	//Rendering offscreen
 	glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
@@ -119,7 +126,7 @@ void LightingModel::setLight() {
 
 	// Using the shadow shader
 	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId);
+	glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[0]);
 	shadowMapUniform.setV(7);
 }
 

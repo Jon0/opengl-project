@@ -24,12 +24,13 @@ class LightingModel {
 public:
 	int shadowMapWidth;
 	int shadowMapHeight;
+	unsigned int numLights;
 
 	// Hold id of the framebuffer for light POV rendering
-	GLuint fboId;
+	vector<GLuint> fboId;
 
 	// Z values will be rendered to this texture when using fboId framebuffer
-	GLuint depthTextureId;
+	vector<GLuint> depthTextureId;
 
 	/* matrix */
 	glm::mat4 biasMatrix;
@@ -40,6 +41,9 @@ public:
 	UniformControl<GLuint> shadowMapUniform;
 	UniformControl<glm::mat4> modelMatrix;
 	UniformControl<glm::mat4> DepthBias;
+
+
+
 	UniformControl< vector<glm::vec4> > Positions;
 
 	float t;
