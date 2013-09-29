@@ -40,7 +40,6 @@ public:
 	UniformControl<GLuint> shadowMapUniform;
 	UniformControl<glm::mat4> modelMatrix;
 	UniformControl<glm::mat4> DepthBias;
-	UniformControl<glm::vec3> LightPosition;
 	UniformControl< vector<glm::vec4> > Positions;
 
 	float t;

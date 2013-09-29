@@ -16,14 +16,12 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		shadowMapUniform { [](GLuint i, GLuint v){ glUniform1i(i, v); } },
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		DepthBias { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		LightPosition { [](GLuint i, glm::vec3 v){ glUniform3f(i, v.x, v.y, v.z); } },
 		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } }
 {
 
 
 	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
 	Positions.data.push_back( glm::vec4(-7.5, 2.0, -7.5, 1.0) );
-	LightPosition.setV( glm::vec3(7.5, 2.0, 7.5) );
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
 	generateShadowFBO();
@@ -31,7 +29,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	/* main shader */
 	main.setUniform("shadowMap", &shadowMapUniform);
 	main.setUniform("DepthBiasMVP", &DepthBias);
-	main.setUniform("LightPosition_worldspace", &LightPosition);
+	main.setUniform("LightPosition_worldspace", &Positions);
 
 	/* depth shader */
 	shadow.setUniform("depthMVP", &modelMatrix);
@@ -90,7 +88,7 @@ void LightingModel::generateShadowFBO() {
 }
 
 void LightingModel::getDepthMap() {
-	LightPosition.setV( glm::vec3( 12.5f * sin(t), 8.0f, 12.5f * cos(t) ) );
+	Positions.data.data()[0] = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
@@ -106,7 +104,7 @@ void LightingModel::getShadow( shared_ptr<Geometry> g ) {
 
 	// Compute the MVP matrix from the light's point of view
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(LightPosition.getV(), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	glm::mat4 depthModelMatrix = g->transform();
 	modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
 	g->draw();
@@ -129,7 +127,7 @@ void LightingModel::setTransform(glm::mat4 t) {
 
 	// Compute the MVP matrix from the light's point of view
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(LightPosition.getV(), glm::vec3(0,0,0), glm::vec3(0,1,0));
+	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
 	DepthBias.setV( biasMatrix * modelMatrix.getV() );
 }

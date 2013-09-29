@@ -26,7 +26,7 @@ uniform sampler2DShadow shadowMap;
 uniform mat4 V;
 uniform mat4 M;
 uniform mat3 MV3x3;
-uniform vec3 LightPosition_worldspace;
+uniform vec4 LightPosition_worldspace [1];
 uniform bool useDiffTex;
 uniform bool useNormTex;
 
@@ -104,7 +104,7 @@ void main(){
 	 */
 
 	// Distance to the light
-	float distance = length( LightPosition_worldspace - Position_worldspace );
+	float distance = length( LightPosition_worldspace[0].xyz - Position_worldspace );
 
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize(LightDirection_tangentspace);

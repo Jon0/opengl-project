@@ -12,12 +12,13 @@ out vec2 UV;
 out vec4 ShadowCoord;
 out vec3 Position_worldspace;
 
-out vec3 EyeDirection_cameraspace;
-out vec3 LightDirection_cameraspace;
-
 out vec3 VertexNormal_tangentspace;
-out vec3 LightDirection_tangentspace;
+
+out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace;
+
+out vec3 LightDirection_cameraspace;
+out vec3 LightDirection_tangentspace;
 
 out mat4 MVP;
 out mat3 MV3x3;
@@ -26,13 +27,12 @@ out mat3 TBN;
 
 
 // Values that stay constant for the whole mesh
-uniform mat4 DepthBiasMVP;
-
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 
-uniform vec3 LightPosition_worldspace;
+uniform mat4 DepthBiasMVP;
+uniform vec4 LightPosition_worldspace [1];
 uniform bool useNormTex;
 
 void main(){
@@ -43,8 +43,6 @@ void main(){
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4( vertexPosition_modelspace, 1 );
 
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace, 1);
-
 	// Position of the vertex, in worldspace : M * position
 	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
 
@@ -53,9 +51,6 @@ void main(){
 	vec3 vertexPosition_cameraspace = ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
 	EyeDirection_cameraspace = vec3(0,0,0) - vertexPosition_cameraspace;
 
-	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-	vec3 LightPosition_cameraspace = ( V * vec4(LightPosition_worldspace,1)).xyz;
-	LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
 
 	// UV of the vertex. No special space for this one.
 	UV = vertexUV;
@@ -76,7 +71,20 @@ void main(){
 		TBN = mat3(1.0);
 	}
 
-	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
+
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
 	VertexNormal_tangentspace = TBN * vertexNormal_cameraspace;
+
+
+	/*
+	 * per light operations
+	 */
+
+	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace, 1);
+
+	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
+	vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[0] ).xyz;
+	LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
+
+	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
 }
