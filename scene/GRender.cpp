@@ -31,8 +31,10 @@ GRender::GRender():
 	mWnd->start();
 
 	/* texturing... */
-	diffuseTex = new Tex();
-	diffuseTex->make2DTex("assets/image/brick.jpg");
+	woodTex = new Tex();
+	woodTex->make2DTex("assets/image/wood.jpg");
+	brickTex = new Tex();
+	brickTex->make2DTex("assets/image/brick.jpg");
 	normalTex = new Tex();
 	normalTex->make2DTex("assets/image/normal.jpg");
 	cubeTex = new Tex();
@@ -79,9 +81,9 @@ void GRender::start() {
 	program.setUniform("P", &camera->projection);
 	program.setUniform("M", &model);
 	program.setUniform("cubeTexture", &cubeTex->location);
-	program.setUniform("diffuseTexture", &diffuseTex->location);
+	program.setUniform("diffuseTexture", &brickTex->location);
 	program.setUniform("normalTexture", &normalTex->location);
-	program.setUniform("specularTexture", &diffuseTex->location);
+	program.setUniform("specularTexture", &brickTex->location);
 
 	skybox.setUniform("cubeTexture", &cubeTex->location);
 }
@@ -116,14 +118,13 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	/*
 	 * Draw the scene objects
 	 */
-	diffuseTex->enable(0);
+	brickTex->enable(0);
 	normalTex->enable(1);
 	cubeTex->enable(2);
 
 	program.enable();
 	glEnable(GL_CULL_FACE);
-	glUniform1i(useDiffTex, false);
-	glUniform1i(useNormTex, false);
+
 
 	light.setLight();
 	displayGeometry();
@@ -131,11 +132,24 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 
 void GRender::displayGeometry() {
 	vb.enable();
+
+	glUniform1i(useDiffTex, true);
+	glUniform1i(useNormTex, false);
+	woodTex->enable(0);
 	drawObject(table);
+
+	glUniform1i(useDiffTex, true);
+	glUniform1i(useNormTex, false);
+	brickTex->enable(0);
 	drawObject(box);
+
+	glUniform1i(useDiffTex, false);
+	glUniform1i(useNormTex, false);
 	drawObject(bunny);
 	drawObject(sphere);
 	drawObject(teapot);
+
+	glUniform1i(useNormTex, true);
 	drawObject(torus);
 }
 

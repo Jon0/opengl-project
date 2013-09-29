@@ -25,7 +25,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	 * setup lights
 	 */
 	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
-	Positions.data.push_back( glm::vec4(-7.5, 2.0, -7.5, 1.0) );
+	Positions.data.push_back( glm::vec4(-13.5, 9.0, -7.5, 1.0) );
 	numLights = Positions.data.size();
 
 	shadowMaps.data.resize(numLights);

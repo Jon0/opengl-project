@@ -45,7 +45,8 @@ public:
 	GLuint useDiffTex, useNormTex;
 
 	/* Textures */
-	Tex *diffuseTex;
+	Tex *woodTex;
+	Tex *brickTex;
 	Tex *normalTex;
 	Tex *cubeTex;
 
