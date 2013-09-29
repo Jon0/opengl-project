@@ -16,7 +16,8 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } }
+		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
+		lightProperties { main.getBlock("LightProperties") }
 {
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
@@ -25,7 +26,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	 * setup lights
 	 */
 	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
-	Positions.data.push_back( glm::vec4(-13.5, 9.0, -7.5, 1.0) );
+	Positions.data.push_back( glm::vec4(-0.5, 15.0, -2.5, 1.0) );
 	numLights = Positions.data.size();
 
 	shadowMaps.data.resize(numLights);

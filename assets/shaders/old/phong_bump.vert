@@ -9,29 +9,37 @@ layout(location = 4) in vec3 vertexBitangent_modelspace;
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
-out vec4 ShadowCoord;
 out vec3 Position_worldspace;
-out vec3 EyeDirection_cameraspace;
-out vec3 LightDirection_cameraspace;
 out vec3 VertexNormal_tangentspace;
 
-out vec3 LightDirection_tangentspace;
+out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace;
 
+out vec3 LightDirection_cameraspace [8];
+out vec3 LightDirection_tangentspace [8];
+
+out vec4 ShadowCoord [8];
+
+out mat4 MVP;
+out mat3 MV3x3;
+out mat3 TBN;
+
 // Values that stay constant for the whole mesh
-uniform mat4 DepthBiasMVP;
-uniform mat4 MVP;
+uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
-uniform mat3 MV3x3;
-uniform vec3 LightPosition_worldspace;
+
+uniform mat4 DepthBiasMVP [8];
+uniform vec4 LightPosition_worldspace [8];
+uniform bool useNormTex;
 
 void main(){
 
+	MVP = P * V * M;
+	MV3x3 = mat3(V * M);
+
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4( vertexPosition_modelspace, 1 );
-
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace, 1);
 
 	// Position of the vertex, in worldspace : M * position
 	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
@@ -41,9 +49,6 @@ void main(){
 	vec3 vertexPosition_cameraspace = ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
 	EyeDirection_cameraspace = vec3(0,0,0) - vertexPosition_cameraspace;
 
-	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-	vec3 LightPosition_cameraspace = ( V * vec4(LightPosition_worldspace,1)).xyz;
-	LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
 
 	// UV of the vertex. No special space for this one.
 	UV = vertexUV;
@@ -53,15 +58,32 @@ void main(){
 	vec3 vertexBitangent_cameraspace = MV3x3 * vertexBitangent_modelspace;
 	vec3 vertexNormal_cameraspace = MV3x3 * vertexNormal_modelspace;
 
-	mat3 TBN = transpose(mat3(
-		vertexTangent_cameraspace,
-		vertexBitangent_cameraspace,
-		vertexNormal_cameraspace
-	)); // You can use dot products instead of building this matrix and transposing it. See References for details.
+	if (useNormTex) {
+		TBN = transpose(mat3(
+			vertexTangent_cameraspace,
+			vertexBitangent_cameraspace,
+			vertexNormal_cameraspace
+		)); // You can use dot products instead of building this matrix and transposing it. See References for details.
+	}
+	else {
+		TBN = mat3(1.0);
+	}
 
-	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
+
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
-
-	// test
 	VertexNormal_tangentspace = TBN * vertexNormal_cameraspace;
+
+
+	/*
+	 * per light operations
+	 */
+	 for (int light = 0; light < 2; ++light) {
+		ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
+
+		// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
+		vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
+		LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
+
+		LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];
+	}
 }

@@ -14,6 +14,7 @@
 #include <GL/gl.h>
 
 #include "Shader.h"
+#include "UniformBlock.h"
 #include "UniformControl.h"
 #include "../buffer/VertexBuffer.h"
 #include "../geometry/Geometry.h"
@@ -56,6 +57,8 @@ public:
 			uniformControl.at( uniformName[name] ) = c;
 		}
 	}
+
+	UniformBlock getBlock(string);
 
 	void enable();
 	void disable();

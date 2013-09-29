@@ -1,4 +1,4 @@
-#version 330 core
+#version 400
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
@@ -130,7 +130,7 @@ void main(){
 		 */
 		//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
 		float bias = 0.0005*tan(acos(cosTheta));
-		bias = clamp(bias, 0,0.001);
+		bias = clamp(bias, 0.0, 0.001);
 
 		float visibility = 1.0;
 		for (int i=0;i<16;i++){

@@ -64,6 +64,10 @@ GLuint Program::addUniform(string name) {
 	}
 }
 
+UniformBlock Program::getBlock(string name) {
+	return UniformBlock(programID, name);
+}
+
 void Program::enable() {
 	if (active) {
 		active->disable();

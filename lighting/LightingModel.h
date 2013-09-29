@@ -44,6 +44,8 @@ public:
 	UniformControl<vector<glm::mat4>> DepthBias;
 	UniformControl< vector<glm::vec4> > Positions;
 
+	UniformBlock lightProperties;
+
 	float t;
 
 	LightingModel(Program &shadow, Program &);
