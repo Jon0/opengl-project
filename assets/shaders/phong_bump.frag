@@ -85,8 +85,8 @@ void main(){
 	   *	reflect ray around normal from eye to surface
 	   */
 	vec3 incident_eye = normalize ( EyeDirection_tangentspace );
-	vec3 normal = normalize ( TextureNormal_tangentspace );
-	vec3 reflected = reflect (incident_eye, normal);
+	vec3 n = normalize ( TextureNormal_tangentspace );
+	vec3 reflected = reflect (incident_eye, n);
 
 	// convert from eye to world space
 	reflected =  inverse(TBN) * reflected;
@@ -96,11 +96,15 @@ void main(){
 							pow(ReflectionColor.y, 8),
 							pow(ReflectionColor.z, 8) ) * MaterialSpecularColor;
 
+
+	/*
+	 *	*******************************
+	 *	calculate for each light source
+	 * 	*******************************
+	 */
+
 	// Distance to the light
 	float distance = length( LightPosition_worldspace - Position_worldspace );
-
-	// Normal of the computed fragment, in camera space
-	vec3 n = normalize(TextureNormal_tangentspace);
 
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize(LightDirection_tangentspace);
@@ -137,6 +141,12 @@ void main(){
 	}
 	visibility = clamp( visibility, 0, 1 );
 
+
+	/*
+	 *	*******************************
+	 *	    set final color value
+	 * 	*******************************
+	 */
 	color =
 		// Ambient : simulates indirect lighting
 	//	MaterialAmbientColor +

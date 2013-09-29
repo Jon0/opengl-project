@@ -41,6 +41,7 @@ public:
 	UniformControl<glm::mat4> modelMatrix;
 	UniformControl<glm::mat4> DepthBias;
 	UniformControl<glm::vec3> LightPosition;
+	UniformControl< vector<glm::vec4> > Positions;
 
 	float t;
 
@@ -49,7 +50,7 @@ public:
 
 	void generateShadowFBO();
 	void getDepthMap();
-	void getShadow( shared_ptr<Geometry>, Program & );
+	void getShadow( shared_ptr<Geometry> );
 	void setLight();
 	void setTransform(glm::mat4);
 };

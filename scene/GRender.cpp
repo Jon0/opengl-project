@@ -96,12 +96,12 @@ void GRender::prepare() {
 	 * prepare depth map of each light
 	 */
 	light.getDepthMap();
-	light.getShadow(table, shadow);
-	light.getShadow(box, shadow);
-	light.getShadow(bunny, shadow);
-	light.getShadow(sphere, shadow);
-	light.getShadow(teapot, shadow);
-	light.getShadow(torus, shadow);
+	light.getShadow(table);
+	light.getShadow(box);
+	light.getShadow(bunny);
+	light.getShadow(sphere);
+	light.getShadow(teapot);
+	light.getShadow(torus);
 }
 
 void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> ) {
