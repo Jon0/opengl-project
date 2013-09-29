@@ -8,10 +8,10 @@ in vec3 VertexNormal_tangentspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 EyeDirection_tangentspace;
 
-in vec3 LightDirection_cameraspace [1];
-in vec3 LightDirection_tangentspace [1];
+in vec3 LightDirection_cameraspace [8];
+in vec3 LightDirection_tangentspace [8];
 
-in vec4 ShadowCoord [1];
+in vec4 ShadowCoord [8];
 
 in mat3 TBN;
 
@@ -23,11 +23,11 @@ uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
-uniform sampler2DShadow shadowMap [1];
+uniform sampler2DShadow shadowMap [8];
 uniform mat4 V;
 uniform mat4 M;
 uniform mat3 MV3x3;
-uniform vec4 LightPosition_worldspace [1];
+uniform vec4 LightPosition_worldspace [8];
 uniform bool useDiffTex;
 uniform bool useNormTex;
 
@@ -103,45 +103,44 @@ void main(){
 	 *	calculate for each light source
 	 * 	*******************************
 	 */
-	int light = 0;
+	vec3 DiffuseTotal = vec3(0.0);
+	vec3 SpecularTotal = vec3(0.0);
+	for (int light = 0; light < 2; ++light) {
 
-	// Distance to the light
-	float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
+		// Distance to the light
+		float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
 
-	// Direction of the light (from the fragment to the light)
-	vec3 l = normalize(LightDirection_tangentspace[light]);
+		// Direction of the light (from the fragment to the light)
+		vec3 l = normalize(LightDirection_tangentspace[light]);
 
-	// Cosine of the angle between the normal and the light direction,
-	// clamped above 0
-	//  - light is at the vertical of the triangle -> 1
-	//  - light is perpendicular to the triangle -> 0
-	//  - light is behind the triangle -> 0
-	float cosTheta = clamp( dot( n,l ), 0, 1 );
+		// Cosine of the angle between the normal and the light direction,
+		float cosTheta = clamp( dot( n,l ), 0, 1 );
 
-	// Eye vector (towards the camera)
-	vec3 E = normalize(EyeDirection_tangentspace);
+		// Eye vector (towards the camera)
+		vec3 E = normalize(EyeDirection_tangentspace);
 
-	// Direction in which the triangle reflects the light
-	vec3 R = reflect(-l, n);
+		// Direction in which the triangle reflects the light
+		vec3 R = reflect(-l, n);
 
-	// Cosine of the angle between the Eye vector and the Reflect vector,
-	// clamped to 0
-	//  - Looking into the reflection -> 1
-	//  - Looking elsewhere -> < 1
-	float cosAlpha = clamp( dot( E,R ), 0,1 );
+		// Cosine of the angle between the Eye vector and the Reflect vector,
+		float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-	/*
-	 *	Shadows
-	 */
-	//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
-	float bias = 0.0005*tan(acos(cosTheta));
-	bias = clamp(bias, 0,0.001);
+		/*
+		 *	Shadows
+		 */
+		//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
+		float bias = 0.0005*tan(acos(cosTheta));
+		bias = clamp(bias, 0,0.001);
 
-	float visibility = 1.0;
-	for (int i=0;i<16;i++){
-		visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
+		float visibility = 1.0;
+		for (int i=0;i<16;i++){
+			visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
+		}
+		visibility = clamp( visibility, 0, 1 );
+
+		DiffuseTotal += MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
 	}
-	visibility = clamp( visibility, 0, 1 );
 
 
 	/*
@@ -149,13 +148,15 @@ void main(){
 	 *	    set final color value
 	 * 	*******************************
 	 */
-	color =
+	//color =
 		// Ambient : simulates indirect lighting
 	//	MaterialAmbientColor +
-		ReflectionColor +
+	//	ReflectionColor +
 		// Diffuse : "color" of the object
-		MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
+	//	MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
 		// Specular : reflective highlight, like a mirror
-		MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+	//	MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+
+	color = ReflectionColor + DiffuseTotal + SpecularTotal;
 
 }

@@ -42,8 +42,6 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	main.setUniform("DepthBiasMVP", &DepthBias);
 	main.setUniform("LightPosition_worldspace", &Positions);
 
-
-
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
 			0.5, 0.0, 0.0, 0.0,
@@ -145,11 +143,11 @@ void LightingModel::setLight() {
 }
 
 void LightingModel::setTransform(glm::mat4 t) {
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
-		glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[i]), glm::vec3(0,0,0), glm::vec3(0,1,0));
 		modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
 		DepthBias.data.data()[i] = biasMatrix * modelMatrix.getV();
 	}

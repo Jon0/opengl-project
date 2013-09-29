@@ -15,10 +15,10 @@ out vec3 VertexNormal_tangentspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace;
 
-out vec3 LightDirection_cameraspace [1];
-out vec3 LightDirection_tangentspace [1];
+out vec3 LightDirection_cameraspace [8];
+out vec3 LightDirection_tangentspace [8];
 
-out vec4 ShadowCoord [1];
+out vec4 ShadowCoord [8];
 
 out mat4 MVP;
 out mat3 MV3x3;
@@ -29,8 +29,8 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 
-uniform mat4 DepthBiasMVP [1];
-uniform vec4 LightPosition_worldspace [1];
+uniform mat4 DepthBiasMVP [8];
+uniform vec4 LightPosition_worldspace [8];
 uniform bool useNormTex;
 
 void main(){
@@ -77,13 +77,13 @@ void main(){
 	/*
 	 * per light operations
 	 */
-	 int light = 0;
+	 for (int light = 0; light < 2; ++light) {
+		ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
 
-	ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
+		// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
+		vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
+		LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
 
-	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-	vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
-	LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
-
-	LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];
+		LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];
+	}
 }
