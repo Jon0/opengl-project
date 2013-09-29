@@ -9,22 +9,20 @@ layout(location = 4) in vec3 vertexBitangent_modelspace;
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
-out vec4 ShadowCoord;
 out vec3 Position_worldspace;
-
 out vec3 VertexNormal_tangentspace;
 
 out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace;
 
-out vec3 LightDirection_cameraspace;
-out vec3 LightDirection_tangentspace;
+out vec3 LightDirection_cameraspace [1];
+out vec3 LightDirection_tangentspace [1];
+
+out vec4 ShadowCoord [1];
 
 out mat4 MVP;
 out mat3 MV3x3;
 out mat3 TBN;
-
-
 
 // Values that stay constant for the whole mesh
 uniform mat4 P;
@@ -81,11 +79,11 @@ void main(){
 	 */
 	 int light = 0;
 
-	ShadowCoord = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
+	ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
 
 	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
 	vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
-	LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
+	LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
 
-	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
+	LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];
 }

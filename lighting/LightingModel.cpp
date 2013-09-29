@@ -105,22 +105,28 @@ void LightingModel::getDepthMap() {
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
-	glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[0]);	//Rendering offscreen
-	glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
+		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 }
 
 void LightingModel::getShadow( shared_ptr<Geometry> g ) {
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
 
 	// Compute the MVP matrix from the light's point of view
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
-	glm::mat4 depthModelMatrix = g->transform();
-	modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
-	g->draw();
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[i]), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 depthModelMatrix = g->transform();
+		modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
+		g->draw();
+	}
 }
 
 

@@ -3,14 +3,15 @@
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
-in vec4 ShadowCoord;
+in vec3 VertexNormal_tangentspace;
 
 in vec3 EyeDirection_cameraspace;
-in vec3 LightDirection_cameraspace;
-
-in vec3 VertexNormal_tangentspace;
-in vec3 LightDirection_tangentspace;
 in vec3 EyeDirection_tangentspace;
+
+in vec3 LightDirection_cameraspace [1];
+in vec3 LightDirection_tangentspace [1];
+
+in vec4 ShadowCoord [1];
 
 in mat3 TBN;
 
@@ -108,7 +109,7 @@ void main(){
 	float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
 
 	// Direction of the light (from the fragment to the light)
-	vec3 l = normalize(LightDirection_tangentspace);
+	vec3 l = normalize(LightDirection_tangentspace[light]);
 
 	// Cosine of the angle between the normal and the light direction,
 	// clamped above 0
@@ -138,7 +139,7 @@ void main(){
 
 	float visibility = 1.0;
 	for (int i=0;i<16;i++){
-		visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+		visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
 	}
 	visibility = clamp( visibility, 0, 1 );
 
