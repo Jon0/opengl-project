@@ -31,7 +31,7 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 
-uniform mat4 DepthBiasMVP;
+uniform mat4 DepthBiasMVP [1];
 uniform vec4 LightPosition_worldspace [1];
 uniform bool useNormTex;
 
@@ -79,11 +79,12 @@ void main(){
 	/*
 	 * per light operations
 	 */
+	 int light = 0;
 
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace, 1);
+	ShadowCoord = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
 
 	// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-	vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[0] ).xyz;
+	vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
 	LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
 
 	LightDirection_tangentspace = TBN * LightDirection_cameraspace;

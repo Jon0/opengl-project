@@ -22,7 +22,7 @@ uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
-uniform sampler2DShadow shadowMap;
+uniform sampler2DShadow shadowMap [1];
 uniform mat4 V;
 uniform mat4 M;
 uniform mat3 MV3x3;
@@ -102,9 +102,10 @@ void main(){
 	 *	calculate for each light source
 	 * 	*******************************
 	 */
+	int light = 0;
 
 	// Distance to the light
-	float distance = length( LightPosition_worldspace[0].xyz - Position_worldspace );
+	float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
 
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize(LightDirection_tangentspace);
@@ -137,7 +138,7 @@ void main(){
 
 	float visibility = 1.0;
 	for (int i=0;i<16;i++){
-		visibility -= 0.04*(1.0-texture( shadowMap, vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
+		visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord.xy + poissonDisk[i]/700.0,  (ShadowCoord.z-bias)/ShadowCoord.w) ));
 	}
 	visibility = clamp( visibility, 0, 1 );
 

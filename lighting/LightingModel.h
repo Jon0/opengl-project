@@ -38,12 +38,10 @@ public:
 	/*
 	 * uniforms
 	 */
-	UniformControl<GLuint> shadowMapUniform;
 	UniformControl<glm::mat4> modelMatrix;
-	UniformControl<glm::mat4> DepthBias;
 
-
-
+	UniformControl<vector<GLint>> shadowMaps;
+	UniformControl<vector<glm::mat4>> DepthBias;
 	UniformControl< vector<glm::vec4> > Positions;
 
 	float t;

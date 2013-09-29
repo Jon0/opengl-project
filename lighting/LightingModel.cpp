@@ -13,30 +13,36 @@
 namespace std {
 
 LightingModel::LightingModel(Program &shadow, Program &main):
-		shadowMapUniform { [](GLuint i, GLuint v){ glUniform1i(i, v); } },
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		DepthBias { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
+		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
 		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } }
 {
-
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
-	numLights = 1;
 
+	/*
+	 * setup lights
+	 */
 	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
 	Positions.data.push_back( glm::vec4(-7.5, 2.0, -7.5, 1.0) );
+	numLights = Positions.data.size();
 
-	depthTextureId.reserve(numLights);
-	fboId.reserve(numLights);
+	shadowMaps.data.resize(numLights);
+	DepthBias.data.resize(numLights);
+	depthTextureId.resize(numLights);
+	fboId.resize(numLights);
 	generateShadowFBO();
-
-	/* main shader */
-	main.setUniform("shadowMap", &shadowMapUniform);
-	main.setUniform("DepthBiasMVP", &DepthBias);
-	main.setUniform("LightPosition_worldspace", &Positions);
 
 	/* depth shader */
 	shadow.setUniform("depthMVP", &modelMatrix);
+
+	/* main shader */
+	main.setUniform("shadowMap", &shadowMaps);
+	main.setUniform("DepthBiasMVP", &DepthBias);
+	main.setUniform("LightPosition_worldspace", &Positions);
+
+
 
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
@@ -124,19 +130,24 @@ void LightingModel::setLight() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	// Using the shadow shader
-	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[0]);
-	shadowMapUniform.setV(7);
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glActiveTexture(GL_TEXTURE5 + i);
+		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[i]);
+		shadowMaps.data.data()[i] = 5 + i;
+	}
+	shadowMaps.forceUpdate();
 }
 
 void LightingModel::setTransform(glm::mat4 t) {
 
 	// Compute the MVP matrix from the light's point of view
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
-	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
-	modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
-	DepthBias.setV( biasMatrix * modelMatrix.getV() );
+	for (unsigned int i = 0; i < numLights; ++i) {
+		glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[0]), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
+		DepthBias.data.data()[i] = biasMatrix * modelMatrix.getV();
+	}
+	DepthBias.forceUpdate();
 }
 
 } /* namespace std */
