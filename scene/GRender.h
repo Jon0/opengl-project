@@ -50,6 +50,8 @@ public:
 	Tex *normalTex;
 	Tex *cubeTex;
 
+	UBO<CameraProperties> *camptr; // TODO this is a hack
+
 	GRender();
 	virtual ~GRender();
 

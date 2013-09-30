@@ -22,25 +22,12 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
 
-	//char data[48];
-	//memcpy(&data[0], &glm::vec4(7.5, 2.0, 7.5, 1.0)[0], 16);
-	//memcpy(&data[16], &glm::vec4(1.0, 1.0, 0.0, 1.0)[0], 16);
-
-
-	//char data1[48];
-	//memcpy(&data1[0], &glm::vec4(-0.5, 2.0, -2.5, 1.0)[0], 16);
-	//memcpy(&data1[16], &glm::vec4(0.0, 0.0, 1.0, 1.0)[0], 16);
-	//data[16] = glm::vec4(7.5, 2.0, 7.5, 1.0);
-
-	//test = lights.getNewBuffer(data, 1);
-	//lightProperties1.getNewBuffer(data1, 2);
-
 	/*
 	 * setup lights
 	 */
-	lights.push_back( UBO<LightProperties>{ 1 } );
-	lights.push_back( UBO<LightProperties>{ 2 } );
-	lights.push_back( UBO<LightProperties>{ 3 } );
+	lights.push_back( UBO<LightProperties>() );
+	lights.push_back( UBO<LightProperties>() );
+	lights.push_back( UBO<LightProperties>() );
 
 
 	lightUniform.assign(&lights.data()[0], 0);
@@ -56,11 +43,6 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lights.data()[1].update();
 
 	numLights = 2;
-
-
-	//Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
-	//Positions.data.push_back( glm::vec4(-0.5, 15.0, -2.5, 1.0) );
-
 
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);

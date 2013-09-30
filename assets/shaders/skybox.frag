@@ -1,8 +1,8 @@
 #version 400
 
-in vec3 texcoords;
-
 uniform samplerCube cubeTexture;
+
+in vec3 texcoords;
 
 out vec4 frag_colour;
 

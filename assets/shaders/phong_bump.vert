@@ -1,5 +1,14 @@
 #version 400
 
+// Values that stay constant for the whole mesh
+//uniform mat4 P;
+//uniform mat4 V;
+//uniform mat4 M;
+
+uniform mat4 DepthBiasMVP [8];
+uniform vec4 LightPosition_worldspace [8];
+uniform bool useNormTex;
+
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
@@ -12,6 +21,12 @@ layout(std140) uniform LightProperties {
 	vec4 color;
 	float intensity;
 } Lights[8];
+
+layout(std140) uniform Camera {
+	uniform mat4 P;
+	uniform mat4 V;
+	uniform mat4 M;
+};
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
@@ -30,14 +45,7 @@ out mat4 MVP;
 out mat3 MV3x3;
 out mat3 TBN;
 
-// Values that stay constant for the whole mesh
-uniform mat4 P;
-uniform mat4 V;
-uniform mat4 M;
 
-uniform mat4 DepthBiasMVP [8];
-uniform vec4 LightPosition_worldspace [8];
-uniform bool useNormTex;
 
 void main(){
 

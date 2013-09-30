@@ -11,6 +11,8 @@
 
 namespace std {
 
+int ubocount = 0;
+
 GRender::GRender():
 		mWnd { new MainWindow(800, 600, "Scene") },
 		program("phong_bump"),
@@ -60,6 +62,8 @@ GRender::GRender():
 	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-3,0.6,-5)) );
 	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-5,1,5)) );
 
+	camptr = NULL;
+
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
@@ -75,17 +79,19 @@ void GRender::start() {
 	/*
 	 * set uniforms
 	 */
-	skybox.setUniform("MVP", &camera->VP);
+	UniformBlock<CameraProperties> camsky = skybox.getBlock<CameraProperties>( "Camera", 1 );
+	camsky.assign( &camera->properties, 0 );
 
-	program.setUniform("V", &camera->view);
-	program.setUniform("P", &camera->projection);
-	program.setUniform("M", &model);
+	skybox.setUniform("cubeTexture", &cubeTex->location);
+
 	program.setUniform("cubeTexture", &cubeTex->location);
 	program.setUniform("diffuseTexture", &brickTex->location);
 	program.setUniform("normalTexture", &normalTex->location);
 	program.setUniform("specularTexture", &brickTex->location);
 
-	skybox.setUniform("cubeTexture", &cubeTex->location);
+	UniformBlock<CameraProperties> cam = program.getBlock<CameraProperties>( "Camera", 1 );
+	cam.assign( &camera->properties, 0 );
+	camptr = &camera->properties;
 }
 
 /*
@@ -155,7 +161,8 @@ void GRender::displayGeometry() {
 
 void GRender::drawObject( shared_ptr<Geometry> g ) {
 	light.setTransform(g->transform());
-	model.setV( g->transform() );
+	camptr->data.M = g->transform();
+	camptr->update();
 	g->draw();
 }
 

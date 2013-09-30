@@ -6,15 +6,21 @@ layout(std140) uniform LightProperties {
 	float intensity;
 } Lights[8];
 
+layout(std140) uniform Camera {
+	uniform mat4 P;
+	uniform mat4 V;
+	uniform mat4 M;
+};
+
 // Values that stay constant for the whole mesh.
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2DShadow shadowMap [8];
-uniform mat4 V;
-uniform mat4 M;
-uniform mat3 MV3x3;
+//uniform mat4 V;
+//uniform mat4 M;
+//uniform mat3 MV3x3;
 uniform vec4 LightPosition_worldspace [8];
 uniform bool useDiffTex;
 uniform bool useNormTex;
@@ -33,6 +39,7 @@ in vec3 LightDirection_tangentspace [8];
 in vec4 ShadowCoord [8];
 
 in mat3 TBN;
+in mat3 MV3x3;
 
 // Ouput data
 out vec3 color;

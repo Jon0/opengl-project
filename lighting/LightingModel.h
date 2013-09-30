@@ -49,7 +49,6 @@ public:
 
 	UniformControl<vector<GLint>> shadowMaps;
 	UniformControl<vector<glm::mat4>> DepthBias;
-	//UniformControl< vector<glm::vec4> > Positions;
 
 	UniformBlock<LightProperties> lightUniform;
 	vector< UBO<LightProperties> > lights;

@@ -14,9 +14,9 @@
 namespace std {
 
 Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
-		view { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		projection { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		VP { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		//view { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		//projection { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		//VP { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		scene(s),
 		focus{0, 0, 0},
 		cam_angle{1, 0, 0, 0},
@@ -24,6 +24,7 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		control{}
+
 {
 	cam_aspect = 1.0;
 	viewzoom = 10.0;
@@ -70,9 +71,15 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glGetFloatv( GL_MODELVIEW_MATRIX, modelviewf );
 	glGetFloatv( GL_PROJECTION_MATRIX, projectionf );
 
-	projection.setV( glm::make_mat4(projectionf) );
-	view.setV( glm::make_mat4(modelviewf) );
-	VP.setV( projection.getV() * view.getV() );
+
+	properties.data.P = glm::make_mat4(projectionf);
+	properties.data.V = glm::make_mat4(modelviewf);
+	properties.data.M = glm::mat4(1.0);
+	properties.update();
+
+	//projection.setV( glm::make_mat4(projectionf) );
+	//view.setV( glm::make_mat4(modelviewf) );
+	//VP.setV( projection.getV() * view.getV() );
 
 	scene->prepare();
 
@@ -175,11 +182,11 @@ Vec3D Camera::unProject(int x, int y) {
 }
 
 glm::mat4 Camera::viewMatrix() {
-	return view.getV();
+	return properties.data.V;
 }
 
 glm::mat4 Camera::projectionMatrix() {
-	return projection.getV();
+	return properties.data.P;
 }
 
 
@@ -191,14 +198,6 @@ void Camera::setupMatrix() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMultMatrixf(model_matrix);
-}
-
-GLfloat *Camera::getProjMatrix() {
-	return proj_matrix;
-}
-
-GLfloat *Camera::getModelMatrix() {
-	return model_matrix;
 }
 
 void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
