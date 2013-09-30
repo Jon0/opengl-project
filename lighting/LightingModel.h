@@ -20,6 +20,12 @@
 
 namespace std {
 
+struct LightProperties {
+	glm::vec4 position;
+	glm::vec4 color;
+	float intensity;
+};
+
 class LightingModel {
 public:
 	int shadowMapWidth;
@@ -43,9 +49,10 @@ public:
 
 	UniformControl<vector<GLint>> shadowMaps;
 	UniformControl<vector<glm::mat4>> DepthBias;
-	UniformControl< vector<glm::vec4> > Positions;
+	//UniformControl< vector<glm::vec4> > Positions;
 
-	UniformBlock lightProperties, lightProperties1;
+	UniformBlock<LightProperties> lightUniform;
+	vector< UBO<LightProperties> > lights;
 
 	float t;
 

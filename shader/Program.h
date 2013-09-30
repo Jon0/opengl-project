@@ -58,7 +58,9 @@ public:
 		}
 	}
 
-	UniformBlock getBlock(string);
+	template<class T> UniformBlock<T> getBlock(string name, int length) {
+		return UniformBlock<T>(programID, name, length);
+	}
 
 	void enable();
 	void disable();

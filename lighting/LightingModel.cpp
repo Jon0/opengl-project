@@ -16,33 +16,51 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
-		lightProperties { main.getBlock("LightProperties[0]") },
-		lightProperties1 { main.getBlock("LightProperties[1]") }
+		//Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
+		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) }
 {
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
 
+	//char data[48];
+	//memcpy(&data[0], &glm::vec4(7.5, 2.0, 7.5, 1.0)[0], 16);
+	//memcpy(&data[16], &glm::vec4(1.0, 1.0, 0.0, 1.0)[0], 16);
 
-	char data[48];
-	memcpy(&data[0], &glm::vec4(7.5, 2.0, 7.5, 1.0)[0], 16);
-	memcpy(&data[16], &glm::vec4(1.0, 1.0, 1.0, 1.0)[0], 16);
 
-
-	char data1[48];
-	memcpy(&data1[0], &glm::vec4(-0.5, 2.0, -2.5, 1.0)[0], 16);
-	memcpy(&data1[16], &glm::vec4(0.0, 0.0, 1.0, 1.0)[0], 16);
+	//char data1[48];
+	//memcpy(&data1[0], &glm::vec4(-0.5, 2.0, -2.5, 1.0)[0], 16);
+	//memcpy(&data1[16], &glm::vec4(0.0, 0.0, 1.0, 1.0)[0], 16);
 	//data[16] = glm::vec4(7.5, 2.0, 7.5, 1.0);
 
-	test = lightProperties.getNewBuffer(data, 30);
-	lightProperties1.getNewBuffer(data1, 4);
+	//test = lights.getNewBuffer(data, 1);
+	//lightProperties1.getNewBuffer(data1, 2);
 
 	/*
 	 * setup lights
 	 */
-	Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
-	Positions.data.push_back( glm::vec4(-0.5, 15.0, -2.5, 1.0) );
-	numLights = Positions.data.size();
+	lights.push_back( UBO<LightProperties>{ 1 } );
+	lights.push_back( UBO<LightProperties>{ 2 } );
+	lights.push_back( UBO<LightProperties>{ 3 } );
+
+
+	lightUniform.assign(&lights.data()[0], 0);
+	lightUniform.assign(&lights.data()[1], 1);
+	lightUniform.assign(&lights.data()[2], 2);
+
+	lights.data()[0].data.position = glm::vec4(7.5, 2.0, 7.5, 1.0);
+	lights.data()[0].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[0].update();
+
+	lights.data()[1].data.position = glm::vec4(-0.5, 10.0, -9.5, 1.0);
+	lights.data()[1].data.color = glm::vec4(0.9, 0.3, 0.9, 1.0);
+	lights.data()[1].update();
+
+	numLights = 2;
+
+
+	//Positions.data.push_back( glm::vec4(7.5, 2.0, 7.5, 1.0) );
+	//Positions.data.push_back( glm::vec4(-0.5, 15.0, -2.5, 1.0) );
+
 
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);
@@ -115,10 +133,8 @@ void LightingModel::generateShadowFBO() {
 }
 
 void LightingModel::getDepthMap() {
-	Positions.data.data()[0] = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
-	glBindBuffer(GL_UNIFORM_BUFFER, test);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, 16, &Positions.data.data()[0][0]);
-	//glBindBufferBase(GL_UNIFORM_BUFFER, 1, test);
+	lights.data()[0].data.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
+	lights.data()[0].update();
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
@@ -139,7 +155,7 @@ void LightingModel::getShadow( shared_ptr<Geometry> g ) {
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
-		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[i]), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(lights.data()[i].data.position), glm::vec3(0,0,0), glm::vec3(0,1,0));
 		glm::mat4 depthModelMatrix = g->transform();
 		modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
 		g->draw();
@@ -166,7 +182,7 @@ void LightingModel::setTransform(glm::mat4 t) {
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
-		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(Positions.data.data()[i]), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(lights.data()[i].data.position), glm::vec3(0,0,0), glm::vec3(0,1,0));
 		modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
 		DepthBias.data.data()[i] = biasMatrix * modelMatrix.getV();
 	}
