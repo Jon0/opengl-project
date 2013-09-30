@@ -40,13 +40,16 @@ public:
 	shared_ptr<Geometry> torus;
 	LightingModel light;
 
-	UniformControl<glm::mat4> model;
-
 	GLuint useDiffTex, useNormTex;
 
 	/* Textures */
 	Tex *woodTex;
+	Tex *woodNormTex;
+	Tex *woodDispTex;
+
 	Tex *brickTex;
+	Tex *brickNormTex;
+
 	Tex *normalTex;
 	Tex *cubeTex;
 

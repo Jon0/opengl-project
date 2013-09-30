@@ -3,7 +3,9 @@
 layout(std140) uniform LightProperties {
 	vec4 position;
 	vec4 color;
+	vec4 direction;
 	float intensity;
+	float spotlight;
 } Lights[8];
 
 layout(std140) uniform Camera {
@@ -33,6 +35,8 @@ in vec3 VertexNormal_tangentspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 EyeDirection_tangentspace;
 
+in vec3 LightSpotlight_cameraspace [8];
+in vec3 LightSpotlight_tangentspace [8];
 in vec3 LightDirection_cameraspace [8];
 in vec3 LightDirection_tangentspace [8];
 
@@ -67,8 +71,7 @@ void main(){
 
 	// Light emission properties
 	// probably should put them as uniforms
-	//vec3 LightColor = vec3(1,1,1);
-	float LightPower = 80.0;
+	//float LightPower = 80.0;
 
 	// Material properties
 	vec3 MaterialDiffuseColor;
@@ -77,12 +80,12 @@ void main(){
 	if (useDiffTex) {
 		MaterialDiffuseColor = texture2D( diffuseTexture, UV ).rgb;
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.9;
+		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.1;
 	}
 	else {
-		MaterialDiffuseColor = vec3(0.1, 0.9, 0.1);
+		MaterialDiffuseColor = vec3(0.3, 0.9, 0.3);
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = vec3(0.8, 0.8, 0.8);
+		MaterialSpecularColor = vec3(0.7, 0.7, 0.7);
 	}
 
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
@@ -118,11 +121,16 @@ void main(){
 	 */
 	vec3 DiffuseTotal = vec3(0.0);
 	vec3 SpecularTotal = vec3(0.0);
-	for (int light = 0; light < 2; ++light) {
+	for (int light = 0; light < 3; ++light) {
 
 		// Distance to the light
-		float distance = length( Lights[light].position.xyz - Position_worldspace );
-		//float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
+		float distance;
+		if ( Lights[light].position.w > 0.0 ) {
+			distance = length( Lights[light].position.xyz - Position_worldspace );
+		}
+		else {
+			distance = 1.0;
+		}
 
 		// Direction of the light (from the fragment to the light)
 		vec3 l = normalize(LightDirection_tangentspace[light]);
@@ -147,13 +155,20 @@ void main(){
 		bias = clamp(bias, 0.0, 0.001);
 
 		float visibility = 1.0;
-		for (int i=0;i<16;i++){
-			visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
+		for (int i = 0; i < 16; i++){
+			visibility -= 0.0625*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
 		}
 		visibility = clamp( visibility, 0, 1 );
 
-		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * LightPower * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+		// dampen spotlight by dot product angle
+		if ( Lights[light].spotlight > 0.0 ) {
+			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(-LightDirection_tangentspace[light]));
+			//angle = pow(angle, 1);
+			visibility = visibility / (1 + acos(angle));
+		}
+
+		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * Lights[light].intensity * visibility * cosTheta / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
 	}
 
 

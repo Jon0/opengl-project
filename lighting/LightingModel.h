@@ -23,7 +23,9 @@ namespace std {
 struct LightProperties {
 	glm::vec4 position;
 	glm::vec4 color;
+	glm::vec4 direction;
 	float intensity;
+	float spotlight;
 };
 
 class LightingModel {

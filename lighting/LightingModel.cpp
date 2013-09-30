@@ -34,15 +34,29 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lightUniform.assign(&lights.data()[1], 1);
 	lightUniform.assign(&lights.data()[2], 2);
 
+	// positional light
 	lights.data()[0].data.position = glm::vec4(7.5, 2.0, 7.5, 1.0);
 	lights.data()[0].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[0].data.intensity = 80.0;
+	lights.data()[1].data.spotlight = 0.0;
 	lights.data()[0].update();
 
-	lights.data()[1].data.position = glm::vec4(-0.5, 10.0, -9.5, 1.0);
-	lights.data()[1].data.color = glm::vec4(0.9, 0.3, 0.9, 1.0);
+	// spot light
+	lights.data()[1].data.position = glm::vec4(-0.5, 15.0, 9.5, 1.0);
+	lights.data()[1].data.color = glm::vec4(0.3, 0.1, 0.9, 1.0);
+	lights.data()[1].data.direction = glm::vec4(0.0, 0.0, 0.0, 1.0);
+	lights.data()[1].data.intensity = 250.0;
+	lights.data()[1].data.spotlight = 1.0;
 	lights.data()[1].update();
 
-	numLights = 2;
+	// directional light
+	lights.data()[2].data.position = glm::vec4(-7.5, 8.0, -6.5, 0.0);
+	lights.data()[2].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[2].data.intensity = 0.33;
+	lights.data()[1].data.spotlight = 0.0;
+	lights.data()[2].update();
+
+	numLights = 3;
 
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);

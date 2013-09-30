@@ -19,7 +19,9 @@ layout(location = 4) in vec3 vertexBitangent_modelspace;
 layout(std140) uniform LightProperties {
 	vec4 position;
 	vec4 color;
+	vec4 direction;
 	float intensity;
+	float spotlight;
 } Lights[8];
 
 layout(std140) uniform Camera {
@@ -36,6 +38,8 @@ out vec3 VertexNormal_tangentspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace;
 
+out vec3 LightSpotlight_cameraspace [8];
+out vec3 LightSpotlight_tangentspace [8];
 out vec3 LightDirection_cameraspace [8];
 out vec3 LightDirection_tangentspace [8];
 
@@ -91,15 +95,23 @@ void main(){
 	/*
 	 * per light operations
 	 */
-	 for (int light = 0; light < 2; ++light) {
+	 for (int light = 0; light < 3; ++light) {
 		ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
 
 		// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-		//vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
 		vec3 LightPosition_cameraspace = ( V * Lights[light].position ).xyz;
+		if (Lights[light].position.w > 0.0) {
+			LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
 
-
-		LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
+			// get spotlight direction if needed
+			if ( Lights[light].spotlight > 0.0 ) {
+				LightSpotlight_cameraspace[light] = vec3(V * normalize(Lights[light].direction - Lights[light].position));
+				LightSpotlight_tangentspace[light] = TBN * LightSpotlight_cameraspace[light];
+			}
+		}
+		else {
+			LightDirection_cameraspace[light] = LightPosition_cameraspace;
+		}
 
 		LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];
 	}

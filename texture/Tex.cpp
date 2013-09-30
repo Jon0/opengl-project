@@ -154,6 +154,8 @@ GLuint Tex::loadGLTexture(const string filename) {
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
+	glGenerateMipmap( GL_TEXTURE_2D );
+
 	return texture;
 }
 

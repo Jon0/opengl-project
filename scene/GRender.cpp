@@ -11,8 +11,6 @@
 
 namespace std {
 
-int ubocount = 0;
-
 GRender::GRender():
 		mWnd { new MainWindow(800, 600, "Scene") },
 		program("phong_bump"),
@@ -27,16 +25,23 @@ GRender::GRender():
 		table { gloader.readOBJG("assets/obj/Table.obj") },
 		teapot { gloader.readOBJG("assets/obj/Teapot.obj") },
 		torus { gloader.readOBJG("assets/obj/Torus.obj") },
-		light { shadow, program },
-		model { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } }
+		light { shadow, program }
 {
 	mWnd->start();
 
 	/* texturing... */
 	woodTex = new Tex();
-	woodTex->make2DTex("assets/image/wood.jpg");
+	woodTex->make2DTex("assets/image/Burled Cherry_DIFFUSE.jpg");
+	woodNormTex = new Tex();
+	woodNormTex->make2DTex("assets/image/Burled Cherry_NORMAL.jpg");
+	woodDispTex = new Tex();
+	woodDispTex->make2DTex("assets/image/Burled Cherry_DISP.jpg");
+
 	brickTex = new Tex();
-	brickTex->make2DTex("assets/image/brick.jpg");
+	brickTex->make2DTex("assets/image/brickdiff.jpg");
+	brickNormTex = new Tex();
+	brickNormTex->make2DTex("assets/image/bricknorm.jpg");
+
 	normalTex = new Tex();
 	normalTex->make2DTex("assets/image/normal.jpg");
 	cubeTex = new Tex();
@@ -56,11 +61,11 @@ GRender::GRender():
 	vb.store();
 
 	table->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)) );
-	box->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(3.0, 2.5, 4.0)) );
-	bunny->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(4,0.6,-5)) );
-	sphere->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(7,1.8,2)) );
-	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-3,0.6,-5)) );
-	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-5,1,5)) );
+	box->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(5.0, 2.5, 6.0)) );
+	bunny->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0,0.5,0)) );
+	sphere->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(4,2.0,-7)) );
+	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-4,0.5,-7)) );
+	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-6,1,5)) );
 
 	camptr = NULL;
 
@@ -87,7 +92,7 @@ void GRender::start() {
 	program.setUniform("cubeTexture", &cubeTex->location);
 	program.setUniform("diffuseTexture", &brickTex->location);
 	program.setUniform("normalTexture", &normalTex->location);
-	program.setUniform("specularTexture", &brickTex->location);
+	program.setUniform("specularTexture", &woodDispTex->location);
 
 	UniformBlock<CameraProperties> cam = program.getBlock<CameraProperties>( "Camera", 1 );
 	cam.assign( &camera->properties, 0 );
@@ -126,7 +131,8 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	 */
 	brickTex->enable(0);
 	normalTex->enable(1);
-	cubeTex->enable(2);
+	woodDispTex->enable(2);
+	cubeTex->enable(3);
 
 	program.enable();
 	glEnable(GL_CULL_FACE);
@@ -140,13 +146,15 @@ void GRender::displayGeometry() {
 	vb.enable();
 
 	glUniform1i(useDiffTex, true);
-	glUniform1i(useNormTex, false);
+	glUniform1i(useNormTex, true);
 	woodTex->enable(0);
+	woodNormTex->enable(1);
+	woodDispTex->enable(2);
 	drawObject(table);
 
-	glUniform1i(useDiffTex, true);
-	glUniform1i(useNormTex, false);
 	brickTex->enable(0);
+	brickNormTex->enable(1);
+	brickTex->enable(2);
 	drawObject(box);
 
 	glUniform1i(useDiffTex, false);
@@ -156,6 +164,7 @@ void GRender::displayGeometry() {
 	drawObject(teapot);
 
 	glUniform1i(useNormTex, true);
+	normalTex->enable(1);
 	drawObject(torus);
 }
 
