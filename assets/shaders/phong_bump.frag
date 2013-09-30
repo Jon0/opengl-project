@@ -1,5 +1,24 @@
 #version 400
 
+layout(std140) uniform LightProperties {
+	vec4 position;
+	vec4 color;
+	float intensity;
+} Lights[8];
+
+// Values that stay constant for the whole mesh.
+uniform samplerCube cubeTexture;
+uniform sampler2D diffuseTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
+uniform sampler2DShadow shadowMap [8];
+uniform mat4 V;
+uniform mat4 M;
+uniform mat3 MV3x3;
+uniform vec4 LightPosition_worldspace [8];
+uniform bool useDiffTex;
+uniform bool useNormTex;
+
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
@@ -17,19 +36,6 @@ in mat3 TBN;
 
 // Ouput data
 out vec3 color;
-
-// Values that stay constant for the whole mesh.
-uniform samplerCube cubeTexture;
-uniform sampler2D diffuseTexture;
-uniform sampler2D normalTexture;
-uniform sampler2D specularTexture;
-uniform sampler2DShadow shadowMap [8];
-uniform mat4 V;
-uniform mat4 M;
-uniform mat3 MV3x3;
-uniform vec4 LightPosition_worldspace [8];
-uniform bool useDiffTex;
-uniform bool useNormTex;
 
 vec2 poissonDisk[16] = vec2[](
    vec2( -0.94201624, -0.39906216 ),
@@ -54,7 +60,7 @@ void main(){
 
 	// Light emission properties
 	// probably should put them as uniforms
-	vec3 LightColor = vec3(1,1,1);
+	//vec3 LightColor = vec3(1,1,1);
 	float LightPower = 80.0;
 
 	// Material properties
@@ -108,7 +114,8 @@ void main(){
 	for (int light = 0; light < 2; ++light) {
 
 		// Distance to the light
-		float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
+		float distance = length( Lights[light].position.xyz - Position_worldspace );
+		//float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
 
 		// Direction of the light (from the fragment to the light)
 		vec3 l = normalize(LightDirection_tangentspace[light]);
@@ -138,8 +145,8 @@ void main(){
 		}
 		visibility = clamp( visibility, 0, 1 );
 
-		DiffuseTotal += MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * LightPower * visibility * cosTheta / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
 	}
 
 

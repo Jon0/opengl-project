@@ -87,7 +87,10 @@ void main(){
 		ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
 
 		// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
-		vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
+		//vec3 LightPosition_cameraspace = ( V * LightPosition_worldspace[light] ).xyz;
+		vec3 LightPosition_cameraspace = ( V * Lights[0].position ).xyz;
+
+
 		LightDirection_cameraspace[light] = LightPosition_cameraspace + EyeDirection_cameraspace;
 
 		LightDirection_tangentspace[light] = TBN * LightDirection_cameraspace[light];

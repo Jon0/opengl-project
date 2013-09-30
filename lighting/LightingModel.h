@@ -25,6 +25,7 @@ public:
 	int shadowMapWidth;
 	int shadowMapHeight;
 	unsigned int numLights;
+	GLuint test;
 
 	// Hold id of the framebuffer for light POV rendering
 	vector<GLuint> fboId;
@@ -44,7 +45,7 @@ public:
 	UniformControl<vector<glm::mat4>> DepthBias;
 	UniformControl< vector<glm::vec4> > Positions;
 
-	UniformBlock lightProperties;
+	UniformBlock lightProperties, lightProperties1;
 
 	float t;
 

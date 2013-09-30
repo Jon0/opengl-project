@@ -17,10 +17,25 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
 		Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
-		lightProperties { main.getBlock("LightProperties") }
+		lightProperties { main.getBlock("LightProperties[0]") },
+		lightProperties1 { main.getBlock("LightProperties[1]") }
 {
 	shadowMapWidth = 1024 * 8; //800 * 3;
 	shadowMapHeight = 1024 * 8; //600 * 3;
+
+
+	char data[48];
+	memcpy(&data[0], &glm::vec4(7.5, 2.0, 7.5, 1.0)[0], 16);
+	memcpy(&data[16], &glm::vec4(1.0, 1.0, 1.0, 1.0)[0], 16);
+
+
+	char data1[48];
+	memcpy(&data1[0], &glm::vec4(-0.5, 2.0, -2.5, 1.0)[0], 16);
+	memcpy(&data1[16], &glm::vec4(0.0, 0.0, 1.0, 1.0)[0], 16);
+	//data[16] = glm::vec4(7.5, 2.0, 7.5, 1.0);
+
+	test = lightProperties.getNewBuffer(data, 30);
+	lightProperties1.getNewBuffer(data1, 4);
 
 	/*
 	 * setup lights
@@ -41,7 +56,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	/* main shader */
 	main.setUniform("shadowMap", &shadowMaps);
 	main.setUniform("DepthBiasMVP", &DepthBias);
-	main.setUniform("LightPosition_worldspace", &Positions);
+	//main.setUniform("LightPosition_worldspace", &Positions);
 
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
@@ -101,6 +116,9 @@ void LightingModel::generateShadowFBO() {
 
 void LightingModel::getDepthMap() {
 	Positions.data.data()[0] = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
+	glBindBuffer(GL_UNIFORM_BUFFER, test);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 16, &Positions.data.data()[0][0]);
+	//glBindBufferBase(GL_UNIFORM_BUFFER, 1, test);
 	t += 0.01;
 
 	//First step: Render from the light POV to a FBO, story depth values only
