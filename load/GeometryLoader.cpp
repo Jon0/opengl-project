@@ -42,11 +42,14 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	vector<Vec3D> uvcoords;
 	vector<GPolygon> g_polys;
 
-	// TODO have one basis per normal, not vertex
-	// because verts can be corners.
-
 	// polygon -> set of array position
 	vector<vector<int>> index;
+
+	// obj point index -> set of normals
+	vector< vector<Vec3D> > pointNr;
+
+	// obj point index -> normal index
+	vector< vector<int> > pointInd;
 
 	//-----------------------------------------------------------
 	//	Read obj file
@@ -85,19 +88,53 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 				GVertex vrt;
 				vector<string> part = stringSplit(vt, "/");
 
-				int index = atoi(part[0].c_str()) - 1;
+				unsigned int index = atoi(part[0].c_str()) - 1;
 				vrt.e[POS] = points.data()[index];
 
+
+				bool hasNormal = false;
 				if (part.size() == 2) {
 					vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
 				}
 				else if (part.size() == 3) {
 					if (part[1].length() == 0) {
 						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
+						hasNormal = true;
 					}
 					else {
 						vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
 						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
+						hasNormal = true;
+					}
+				}
+
+
+
+				/*
+				 * just a little hack to make each point have a unique normal
+				 * if not, a new point is added
+				 */
+				if (hasNormal) {
+					bool match = false;
+
+					if (index < pointNr.size()) {
+						for (unsigned int i = 0; i < pointNr.data()[index].size(); ++i) {
+							if (vrt.e[NORM].similiar(pointNr.data()[index].data()[i])) {
+								match = true;
+								index = pointInd.data()[index].data()[i];
+								break;
+							}
+						}
+					}
+					if (!match) {
+						points.push_back(vrt.e[POS]);
+						if (index >= pointNr.size()) {
+							pointNr.resize(index + 1);
+							pointInd.resize(index + 1);
+						}
+						pointNr.data()[index].push_back( vrt.e[NORM] );
+						pointInd.data()[index].push_back(points.size() - 1);
+						index = points.size() - 1;
 					}
 				}
 				plg.push_back(vrt);

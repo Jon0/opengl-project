@@ -31,6 +31,7 @@ public:
 	void setLength(float);
 	void interpolate(Vec3D other, float percent);
 	Vec3D normalise() const;
+	bool similiar(Vec3D &other);
 
 	Vec3D &operator=(const float *vec);
 	Vec3D &operator=(const Vec3D &);

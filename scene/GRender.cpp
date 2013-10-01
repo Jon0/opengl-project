@@ -140,12 +140,15 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 
 	light.setLight();
 	displayGeometry();
+
+	glUseProgram(0);
+	table->drawDebug();
 }
 
 void GRender::displayGeometry() {
 	vb.enable();
 
-	glUniform1i(useDiffTex, false);
+	glUniform1i(useDiffTex, true);
 	glUniform1i(useNormTex, true);
 	woodTex->enable(0);
 	woodNormTex->enable(1);

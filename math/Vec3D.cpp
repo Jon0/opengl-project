@@ -94,6 +94,11 @@ Vec3D Vec3D::normalise() const {
 	}
 }
 
+bool Vec3D::similiar(Vec3D &other) {
+	float d = dotproduct(other);
+	return d > 0.99;
+}
+
 Vec3D &Vec3D::operator=(const float *vec) {
 	v[0] = vec[0];
 	v[1] = vec[1];

@@ -81,7 +81,7 @@ void main(){
 	if (useDiffTex) {
 		MaterialDiffuseColor = texture2D( diffuseTexture, UV ).rgb;
 		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.1;
+		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb;
 	}
 	else {
 		MaterialDiffuseColor = vec3(0.3, 0.9, 0.3);
@@ -169,7 +169,7 @@ void main(){
 		}
 
 		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * Lights[light].intensity * visibility * cosTheta / (distance*distance);
-		//SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
 	}
 
 
