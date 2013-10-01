@@ -28,7 +28,7 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
-	selQuat = NULL;
+	selQuat = glm::quat();
 	selIndex = -1;
 	current_pose = NULL;
 
@@ -116,8 +116,7 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	color *cl = (this->*cf)(root);
 
 	glPushMatrix();
-	root->rotation->toMatrix(temp_mat);
-	glMultMatrixf(temp_mat);
+	glMultMatrixf(&glm::mat4_cast( root->rotation )[0][0]);
 
 	// rgb axis display
 	glColor4ubv((unsigned char *) cl->x);
@@ -127,11 +126,9 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 	glColor4ubv((unsigned char *) cl->z);
 	display_cylinder(q, 0, 0, 1, 1, true);
 
-	current_pose->q.data()[root->index].toMatrix(temp_mat);
-	glMultMatrixf(temp_mat);
 
-	root->rotation->multiplicativeInverse().toMatrix(temp_mat);
-	glMultMatrixf(temp_mat);
+	glMultMatrixf(&glm::mat4_cast( current_pose->q.data()[root->index] )[0][0]);
+	glMultMatrixf(&glm::mat4_cast( glm::inverse(root->rotation) )[0][0]);
 
 	if (root == select) {
 		glColor4ubv((unsigned char *) cl->select);
@@ -145,14 +142,14 @@ void Skeleton::display(bone* root, GLUquadric* q) {
 		gluProject(0, 0, 0, modelview, projection, viewport, &selPoint[0], &selPoint[1], &selPoint[2]);
 
 		// sum the rotations back to the root
-		selQuat = new Quaternion( 1, 0, 0, 0 );
+		selQuat = glm::quat();
 		bone *b = root->parent;
 		while(b) {
-			Quaternion q = current_pose->q.data()[b->index];
-			Quaternion bri = b->rotation->multiplicativeInverse();
-			selQuat->rotate( bri );
-			selQuat->rotate( q );
-			selQuat->rotate( *b->rotation );
+			glm::quat q = current_pose->q.data()[b->index];
+			glm::quat bri = glm::inverse(b->rotation);
+			selQuat = bri * selQuat;
+			selQuat = q * selQuat;
+			selQuat = b->rotation * selQuat;
 			b = b->parent;
 		}
 	}
@@ -237,11 +234,11 @@ GLdouble *Skeleton::selectionCenter() {
 	return selPoint;
 }
 
-Quaternion *Skeleton::getSelectionRot() {
+glm::quat Skeleton::getSelectionRot() {
 	return selQuat;
 }
 
-Quaternion *Skeleton::getBoneAxis(int id) {
+glm::quat Skeleton::getBoneAxis(int id) {
 	return root[id].rotation;
 }
 
@@ -263,7 +260,7 @@ void makeState( int numBones, pose *next ) {
 	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {
-		next->q.push_back({1, 0, 0, 0});
+		next->q.push_back( glm::quat() );
 	}
 }
 

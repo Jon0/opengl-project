@@ -20,6 +20,8 @@
 
 #include <vector>
 #include <GL/glut.h>
+#include <glm/gtc/quaternion.hpp>
+
 #include "Drawable.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
@@ -37,7 +39,7 @@ typedef int DOF;
 
 struct pose {
 	Vec3D adjust;
-	vector<Quaternion> q;
+	vector<glm::quat> q;
 };
 
 //Type to represent a bone
@@ -45,7 +47,7 @@ struct bone {
 	int index;
 	char* name;
 	float dirx, diry, dirz;
-	Quaternion *rotation;
+	glm::quat rotation;
 	DOF dof;
 	float length;
 	bone *parent;
@@ -80,8 +82,8 @@ public:
 	bool hasSelection();
 	DOF getDof(int);
 	GLdouble *selectionCenter();
-	Quaternion *getSelectionRot();
-	Quaternion *getBoneAxis(int);
+	glm::quat getSelectionRot();
+	glm::quat getBoneAxis(int);
 	void setCurrentPose(pose *p);
 
 
@@ -96,7 +98,7 @@ private:
 	GLubyte pix[4]; // buffer to return selection
 	GLfloat temp_mat[16];
 	GLdouble selPoint[3];
-	Quaternion *selQuat;
+	glm::quat selQuat;
 
 	// current pose
 	pose *current_pose;

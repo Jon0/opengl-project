@@ -126,7 +126,7 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, shared_ptr<Sk
 			}
 		}
 
-		current->q.data()[b->index] = *fromEular(eularAngle[0], eularAngle[1], eularAngle[2]);
+		current->q.data()[b->index] = glm::quat( glm::vec3(eularAngle[0], eularAngle[1], eularAngle[2]) );
 	}
 	else {
 		cout << n << " not found" << endl;
@@ -167,7 +167,7 @@ void AnimationLoader::loadAMCQBone( char *buff, pose *current, shared_ptr<Skelet
 			start += strlen(next);
 			trim(&start);
 		}
-		current->q.data()[b->index] = Quaternion(q[0], q[1], q[2], q[3]);
+		current->q.data()[b->index] = glm::quat(q[0], q[1], q[2], q[3]);
 	}
 	else {
 		cout << n << " not found" << endl;
@@ -213,9 +213,9 @@ void AnimationLoader::saveAMCState( const char *filename, pose *drawnState, shar
 		if (i > 0) {
 			fprintf(f, "%s ", skeleton->getBone(i)->name);
 		}
-		float f1 = drawnState->q[i].firstValue();
-		Vec3D v1 = drawnState->q[i].vector();
-		fprintf(f, "%f %f %f %f", f1, v1.v[0], v1.v[1], v1.v[2]);
+		float f1 = drawnState->q[i].w;
+		glm::vec3 v1 = glm::axis(drawnState->q[i]);
+		fprintf(f, "%f %f %f %f", f1, v1.x, v1.y, v1.z);
 		fprintf(f, "\n");
 	}
 	fclose(f);

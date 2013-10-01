@@ -38,7 +38,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lights.data()[0].data.position = glm::vec4(7.5, 2.0, 7.5, 1.0);
 	lights.data()[0].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
 	lights.data()[0].data.intensity = 80.0;
-	lights.data()[1].data.spotlight = 0.0;
+	lights.data()[0].data.spotlight = 0.0;
 	lights.data()[0].update();
 
 	// spot light
@@ -54,7 +54,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lights.data()[2].data.position = glm::vec4(-7.5, 8.0, -6.5, 0.0);
 	lights.data()[2].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
 	lights.data()[2].data.intensity = 0.33;
-	lights.data()[1].data.spotlight = 0.0;
+	lights.data()[2].data.spotlight = 0.0;
 	lights.data()[2].update();
 
 	numLights = 3;
@@ -92,7 +92,6 @@ void LightingModel::generateShadowFBO() {
 	GLenum FBOstatus;
 
 	// Try to use a texture depth component
-
 	glGenTextures(numLights, depthTextureId.data());
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[i]);
@@ -142,8 +141,6 @@ void LightingModel::getDepthMap() {
 	}
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-
-
 }
 
 void LightingModel::getShadow( shared_ptr<Geometry> g ) {
@@ -184,6 +181,18 @@ void LightingModel::setTransform(glm::mat4 t) {
 		DepthBias.data.data()[i] = biasMatrix * modelMatrix.getV();
 	}
 	DepthBias.forceUpdate();
+}
+
+void LightingModel::drawIcons() {
+	glUseProgram(0);
+	GLUquadric* quad = gluNewQuadric();
+	for (UBO<LightProperties> &l :lights) {
+		glPushMatrix();
+		glm::vec4 &pos = l.data.position;
+		glTranslatef(pos.x, pos.y, pos.z);
+		gluSphere(quad, 0.50, 12, 12);
+		glPopMatrix();
+	}
 }
 
 } /* namespace std */

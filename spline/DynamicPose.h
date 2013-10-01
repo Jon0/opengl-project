@@ -28,7 +28,7 @@ public:
 	void insertFrame(float);
 	void rollSelection(int, float);
 	void modSelection(int, int, float, float, float);
-	void modSelection(int, int id, Quaternion &q);
+	void modSelection(int, int id, const glm::quat &q);
 	void setPathLength(float);
 	int numFrames();
 

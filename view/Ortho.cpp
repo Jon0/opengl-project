@@ -61,9 +61,13 @@ int Ortho::mouseDragged(int x, int y) {
 	return scene->mouseDragged( shared_from_this(), x, y );
 }
 
-Quaternion Ortho::cameraAngle() {
-	Quaternion r(1, 0, 0, 0);
+glm::quat Ortho::cameraAngle() {
+	glm::quat r(1, 0, 0, 0);
 	return r;
+}
+
+glm::vec2 Ortho::project(glm::vec3 v) {
+	return glm::vec2(v);
 }
 
 Vec3D Ortho::unProject(int x, int y) {
@@ -79,11 +83,11 @@ Vec3D Ortho::unProject(int x, int y) {
 }
 
 glm::mat4 Ortho::viewMatrix() {
-
+	return glm::mat4(1.0);
 }
 
 glm::mat4 Ortho::projectionMatrix() {
-
+	return glm::mat4(1.0);
 }
 
 void drawString(string message, float x, float y) {

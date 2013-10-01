@@ -15,19 +15,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
 
+#include "../shader/ShaderStructs.h"
 #include "../shader/Program.h"
 #include "../shader/UniformControl.h"
 
 namespace std {
-
-struct LightProperties {
-	glm::vec4 position;
-	glm::vec4 color;
-	glm::vec4 direction;
-	float intensity;
-	float spotlight;
-	float spotlightInner;
-};
 
 class LightingModel {
 public:
@@ -66,6 +58,7 @@ public:
 	void getShadow( shared_ptr<Geometry> );
 	void setLight();
 	void setTransform(glm::mat4);
+	void drawIcons();
 };
 
 } /* namespace std */

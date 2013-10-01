@@ -11,14 +11,14 @@
 #include <memory>
 #include <chrono>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
 
 namespace std {
 
-class Vec3D;
-class Quaternion;
+class Vec3D; // TODO remove
 
 class ViewInterface:
 		public enable_shared_from_this<ViewInterface>,
@@ -32,7 +32,8 @@ public:
 	virtual void keyPressed(unsigned char) = 0;
 	virtual int mouseClicked(int, int, int, int) = 0;
 	virtual int mouseDragged(int, int) = 0;
-	virtual Quaternion cameraAngle() = 0;
+	virtual glm::quat cameraAngle() = 0;
+	virtual glm::vec2 project(glm::vec3) = 0;
 	virtual Vec3D unProject(int, int) = 0;
 	virtual glm::mat4 viewMatrix() = 0;
 	virtual glm::mat4 projectionMatrix() = 0;

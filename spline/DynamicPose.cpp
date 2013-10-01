@@ -42,7 +42,7 @@ void DynamicPose::update(float position, pose *current) {
 	 */
 	current->adjust = a->adjust * (1 - t) + b->adjust * t;
 	for (int i = 0; i < numBones; ++i) {
-		current->q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
+		current->q.data()[i] = glm::slerp(a->q.data()[i], b->q.data()[i], t);
 	}
 }
 
@@ -72,7 +72,7 @@ void DynamicPose::insertFrame(float time) {
 	float t = fmod(animate_frame, 1.0);
 
 	for (int i = 0; i < numBones; ++i) {
-		newPose.q.data()[i] = slerp(a->q.data()[i], b->q.data()[i], t);
+		newPose.q.data()[i] = glm::slerp(a->q.data()[i], b->q.data()[i], t);
 	}
 	//v_pose.insert()
 }
@@ -85,15 +85,16 @@ void DynamicPose::rollSelection(int id, float f) {
 }
 
 void DynamicPose::modSelection(int frame_index, int id, float x, float y, float z) {
-	Quaternion q = *fromEular(x, y, z);
+	glm::quat q = glm::quat( glm::vec3(x, y, z) );
 	modSelection( frame_index, id, q );
 }
 
-void DynamicPose::modSelection(int frame_index, int id, Quaternion &q) {
+void DynamicPose::modSelection(int frame_index, int id, const glm::quat &q) {
 	if ( id < 0 ) {
 		return;
 	}
-	v_pose[frame_index % v_pose.size()].q[id].rotate( q );
+	glm::quat &p = v_pose[frame_index % v_pose.size()].q[id];
+	p = q * p;
 
 	// TODO ensure bone is within limits?
 	//DOF dof = skeleton->getDof(id);

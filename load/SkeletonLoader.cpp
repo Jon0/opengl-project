@@ -33,7 +33,7 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 		root[i].dirx = 0;
 		root[i].diry = 0;
 		root[i].dirz = 0;
-		root[i].rotation = NULL;
+		root[i].rotation = glm::quat();
 		root[i].dof = DOF_NONE;
 		root[i].length = 0;
 		root[i].name = NULL;
@@ -50,7 +50,7 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 	root[0].name = name;
 	root[0].dof = DOF_ROOT;
 	root[0].index = 0;
-	root[0].rotation = new Quaternion(1, 0, 0, 0);
+	root[0].rotation = glm::quat();
 
 
 	int numBones = 1;
@@ -315,7 +315,7 @@ void SkeletonLoader::readBone(char* buff, FILE* file, int &numBones, bone *root 
 						printf("Got: %s", p);
 						exit(EXIT_FAILURE);
 					}
-					root[numBones].rotation = fromEular(x, y, z);
+					root[numBones].rotation = glm::quat( glm::vec3(x, y, z) );
 				}
 				//There are more things but they are not needed for the core
 			}

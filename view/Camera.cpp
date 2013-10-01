@@ -14,9 +14,6 @@
 namespace std {
 
 Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
-		//view { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		//projection { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
-		//VP { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		scene(s),
 		focus{0, 0, 0},
 		cam_angle{1, 0, 0, 0},
@@ -41,8 +38,9 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 Camera::~Camera() {}
 
 void Camera::setView( chrono::duration<double> tick ) {
-	cam_angle.rotate( cam_angle_d );
-	cam_angle_d = slerp( {1,0,0,0}, cam_angle_d, ( 1 - tick.count() * 10 ) );
+	cam_angle = cam_angle_d * cam_angle;
+	//cam_angle.rotate( cam_angle_d );
+	cam_angle_d = glm::slerp( glm::quat(), cam_angle_d, ( 1 - (float)tick.count() * 10 ) );
 
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
@@ -57,10 +55,10 @@ void Camera::setView( chrono::duration<double> tick ) {
 	// setup camera position
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
-	cam_angle.toMatrix(temp_matrix);
-	glMultMatrixf(temp_matrix);
+	//cam_angle.toMatrix(temp_matrix);
+	glMultMatrixf( &glm::mat4_cast(cam_angle)[0][0] );
 
-	float x = focus.getX(), y = focus.getY(), z = focus.getZ();
+	float x = focus.x, y = focus.y, z = focus.z;
 	gluLookAt(x, y, z, x, y, z - viewzoom, 0.0, 1.0, 0.0);
 	glGetFloatv(GL_MODELVIEW_MATRIX, model_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, model_matrixd);
@@ -114,7 +112,7 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 	if ((glutGetModifiers() & GLUT_ACTIVE_SHIFT) == GLUT_ACTIVE_SHIFT) {
 		if (button == 0) {
 			control[0] = true;
-			getArc( arcball_x, arcball_y, x, y, arcball_radius, &click_new ); // initial click down
+			getArc( arcball_x, arcball_y, x, y, arcball_radius, click_new ); // initial click down
 			click_old = click_new;
 		}
 		else if (button == 2) {
@@ -139,10 +137,10 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 
 int Camera::mouseDragged(int x, int y) {
 	if (control[0]) {
-		getArc(arcball_x, arcball_y, x, y, arcball_radius, &click_new);
+		getArc(arcball_x, arcball_y, x, y, arcball_radius, click_new);
 		// cam_angle_d = click_new * click_old.multiplicativeInverse();
-		Quaternion q = cam_angle_d = click_new * click_old.multiplicativeInverse();
-		cam_angle_d.rotate( q );
+		glm::quat q = cam_angle_d = click_new * glm::inverse(click_old);
+		cam_angle_d = q * cam_angle_d;
 		click_old = click_new;
 		return true;
 	}
@@ -152,7 +150,7 @@ int Camera::mouseDragged(int x, int y) {
 		float len_sq = xn*xn + yn*yn;
 		if (len_sq > 0.1) {
 			float len = sqrt(len_sq);
-			Vec3D add = (cam_angle.multiplicativeInverse() * Quaternion{0, xn, yn, 0} * cam_angle).vector();
+			glm::vec3 add = glm::axis( glm::inverse(cam_angle) * glm::quat(0, xn, yn, 0) * cam_angle );
 			focus = focus + add * (len / arcball_radius);
 			click_x = x;
 			click_y = y;
@@ -165,8 +163,14 @@ int Camera::mouseDragged(int x, int y) {
 	}
 }
 
-Quaternion Camera::cameraAngle() {
+glm::quat Camera::cameraAngle() {
 	return cam_angle;
+}
+
+glm::vec2 Camera::project(glm::vec3 v) {
+	//properties.data.P.
+	//return properties.data.P * properties.data.V * glm::vec4(v.x, v.y, v.z, 1.0);
+	return glm::vec2(0, 0); // TODO stuff
 }
 
 Vec3D Camera::unProject(int x, int y) {
@@ -200,26 +204,26 @@ void Camera::setupMatrix() {
 	glMultMatrixf(model_matrix);
 }
 
-void getArc(int arcx, int arcy, int ix, int iy, float rad, Quaternion *result) {
+void getArc(int arcx, int arcy, int ix, int iy, float rad, glm::quat &result) {
 	float x = (ix - arcx) / rad;
 	float y = (iy - arcy) / rad;
 
 	// check click is inside the arcball radius
 	if (x*x + y*y < 1.0) {
 		float z = sqrt(1 - (x*x + y*y));
-		*result = Quaternion(0, x, y, z);
+		result = glm::quat(0, x, y, z);
 	}
 	else {
 		float len = sqrt(x*x + y*y);
-		*result = Quaternion(0, x / len, y / len, 0);
+		result = glm::quat(0, x / len, y / len, 0);
 	}
 }
 
-void getUnitCircle(int arcx, int arcy, int ix, int iy, Quaternion *result) {
+void getUnitCircle(int arcx, int arcy, int ix, int iy, glm::quat &result) {
 	float x = ix - arcx;
 	float y = iy - arcy;
 	float len = sqrt(x*x + y*y);
-	*result = Quaternion(0, x / len, y / len, 0);
+	result = glm::quat(0, x / len, y / len, 0);
 }
 
 } /* namespace std */

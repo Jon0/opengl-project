@@ -137,12 +137,10 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	program.enable();
 	glEnable(GL_CULL_FACE);
 
-
 	light.setLight();
 	displayGeometry();
 
-	glUseProgram(0);
-	table->drawDebug();
+	light.drawIcons();
 }
 
 void GRender::displayGeometry() {
@@ -178,8 +176,10 @@ void GRender::drawObject( shared_ptr<Geometry> g ) {
 	g->draw();
 }
 
-int GRender::mouseClicked( shared_ptr<ViewInterface>, int, int, int, int ) {
+int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int, int, int, int ) {
 	return false;
+
+	//cam->project();
 }
 
 int GRender::mouseDragged( shared_ptr<ViewInterface>, int, int ) {

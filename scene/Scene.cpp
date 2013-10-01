@@ -35,10 +35,10 @@ void Scene::start() {
 
 Scene::~Scene() {}
 
-void Scene::getBoneAlignment(Quaternion current, Quaternion cam_angle, Quaternion *result) {
+void Scene::getBoneAlignment(glm::quat current, glm::quat cam_angle, glm::quat &result) {
 	// reverse all existing rotations in order
-	Quaternion k = cam_angle * *skeleton->getSelectionRot() * *skeleton->getBoneAxis(selectedBone);
-	*result = k.multiplicativeInverse() * current * k;
+	glm::quat k = cam_angle * skeleton->getSelectionRot() * skeleton->getBoneAxis(selectedBone);
+	result = glm::inverse(k) * current * k;
 }
 
 int Scene::mouseSelect(int x, int y) {
@@ -78,19 +78,19 @@ int Scene::mouseClicked( shared_ptr<ViewInterface> view, int button, int state, 
 int Scene::mouseDragged( shared_ptr<ViewInterface> in, int x, int y ) {
 	if ( drag_bone && selectedBone >= 0 ) {
 		GLdouble *p = skeleton->selectionCenter();
-		Quaternion temp;
+		glm::quat temp;
 
 		// use old mouse position to find starting quaternion
 		if (clickx > 0 && clicky > 0) {
-			getArc( p[0], p[1], clickx, clicky, 200.0, &temp );
-			getBoneAlignment(temp, in->cameraAngle(), &click_old);
+			getArc( p[0], p[1], clickx, clicky, 200.0, temp );
+			getBoneAlignment(temp, in->cameraAngle(), click_old);
 			clickx = clicky = 0;
 		}
 
 		// modify bone orientation
-		getArc( p[0], p[1], x, y, 200.0, &temp );
-		getBoneAlignment(temp, in->cameraAngle(), &click_new);
-		Quaternion drag = click_new * click_old.multiplicativeInverse();
+		getArc( p[0], p[1], x, y, 200.0, temp );
+		getBoneAlignment(temp, in->cameraAngle(), click_new);
+		glm::quat drag = click_new * glm::inverse(click_old);
 		player.animation[0].modSelection( time, selectedBone, drag );
 		click_old = click_new;
 		return true;

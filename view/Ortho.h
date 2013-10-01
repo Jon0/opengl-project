@@ -32,7 +32,8 @@ public:
 	virtual void keyPressed(unsigned char);
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int, int);
-	virtual Quaternion cameraAngle();
+	virtual glm::quat cameraAngle();
+	virtual glm::vec2 project(glm::vec3);
 	virtual Vec3D unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();

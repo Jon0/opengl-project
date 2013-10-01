@@ -28,7 +28,7 @@ public:
 	void start();
 	virtual ~Scene();
 
-	void getBoneAlignment(Quaternion, Quaternion, Quaternion *);
+	void getBoneAlignment(glm::quat, glm::quat, glm::quat &);
 	int mouseSelect(int, int);
 
 	virtual void prepare();
@@ -46,7 +46,7 @@ protected:
 	shared_ptr<Skeleton> skeleton;
 
 	SkeletonTransform player;
-	Quaternion click_old, click_new;
+	glm::quat click_old, click_new;
 
 	bool playing, drag_bone;
 	float time;
