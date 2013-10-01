@@ -26,6 +26,7 @@ struct LightProperties {
 	glm::vec4 direction;
 	float intensity;
 	float spotlight;
+	float spotlightInner;
 };
 
 class LightingModel {

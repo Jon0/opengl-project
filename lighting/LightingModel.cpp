@@ -42,11 +42,12 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lights.data()[0].update();
 
 	// spot light
-	lights.data()[1].data.position = glm::vec4(-0.5, 15.0, 9.5, 1.0);
+	lights.data()[1].data.position = glm::vec4(-0.5, 15.0, -9.5, 1.0);
 	lights.data()[1].data.color = glm::vec4(0.3, 0.1, 0.9, 1.0);
-	lights.data()[1].data.direction = glm::vec4(0.0, 0.0, 0.0, 1.0);
-	lights.data()[1].data.intensity = 250.0;
-	lights.data()[1].data.spotlight = 1.0;
+	lights.data()[1].data.direction = glm::vec4(0.0, 1.0, -5.0, 1.0);
+	lights.data()[1].data.intensity = 500.0;
+	lights.data()[1].data.spotlight = cos(0.45); //0.95533648912;
+	lights.data()[1].data.spotlightInner = cos(0.35);
 	lights.data()[1].update();
 
 	// directional light

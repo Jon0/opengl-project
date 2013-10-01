@@ -144,9 +144,10 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 
 void GRender::displayGeometry() {
 	vb.enable();
-
-	glUniform1i(useDiffTex, true);
-	glUniform1i(useNormTex, true);
+	glUniform1i(useDiffTex, false);
+	glUniform1i(useNormTex, false);
+	//glUniform1i(useDiffTex, true);
+	//glUniform1i(useNormTex, true);
 	woodTex->enable(0);
 	woodNormTex->enable(1);
 	woodDispTex->enable(2);

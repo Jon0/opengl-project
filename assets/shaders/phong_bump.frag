@@ -6,6 +6,7 @@ layout(std140) uniform LightProperties {
 	vec4 direction;
 	float intensity;
 	float spotlight;
+	float spotlightInner;
 } Lights[8];
 
 layout(std140) uniform Camera {
@@ -161,14 +162,22 @@ void main(){
 		visibility = clamp( visibility, 0, 1 );
 
 		// dampen spotlight by dot product angle
-		if ( Lights[light].spotlight > 0.0 ) {
-			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(-LightDirection_tangentspace[light]));
-			//angle = pow(angle, 1);
-			visibility = visibility / (1 + acos(angle));
+		if ( Lights[light].spotlight > 0.1 ) {
+			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(LightDirection_tangentspace[light]));
+			float spot = clamp((angle - Lights[light].spotlight) / (Lights[light].spotlightInner - Lights[light].spotlight), 0.0, 1.0);
+			visibility = visibility * pow(spot, 2);
+
+			//if (angle > Lights[light].spotlight) {
+				//float percent = (angle - Lights[light].spotlight) / (1 - Lights[light].spotlight);
+				//visibility = visibility * percent; //pow(percent, 0.8);
+			//}
+			//else {
+			//	visibility = 0.0;
+			//}
 		}
 
 		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * Lights[light].intensity * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
+		//SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
 	}
 
 
