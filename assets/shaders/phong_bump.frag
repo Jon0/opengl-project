@@ -151,7 +151,6 @@ void main(){
 		/*
 		 *	Shadows
 		 */
-		//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
 		float bias = 0.0005*tan(acos(cosTheta));
 		bias = clamp(bias, 0.0, 0.001);
 
@@ -167,13 +166,6 @@ void main(){
 			float spot = clamp((angle - Lights[light].spotlight) / (Lights[light].spotlightInner - Lights[light].spotlight), 0.0, 1.0);
 			visibility = visibility * pow(spot, 2);
 
-			//if (angle > Lights[light].spotlight) {
-				//float percent = (angle - Lights[light].spotlight) / (1 - Lights[light].spotlight);
-				//visibility = visibility * percent; //pow(percent, 0.8);
-			//}
-			//else {
-			//	visibility = 0.0;
-			//}
 		}
 
 		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * Lights[light].intensity * visibility * cosTheta / (distance*distance);
@@ -186,15 +178,6 @@ void main(){
 	 *	    set final color value
 	 * 	*******************************
 	 */
-	//color =
-		// Ambient : simulates indirect lighting
-	//	MaterialAmbientColor +
-	//	ReflectionColor +
-		// Diffuse : "color" of the object
-	//	MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
-		// Specular : reflective highlight, like a mirror
-	//	MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
-
 	color = ReflectionColor + DiffuseTotal + SpecularTotal;
 
 }

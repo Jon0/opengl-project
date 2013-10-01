@@ -45,7 +45,7 @@ vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
 	// TODO have one basis per normal, not vertex
 	// because verts can be corners.
 
-	// polygon -> number -> array position
+	// polygon -> set of array position
 	vector<vector<int>> index;
 
 	//-----------------------------------------------------------
