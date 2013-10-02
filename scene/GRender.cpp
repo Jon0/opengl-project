@@ -180,6 +180,8 @@ int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int, int, int, int ) {
 	return false;
 
 	//cam->project();
+
+
 }
 
 int GRender::mouseDragged( shared_ptr<ViewInterface>, int, int ) {

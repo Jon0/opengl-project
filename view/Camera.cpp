@@ -169,8 +169,10 @@ glm::quat Camera::cameraAngle() {
 
 glm::vec2 Camera::project(glm::vec3 v) {
 	//properties.data.P.
-	//return properties.data.P * properties.data.V * glm::vec4(v.x, v.y, v.z, 1.0);
-	return glm::vec2(0, 0); // TODO stuff
+	return properties.data.P * properties.data.V * glm::vec4(v.x, v.y, v.z, 1.0);
+
+	glm::project()
+	//return glm::vec2(0, 0); // TODO stuff
 }
 
 Vec3D Camera::unProject(int x, int y) {
