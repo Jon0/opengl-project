@@ -66,7 +66,7 @@ glm::quat Ortho::cameraAngle() {
 	return r;
 }
 
-glm::vec3 Ortho::project(glm::vec3 v) {
+glm::vec3 Ortho::project(const glm::vec3 &v) {
 	return v;
 }
 

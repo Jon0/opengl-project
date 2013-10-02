@@ -80,8 +80,6 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 	);
-
-	t = 0.0;
 }
 
 LightingModel::~LightingModel() {
@@ -90,6 +88,10 @@ LightingModel::~LightingModel() {
 
 LightProperties &LightingModel::getLight(int i) {
 	return lights.data()[i].data;
+}
+
+void LightingModel::updateLight(int i) {
+	lights.data()[i].update();
 }
 
 void LightingModel::generateShadowFBO() {
@@ -133,10 +135,6 @@ void LightingModel::generateShadowFBO() {
 }
 
 void LightingModel::clearDepthMap() {
-	lights.data()[0].data.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
-	lights.data()[0].update();
-	t += 0.01;
-
 	//First step: Render from the light POV to a FBO, story depth values only
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen

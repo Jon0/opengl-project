@@ -51,7 +51,7 @@ public:
 	virtual int mouseClicked(int, int, int, int);
 	virtual int mouseDragged(int, int);
 	virtual glm::quat cameraAngle();
-	virtual glm::vec3 project(glm::vec3);
+	virtual glm::vec3 project(const glm::vec3 &);
 	virtual Vec3D unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();

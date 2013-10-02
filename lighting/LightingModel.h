@@ -48,12 +48,11 @@ public:
 	UniformBlock<LightProperties> lightUniform;
 	vector< UBO<LightProperties> > lights;
 
-	float t;
-
 	LightingModel(Program &shadow, Program &);
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);
+	void updateLight(int);
 	void generateShadowFBO();
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );

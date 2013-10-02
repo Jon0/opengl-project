@@ -67,7 +67,9 @@ GRender::GRender():
 	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-4,0.5,-7)) );
 	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-6,1,5)) );
 
+	selectedLight = 1;
 	camptr = NULL;
+	t = 0.0;
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -103,6 +105,11 @@ void GRender::start() {
  * TODO only call this once
  */
 void GRender::prepare() {
+	LightProperties &p = light.getLight(0);
+	p.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
+	light.updateLight(0);
+	t += 0.01;
+
 	shadow.enable();
 
 	/*
@@ -176,16 +183,39 @@ void GRender::drawObject( shared_ptr<Geometry> g ) {
 	g->draw();
 }
 
-int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int, int, int, int ) {
-	return false;
+int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int button, int state, int x, int y ) {
+	if (state) {
+		drag = false;
+		return false;
+	}
 
-	LightProperties l = light.getLight(1);
-	glm::vec3 p = cam->project( glm::vec3(l.position) );
-
-	cout << "pos = " << p.x << ", " << p.y << ", " << p.z << endl;
+	glm::vec3 p = cam->project( glm::vec3(0,0,0) );
+	getArc( p.x, p.y, x, y, 600.0, click_old );
+	click_old = glm::inverse(cam->cameraAngle()) * click_old * cam->cameraAngle();
+	drag = true;
+	return true;
 }
 
-int GRender::mouseDragged( shared_ptr<ViewInterface>, int, int ) {
+int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
+	if (drag && selectedLight >= 0) {
+		LightProperties &l = light.getLight(selectedLight);
+		glm::vec3 p = cam->project( glm::vec3(0,0,0) );
+
+		// modify orientation
+		getArc(p.x, p.y, x, y, 600.0, click_new);
+		click_new = glm::inverse(cam->cameraAngle()) * click_new * cam->cameraAngle();
+
+
+		//getBoneAlignment(temp, in->cameraAngle(), click_new);
+		glm::quat drag = click_new * glm::inverse(click_old);
+		l.position = drag * l.position;
+
+		//player.animation[0].modSelection( time, selectedBone, drag );
+		light.updateLight(selectedLight);
+		click_old = click_new;
+		return true;
+	}
+
 	return false;
 }
 

@@ -53,6 +53,13 @@ public:
 	Tex *normalTex;
 	Tex *cubeTex;
 
+
+	bool drag;
+	int selectedLight;
+	glm::quat click_old, click_new;
+
+	float t;
+
 	UBO<CameraProperties> *camptr; // TODO this is a hack
 
 	GRender();

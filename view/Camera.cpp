@@ -168,7 +168,7 @@ glm::quat Camera::cameraAngle() {
 	return cam_angle;
 }
 
-glm::vec3 Camera::project(glm::vec3 v) {
+glm::vec3 Camera::project(const glm::vec3 &v) {
 	return glm::project( v, properties.data.V, properties.data.P, glm::vec4(0, 0, windowwidth, windowheight) );
 }
 
