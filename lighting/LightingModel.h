@@ -53,9 +53,10 @@ public:
 	LightingModel(Program &shadow, Program &);
 	virtual ~LightingModel();
 
+	LightProperties &getLight(int);
 	void generateShadowFBO();
-	void getDepthMap();
-	void getShadow( shared_ptr<Geometry> );
+	void clearDepthMap();
+	void createShadow( shared_ptr<Geometry> );
 	void setLight();
 	void setTransform(glm::mat4);
 	void drawIcons();

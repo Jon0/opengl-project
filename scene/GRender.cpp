@@ -108,13 +108,13 @@ void GRender::prepare() {
 	/*
 	 * prepare depth map of each light
 	 */
-	light.getDepthMap();
-	light.getShadow(table);
-	light.getShadow(box);
-	light.getShadow(bunny);
-	light.getShadow(sphere);
-	light.getShadow(teapot);
-	light.getShadow(torus);
+	light.clearDepthMap();
+	light.createShadow(table);
+	light.createShadow(box);
+	light.createShadow(bunny);
+	light.createShadow(sphere);
+	light.createShadow(teapot);
+	light.createShadow(torus);
 }
 
 void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> ) {
@@ -179,9 +179,10 @@ void GRender::drawObject( shared_ptr<Geometry> g ) {
 int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int, int, int, int ) {
 	return false;
 
-	//cam->project();
+	LightProperties l = light.getLight(1);
+	glm::vec3 p = cam->project( glm::vec3(l.position) );
 
-
+	cout << "pos = " << p.x << ", " << p.y << ", " << p.z << endl;
 }
 
 int GRender::mouseDragged( shared_ptr<ViewInterface>, int, int ) {

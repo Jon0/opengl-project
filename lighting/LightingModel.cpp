@@ -88,6 +88,10 @@ LightingModel::~LightingModel() {
 	// TODO Auto-generated destructor stub
 }
 
+LightProperties &LightingModel::getLight(int i) {
+	return lights.data()[i].data;
+}
+
 void LightingModel::generateShadowFBO() {
 	GLenum FBOstatus;
 
@@ -128,7 +132,7 @@ void LightingModel::generateShadowFBO() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void LightingModel::getDepthMap() {
+void LightingModel::clearDepthMap() {
 	lights.data()[0].data.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
 	lights.data()[0].update();
 	t += 0.01;
@@ -143,7 +147,7 @@ void LightingModel::getDepthMap() {
 	glCullFace(GL_FRONT);
 }
 
-void LightingModel::getShadow( shared_ptr<Geometry> g ) {
+void LightingModel::createShadow( shared_ptr<Geometry> g ) {
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
 
 	// Compute the MVP matrix from the light's point of view

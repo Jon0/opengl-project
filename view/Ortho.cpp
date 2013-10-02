@@ -66,8 +66,8 @@ glm::quat Ortho::cameraAngle() {
 	return r;
 }
 
-glm::vec2 Ortho::project(glm::vec3 v) {
-	return glm::vec2(v);
+glm::vec3 Ortho::project(glm::vec3 v) {
+	return v;
 }
 
 Vec3D Ortho::unProject(int x, int y) {
