@@ -135,6 +135,10 @@ void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) 
 	glEnd();
 }
 
+void SpeedCurve::displayUI() {
+
+}
+
 void SpeedCurve::displayGeometry() {
 
 }

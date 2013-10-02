@@ -32,10 +32,7 @@ void Ortho::setView( chrono::duration<double> tick ) {
 	glLoadIdentity();
 
 	// draw scene
-	scene->display( shared_from_this(), tick );
-
-	// draw message
-	drawString(message, 5, 5);
+	scene->displayUI();
 }
 
 void Ortho::resize(int x, int y) {
@@ -99,8 +96,6 @@ void drawString(string message, float x, float y) {
 	const char *str = message.c_str();
 	int len = (int) strlen(str);
 	void *font = GLUT_BITMAP_HELVETICA_12;
-	glutBitmapCharacter(font, '>');
-	glutBitmapCharacter(font, ' ');
 	for (int i = 0; i < len; i++) {
 		glutBitmapCharacter(font, str[i]);
 	}

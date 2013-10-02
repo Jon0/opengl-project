@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "../geometry/Cube.h"
+#include "../texture/Font.h"
 #include "GRender.h"
 
 namespace std {
@@ -28,6 +29,8 @@ GRender::GRender():
 		light { shadow, program }
 {
 	mWnd->start();
+
+	new Font();
 
 	/* texturing... */
 	woodTex = new Tex();
@@ -82,6 +85,9 @@ GRender::~GRender() {
 void GRender::start() {
 	camera = shared_ptr<Camera>{ new Camera( shared_from_this(), mWnd ) };
 	mWnd->addView( camera );
+
+	ortho = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
+	mWnd->addView( ortho );
 
 	/*
 	 * set uniforms
@@ -148,6 +154,11 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	displayGeometry();
 
 	light.drawIcons();
+}
+
+void GRender::displayUI() {
+	glUseProgram(0);
+	drawString( "test", 10, 10 );
 }
 
 void GRender::displayGeometry() {

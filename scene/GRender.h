@@ -16,6 +16,7 @@
 #include "../load/GeometryLoader.h"
 #include "../shader/Program.h"
 #include "../view/Camera.h"
+#include "../view/Ortho.h"
 #include "../window/MainWindow.h"
 
 namespace std {
@@ -31,6 +32,7 @@ public:
 	VertexBuffer vb;
 	GeometryLoader gloader;
 	shared_ptr<Camera> camera;
+	shared_ptr<Ortho> ortho;
 	shared_ptr<Geometry> sky;
 	shared_ptr<Geometry> box;
 	shared_ptr<Geometry> bunny;
@@ -69,6 +71,7 @@ public:
 	void drawObject( shared_ptr<Geometry> );
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual void displayUI();
 	virtual void displayGeometry();
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
 	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int );
