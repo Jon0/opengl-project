@@ -30,8 +30,6 @@ GRender::GRender():
 {
 	mWnd->start();
 
-	new Font();
-
 	/* texturing... */
 	woodTex = new Tex();
 	woodTex->make2DTex("assets/image/Burled Cherry_DIFFUSE.jpg");

@@ -69,7 +69,6 @@ vec2 poissonDisk[16] = vec2[](
 );
 
 void main(){
-
 	// Light emission properties
 	// probably should put them as uniforms
 	//float LightPower = 80.0;

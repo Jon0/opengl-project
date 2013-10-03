@@ -37,20 +37,20 @@ public:
 
 		if (length == 1) {
 			blockIndex.push_back( glGetUniformBlockIndex(programID, name.c_str()) );
-			cout << blockIndex.data()[0] << ": " << name << endl;
+			//cout << blockIndex.data()[0] << ": " << name << endl;
 		}
 		else {
 			for (int i = 0; i < length; ++i) {
 				string fullname = name + "[" + to_string(i) +"]";
 				blockIndex.push_back( glGetUniformBlockIndex(programID, fullname.c_str()) );
-				cout << blockIndex.data()[i] << ": " << fullname << endl;
+				//cout << blockIndex.data()[i] << ": " << fullname << endl;
 			}
 		}
 		blockSource.resize(length);
 
 		glGetActiveUniformBlockiv(programID, blockIndex.data()[0], GL_UNIFORM_BLOCK_DATA_SIZE, &blockDataSize);
-		cout << "block data size: " << blockDataSize << endl;
-		cout << "type data size: " << sizeof(T) << endl;
+		//cout << "block data size: " << blockDataSize << endl;
+		//cout << "type data size: " << sizeof(T) << endl;
 	}
 
 	virtual ~UniformBlock() {}
