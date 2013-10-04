@@ -57,4 +57,3 @@ Keyboard Control
 
 * modifying bones after adding a new pose will alter only the most recently added
 
-
