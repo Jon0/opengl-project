@@ -323,6 +323,26 @@ void GRender::keyPressed(unsigned char c) {
 		else if (lightcontrol == 1) message = "Light "+to_string(selectedLight) +" : Spot";
 		else if (lightcontrol == 2) message = "Light "+to_string(selectedLight) +" : Color";
 		break;
+	case 't':
+		l.spotlight *= 1.01;
+		if (l.spotlight > l.spotlightInner) l.spotlightInner = l.spotlight;
+		light.updateLight(selectedLight);
+		break;
+	case 'y':
+		l.spotlight /= 1.01;
+
+		light.updateLight(selectedLight);
+		break;
+	case 'g':
+		l.spotlightInner *= 1.01;
+
+		light.updateLight(selectedLight);
+		break;
+	case 'h':
+		l.spotlightInner /= 1.01;
+		if (l.spotlight > l.spotlightInner) l.spotlight = l.spotlightInner;
+		light.updateLight(selectedLight);
+		break;
 	case '.':
 		showIcons = !showIcons;
 		break;

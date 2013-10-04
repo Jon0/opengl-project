@@ -1,5 +1,7 @@
-animation
+Rendering
 =========
+
+* REQUIRES OPEN GL 4.0 OR HIGHER
 
 * Compile with Debug/makefile from inside directory
 
@@ -11,10 +13,10 @@ animation
 
 * ./Debug/animation
 
+* Run with no command line args
+
 Mouse Control
 =============
-
-* Run with no command line args
 
 * Shift + Mouse left to rotate view
 
@@ -22,39 +24,23 @@ Mouse Control
 
 * Shift + Mouse Wheel to zoom
 
-* Ctrl + Mouse left to choose or unselect bone
-
-* Mouse left drag to move bone on any axis
-
-* Mouse Right to place spline points in 3d space
-
-* Left click speed control window to place data point
-
-* Drag on speed control window to move data points
-
-* Speed is 0 at bottom of window, 200 at top
+* Without Shift, Mouse performs adjustment of light parameters
 
 Keyboard Control
 ===============
 
-* While main window is focus enter these messages then enter (lowercase only):
+* A => mouse will alter light position
 
-* "play"
+* S => mouse will alter light direction (spotlight only)
 
-* "stop"
+* D => mouse will alter light color
 
-* "reset" - removes all data without saving
+* Z => toggle the currently selected light ( 0 = positional, 1 = spotlight, 2 = directional )
 
-* "load [filename]" - to load animation sequence file assets/[filename].amc
+* T and Y => mouse will alter a spotlights outer cone angle up and down
 
-* "save [filename]" - to save current single pose as assets/[filename].amc
+* G and H => mouse will alter a spotlights inner cone angle up and down
 
-* "add [filename]" - to append key frame series with single pose from assets/[filename].amc
-
-* "add" - append a single empty pose to key frame series
-
-* "show [time]" - skip to a given point in time
-
-* modifying bones after adding a new pose will alter only the most recently added
+* . will toggle light icons on and off
 
 
