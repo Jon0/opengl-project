@@ -27,5 +27,12 @@ struct LightProperties {
 	float spotlightInner;
 };
 
+struct MaterialProperties {
+	glm::vec4 DiffuseColor;
+	glm::vec4 AmbientColor;
+	glm::vec4 SpecularColor;
+	float Exponent;
+};
+
 } /* namespace std */
 #endif /* SHADERSTRUCTS_H_ */

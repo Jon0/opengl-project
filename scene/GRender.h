@@ -55,8 +55,9 @@ public:
 	Tex *normalTex;
 	Tex *cubeTex;
 
+	UniformBlock<MaterialProperties> materialUniform;
 
-	bool drag;
+	bool drag, showIcons;
 	int selectedLight;
 	int lightcontrol;
 	string message;

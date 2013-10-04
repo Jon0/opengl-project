@@ -16,7 +16,6 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		//Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) }
 {
 	shadowMapWidth = 1024 * 8; //800 * 3;
@@ -43,9 +42,9 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 
 	// spot light
 	lights.data()[1].data.position = glm::vec4(-0.5, 15.0, -9.5, 1.0);
-	lights.data()[1].data.color = glm::vec4(0.3, 0.1, 0.9, 1.0);
-	lights.data()[1].data.direction = glm::vec4(0.0, 1.0, -5.0, 1.0);
-	lights.data()[1].data.intensity = 500.0;
+	lights.data()[1].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[1].data.direction = glm::vec4(0.0, 1.0, 0.0, 1.0);
+	lights.data()[1].data.intensity = 200.0;
 	lights.data()[1].data.spotlight = cos(0.45); //0.95533648912;
 	lights.data()[1].data.spotlightInner = cos(0.35);
 	lights.data()[1].update();
@@ -201,17 +200,18 @@ void LightingModel::drawIcons() {
 			glm::vec4 dir = glm::normalize(spot - pos);
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
-			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, l.data.spotlight);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, 0.0, l.data.spotlight);
 			glPopMatrix();
 			glPushMatrix();
 			glTranslatef(spot.x, spot.y, spot.z);
 			gluSphere(quad, 0.50, 12, 12);
 			glPopMatrix();
 		}
-		else if (pos.w == 0) {
+		else if (pos.w < 0.1) {
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
-			gluSphere(quad, 0.50, 12, 12);
+			glm::vec4 dir = glm::normalize(-pos);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, 0.1, 0.0);
 			glPopMatrix();
 		}
 		else {
@@ -223,7 +223,7 @@ void LightingModel::drawIcons() {
 	}
 }
 
-void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float spotangle) {
+void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float width, float spotangle) {
 	const float rad_to_deg = 360.0/(2 * M_PI);
 	Vec3D z_vec, d_vec;
 	z_vec.v[0] = 0;	z_vec.v[1] = 0;	z_vec.v[2] = 1;
@@ -241,7 +241,7 @@ void display_cylinder(GLUquadric* q, float x, float y, float z, float length, fl
 	if (d > 0) {
 		glRotatef(angle, a->v[0], a->v[1], a->v[2]);
 	}
-	gluCylinder(q, 0*length, 0.5*length*spotangle, length, 10, 10);
+	gluCylinder(q, width, width + 0.5*length*spotangle, length, 10, 10);
 	glPopMatrix();
 }
 

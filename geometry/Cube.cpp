@@ -77,4 +77,16 @@ void Cube::setTransform(glm::mat4) {
 
 }
 
+UBO<MaterialProperties> *Cube::materialUBO() {
+
+}
+
+MaterialProperties &Cube::material() {
+
+}
+
+void Cube::updateMaterial() {
+
+}
+
 } /* namespace std */

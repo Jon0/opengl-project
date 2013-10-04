@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 
 #include "../buffer/VertexBuffer.h"
+#include "../shader/UBO.h"
+#include "../shader/ShaderStructs.h"
 
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
@@ -22,6 +24,9 @@ public:
 	virtual void drawDebug() = 0;
 	virtual glm::mat4 transform() = 0;
 	virtual void setTransform(glm::mat4) = 0;
+	virtual UBO<MaterialProperties> *materialUBO() = 0;
+	virtual MaterialProperties &material() = 0;
+	virtual void updateMaterial() = 0;
 };
 
 } /* namespace std */

@@ -15,6 +15,14 @@ layout(std140) uniform Camera {
 	uniform mat4 M;
 };
 
+layout(std140) uniform MaterialProperties {
+	vec4 DiffuseColor;
+	vec4 AmbientColor;
+	vec4 SpecularColor;
+	float Exponent;
+} Material;
+
+
 // Values that stay constant for the whole mesh.
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
@@ -44,7 +52,7 @@ in mat3 TBN;
 in mat3 MV3x3;
 
 // Ouput data
-out vec3 color;
+out vec4 color;
 
 vec2 poissonDisk[16] = vec2[](
    vec2( -0.94201624, -0.39906216 ),
@@ -67,20 +75,16 @@ vec2 poissonDisk[16] = vec2[](
 
 void main(){
 	// Material properties
-	vec3 MaterialDiffuseColor;
-	vec3 MaterialAmbientColor;
-	vec3 MaterialSpecularColor;
+	vec4 MaterialDiffuseColor = Material.DiffuseColor;
+	vec4 MaterialAmbientColor = Material.AmbientColor;
+	vec4 MaterialSpecularColor = Material.SpecularColor;
+	float MaterialExponent = Material.Exponent;
 	if (useDiffTex) {
-		MaterialDiffuseColor = texture2D( diffuseTexture, UV ).rgb;
-		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb;
+		MaterialDiffuseColor *= texture2D( diffuseTexture, UV );
+		MaterialAmbientColor *= MaterialDiffuseColor;
+		MaterialSpecularColor *= texture2D( specularTexture, UV );
 	}
-	else {
-		MaterialDiffuseColor = vec3(0.3, 0.9, 0.3);
-		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = vec3(0.7, 0.7, 0.7);
-	}
-
+	
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
 	vec3 TextureNormal_tangentspace;
 	if (useNormTex) {
@@ -101,10 +105,10 @@ void main(){
 	// convert from eye to world space
 	reflected =  inverse(TBN) * reflected;
 	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
-	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
-	ReflectionColor = vec3( pow(ReflectionColor.x, 8),
-							pow(ReflectionColor.y, 8),
-							pow(ReflectionColor.z, 8) ) * MaterialSpecularColor;
+	vec4 ReflectionColor = texture(cubeTexture, reflected);
+	ReflectionColor = vec4( pow(ReflectionColor.x, MaterialExponent),
+							pow(ReflectionColor.y, MaterialExponent),
+							pow(ReflectionColor.z, MaterialExponent), 1.0 ) * MaterialSpecularColor;
 
 
 	/*
@@ -112,8 +116,8 @@ void main(){
 	 *	calculate for each light source
 	 * 	*******************************
 	 */
-	vec3 DiffuseTotal = vec3(0.0);
-	vec3 SpecularTotal = vec3(0.0);
+	vec4 DiffuseTotal = vec4(0.0);
+	vec4 SpecularTotal = vec4(0.0);
 	for (int light = 0; light < 3; ++light) {
 
 		// Distance to the light
@@ -160,8 +164,8 @@ void main(){
 
 		}
 
-		DiffuseTotal += MaterialDiffuseColor * Lights[light].color.xyz * Lights[light].intensity * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * Lights[light].color.xyz * Lights[light].intensity * visibility * pow(cosAlpha, 8) / (distance*distance);
+		DiffuseTotal += MaterialDiffuseColor * Lights[light].color * Lights[light].intensity * visibility * cosTheta / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha, MaterialExponent) / (distance*distance);
 	}
 
 
@@ -170,6 +174,6 @@ void main(){
 	 *	    set final color value
 	 * 	*******************************
 	 */
-	color = ReflectionColor + DiffuseTotal + SpecularTotal;
+	color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 
 }

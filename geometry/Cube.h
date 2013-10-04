@@ -30,6 +30,9 @@ public:
 	virtual void drawDebug();
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);
+	virtual UBO<MaterialProperties> *materialUBO();
+	virtual MaterialProperties &material();
+	virtual void updateMaterial();
 };
 
 } /* namespace std */
