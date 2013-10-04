@@ -17,7 +17,7 @@ namespace std {
 Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 		scene(s),
 		focus{0, 0, 0},
-		cam_angle{1, 0, 0, 0},
+		cam_angle{0.83336, 0.215111, 0.494087, 0.123007},
 		cam_angle_d{1, 0, 0, 0},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
@@ -25,7 +25,7 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 
 {
 	cam_aspect = 1.0;
-	viewzoom = 10.0;
+	viewzoom = 41.1614;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
@@ -76,10 +76,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	properties.data.M = glm::mat4(1.0);
 	properties.update();
 
-	//projection.setV( glm::make_mat4(projectionf) );
-	//view.setV( glm::make_mat4(modelviewf) );
-	//VP.setV( projection.getV() * view.getV() );
-
+	// run prepare
 	scene->prepare();
 
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -139,7 +136,6 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 int Camera::mouseDragged(int x, int y) {
 	if (control[0]) {
 		getArc(arcball_x, arcball_y, x, y, arcball_radius, click_new);
-		// cam_angle_d = click_new * click_old.multiplicativeInverse();
 		glm::quat q = cam_angle_d = click_new * glm::inverse(click_old);
 		cam_angle_d = q * cam_angle_d;
 		click_old = click_new;

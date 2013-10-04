@@ -16,11 +16,10 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		//Positions { [](GLuint i, vector<glm::vec4> v){ glUniform4fv(i, v.size(), &v.data()[0][0]); } },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) }
 {
-	shadowMapWidth = 1024 * 8; //800 * 3;
-	shadowMapHeight = 1024 * 8; //600 * 3;
+	shadowMapWidth = 1024 * 4;
+	shadowMapHeight = 1024 * 4;
 
 	/*
 	 * setup lights
@@ -43,17 +42,17 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 
 	// spot light
 	lights.data()[1].data.position = glm::vec4(-0.5, 15.0, -9.5, 1.0);
-	lights.data()[1].data.color = glm::vec4(0.3, 0.1, 0.9, 1.0);
-	lights.data()[1].data.direction = glm::vec4(0.0, 1.0, -5.0, 1.0);
-	lights.data()[1].data.intensity = 500.0;
-	lights.data()[1].data.spotlight = cos(0.45); //0.95533648912;
+	lights.data()[1].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[1].data.direction = glm::vec4(0.0, 1.0, 0.0, 1.0);
+	lights.data()[1].data.intensity = 200.0;
+	lights.data()[1].data.spotlight = cos(0.45);
 	lights.data()[1].data.spotlightInner = cos(0.35);
 	lights.data()[1].update();
 
 	// directional light
-	lights.data()[2].data.position = glm::vec4(-7.5, 8.0, -6.5, 0.0);
-	lights.data()[2].data.color = glm::vec4(1.0, 0.95, 0.7, 1.0);
-	lights.data()[2].data.intensity = 0.33;
+	lights.data()[2].data.position = glm::vec4(-15.0, 10.0, -13.0, 0.0);
+	lights.data()[2].data.color = glm::vec4(1.0, 0.85, 0.05, 1.0);
+	lights.data()[2].data.intensity = 0.85;
 	lights.data()[2].data.spotlight = 0.0;
 	lights.data()[2].update();
 
@@ -117,9 +116,9 @@ void LightingModel::generateShadowFBO() {
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER, fboId.data()[i]);
 
-		// Instruct openGL that we won't bind a color texture with the currently bound FBO
+		// won't bind a color texture with the currently bound FBO
 		glDrawBuffer(GL_NONE);
-		//glReadBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
 
 		// attach the texture to FBO depth attachment point
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureId.data()[i], 0);
@@ -146,14 +145,16 @@ void LightingModel::clearDepthMap() {
 }
 
 void LightingModel::createShadow( shared_ptr<Geometry> g ) {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-20, 20, -20, 20, 0, 80);
+	//glm::mat4 depthProjectionMatrix = glm::perspective<float>(90.0, 1.0, 1.5, 60.0);
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
-		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(lights.data()[i].data.position), glm::vec3(0,0,0), glm::vec3(0,1,0));
-		glm::mat4 depthModelMatrix = g->transform();
-		modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * depthModelMatrix );
+		glm::vec3 p = glm::vec3(lights.data()[i].data.position);
+		//p *= 2.5;
+		glm::mat4 depthViewMatrix = glm::lookAt(p, glm::vec3(0,0,0), glm::vec3(0,1,0));
+		modelMatrix.setV( depthProjectionMatrix * depthViewMatrix * g->transform() );
 		g->draw();
 	}
 }
@@ -174,11 +175,14 @@ void LightingModel::setLight() {
 }
 
 void LightingModel::setTransform(glm::mat4 t) {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-20, 20, -20, 20, 0, 80);
+	//glm::mat4 depthProjectionMatrix = glm::perspective<float>(90.0, 1.0, 1.5, 60.0);
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
-		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(lights.data()[i].data.position), glm::vec3(0,0,0), glm::vec3(0,1,0));
+		glm::vec3 p = glm::vec3(lights.data()[i].data.position);
+		//p *= 2.5;
+		glm::mat4 depthViewMatrix = glm::lookAt(p, glm::vec3(0,0,0), glm::vec3(0,1,0));
 		modelMatrix.setV(depthProjectionMatrix * depthViewMatrix * t);
 		DepthBias.data.data()[i] = biasMatrix * modelMatrix.getV();
 	}
@@ -189,6 +193,7 @@ void LightingModel::drawIcons() {
 	glUseProgram(0);
 	glDisable(GL_CULL_FACE);
 	GLUquadric* quad = gluNewQuadric();
+	gluQuadricDrawStyle(quad, GLU_LINE);
 	for (UBO<LightProperties> &l :lights) {
 		glm::vec4 &cl = l.data.color;
 		glColor3f(cl.x, cl.y, cl.z);
@@ -201,29 +206,30 @@ void LightingModel::drawIcons() {
 			glm::vec4 dir = glm::normalize(spot - pos);
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
-			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, l.data.spotlight);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, 0.0, l.data.spotlight);
 			glPopMatrix();
 			glPushMatrix();
 			glTranslatef(spot.x, spot.y, spot.z);
-			gluSphere(quad, 0.50, 12, 12);
+			gluSphere(quad, 0.50, 4, 4);
 			glPopMatrix();
 		}
-		else if (pos.w == 0) {
+		else if (pos.w < 0.1) {
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
-			gluSphere(quad, 0.50, 12, 12);
+			glm::vec4 dir = glm::normalize(-pos);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.5, 0.33, 1.0);
 			glPopMatrix();
 		}
 		else {
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
-			gluSphere(quad, 0.50, 12, 12);
+			gluSphere(quad, 0.50, 4, 4);
 			glPopMatrix();
 		}
 	}
 }
 
-void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float spotangle) {
+void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float width, float spotangle) {
 	const float rad_to_deg = 360.0/(2 * M_PI);
 	Vec3D z_vec, d_vec;
 	z_vec.v[0] = 0;	z_vec.v[1] = 0;	z_vec.v[2] = 1;
@@ -241,7 +247,7 @@ void display_cylinder(GLUquadric* q, float x, float y, float z, float length, fl
 	if (d > 0) {
 		glRotatef(angle, a->v[0], a->v[1], a->v[2]);
 	}
-	gluCylinder(q, 0*length, 0.5*length*spotangle, length, 10, 10);
+	gluCylinder(q, width, width + M_PI*length*(1-spotangle), length, 8, 3);
 	glPopMatrix();
 }
 

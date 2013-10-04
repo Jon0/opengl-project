@@ -26,8 +26,10 @@ public:
 	virtual void drawDebug();
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);
-
 	virtual int selectMouse( int, int );
+	virtual UBO<MaterialProperties> *materialUBO();
+	virtual MaterialProperties &material();
+	virtual void updateMaterial();
 
 	/*
 	 * do these need to be kept?
@@ -40,6 +42,9 @@ public:
 
 	/* Indices */
 	GLuint elementbuffer;
+
+	/* material */
+	UBO<MaterialProperties> materialType;
 };
 
 } /* namespace std */

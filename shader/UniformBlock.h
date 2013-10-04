@@ -63,6 +63,14 @@ public:
 		blockSource.data()[index] = data;
 		glUniformBlockBinding(programID, blockIndex[index], data->bindingPoint);
 	}
+
+	/*
+	 * if its not an array of structs
+	 */
+	void assign(UBO<T> *data) {
+		blockSource.data()[0] = data;
+		glUniformBlockBinding(programID, blockIndex[0], data->bindingPoint);
+	}
 };
 
 } /* namespace std */

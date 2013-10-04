@@ -16,6 +16,12 @@ DrawList::DrawList(vector<GPolygon> shape) {
 	elementbuffer = 0;
 
 	transform_matrix = glm::mat4(1.0f);
+
+	materialType.data.AmbientColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	materialType.data.DiffuseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	materialType.data.SpecularColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	materialType.data.Exponent = 8.0;
+	materialType.update();
 }
 
 DrawList::~DrawList() {}
@@ -78,6 +84,18 @@ glm::mat4 DrawList::transform() {
 
 void DrawList::setTransform(glm::mat4 t) {
 	transform_matrix = t;
+}
+
+UBO<MaterialProperties> *DrawList::materialUBO() {
+	return &materialType;
+}
+
+MaterialProperties &DrawList::material() {
+	return materialType.data;
+}
+
+void DrawList::updateMaterial() {
+	return materialType.update();
 }
 
 } /* namespace std */

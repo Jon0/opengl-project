@@ -26,7 +26,8 @@ GRender::GRender():
 		table { gloader.readOBJG("assets/obj/Table.obj") },
 		teapot { gloader.readOBJG("assets/obj/Teapot.obj") },
 		torus { gloader.readOBJG("assets/obj/Torus.obj") },
-		light { shadow, program }
+		light { shadow, program },
+		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
 {
 	mWnd->start();
 
@@ -68,12 +69,41 @@ GRender::GRender():
 	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-4,0.5,-7)) );
 	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-6,1,5)) );
 
+	MaterialProperties &mpb = bunny->material();
+	mpb.AmbientColor = glm::vec4(0.0, 0.0, 0.0, 0.5);
+	mpb.DiffuseColor = glm::vec4(0.588235, 0.670588, 0.729412, 0.5);
+	mpb.SpecularColor = glm::vec4(0.9, 0.9, 0.9, 0.5);
+	mpb.Exponent = 96.0;
+	bunny->updateMaterial();
+
+	MaterialProperties &mptp = teapot->material();
+	mptp.AmbientColor = glm::vec4(0.105882, 0.058824, 0.113725, 1.0);
+	mptp.DiffuseColor = glm::vec4(0.427451, 0.470588, 0.541176, 1.0);
+	mptp.SpecularColor = glm::vec4(0.333333, 0.333333, 0.521569, 1.0);
+	mptp.Exponent = 9.84615;
+	teapot->updateMaterial();
+
+	MaterialProperties &mps = sphere->material();
+	mps.AmbientColor = glm::vec4(0.2125, 0.1275, 0.054, 1.0);
+	mps.DiffuseColor = glm::vec4(0.714, 0.4284, 0.18144, 1.0);
+	mps.SpecularColor = glm::vec4(0.393548, 0.271906, 0.166721, 1.0);
+	mps.Exponent = 25.6;
+	sphere->updateMaterial();
+
+	MaterialProperties &mpt = torus->material();
+	mpt.AmbientColor = glm::vec4(0.0, 0.0, 0.0, 1.0);
+	mpt.DiffuseColor = glm::vec4(0.85, 0.05, 0.05, 1.0);
+	mpt.SpecularColor = glm::vec4(0.9, 0.7, 0.7, 1.0);
+	mpt.Exponent = 200.0;
+	torus->updateMaterial();
+
 	selectedLight = 1;
 	camptr = NULL;
 	t = 0.0;
 
 	lightcontrol = 0;
-	message = "Position";
+	message = "Light "+to_string(selectedLight) +" : Position";
+	showIcons = true;
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -154,7 +184,7 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	light.setLight();
 	displayGeometry();
 
-	light.drawIcons();
+	if (showIcons) light.drawIcons();
 }
 
 void GRender::displayUI() {
@@ -162,6 +192,10 @@ void GRender::displayUI() {
 }
 
 void GRender::displayGeometry() {
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	vb.enable();
 
 	glUniform1i(useDiffTex, true);
@@ -177,17 +211,20 @@ void GRender::displayGeometry() {
 	drawObject(box);
 
 	glUniform1i(useDiffTex, false);
+	normalTex->enable(1);
+	drawObject(torus);
+
 	glUniform1i(useNormTex, false);
-	drawObject(bunny);
 	drawObject(sphere);
 	drawObject(teapot);
 
-	glUniform1i(useNormTex, true);
-	normalTex->enable(1);
-	drawObject(torus);
+	/* bunny last, it has transperency */
+	drawObject(bunny);
 }
 
 void GRender::drawObject( shared_ptr<Geometry> g ) {
+	materialUniform.assign(g->materialUBO());
+
 	light.setTransform(g->transform());
 	camptr->data.M = g->transform();
 	camptr->update();
@@ -210,8 +247,8 @@ int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int button, int state,
 
 	LightProperties &l = light.getLight(selectedLight);
 	glm::vec4 *var;
-		if (lightcontrol == 0) {
-			var = &l.position;
+	if (lightcontrol == 0) {
+		var = &l.position;
 	} else if (lightcontrol == 1) {
 		var = &l.direction;
 	} else if (lightcontrol == 2) {
@@ -239,9 +276,6 @@ int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
 		// modify orientation
 		getArc(p.x, p.y, x, y, 600.0, click_new);
 		click_new = glm::inverse(cam->cameraAngle()) * click_new * cam->cameraAngle();
-
-
-		//getBoneAlignment(temp, in->cameraAngle(), click_new);
 		glm::quat drag = click_new * glm::inverse(click_old);
 		if (lightcontrol == 0) {
 			l.position = drag * l.position;
@@ -251,6 +285,9 @@ int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
 		}
 		else if (lightcontrol == 2) {
 			l.color = drag * l.color;
+			l.color.x = abs(l.color.x);
+			l.color.y = abs(l.color.y);
+			l.color.z = abs(l.color.z);
 		}
 
 		light.updateLight(selectedLight);
@@ -266,18 +303,48 @@ void GRender::messageSent(string) {
 }
 
 void GRender::keyPressed(unsigned char c) {
+	LightProperties &l = light.getLight(selectedLight);
 	switch (c) {
 	case 'a':
 		lightcontrol = 0;
-		message = "Position";
+		message = "Light "+to_string(selectedLight) +" : Position";
 		break;
 	case 's':
 		lightcontrol = 1;
-		message = "Spot";
+		message = "Light "+to_string(selectedLight) +" : Spot";
 		break;
 	case 'd':
 		lightcontrol = 2;
-		message = "Color";
+		message = "Light "+to_string(selectedLight) +" : Color";
+		break;
+	case 'z':
+		selectedLight = (selectedLight + 1) % 3;
+		if (lightcontrol == 0) message = "Light "+to_string(selectedLight) +" : Position";
+		else if (lightcontrol == 1) message = "Light "+to_string(selectedLight) +" : Spot";
+		else if (lightcontrol == 2) message = "Light "+to_string(selectedLight) +" : Color";
+		break;
+	case 't':
+		l.spotlight *= 1.01;
+		if (l.spotlight > l.spotlightInner) l.spotlightInner = l.spotlight;
+		light.updateLight(selectedLight);
+		break;
+	case 'y':
+		l.spotlight /= 1.01;
+
+		light.updateLight(selectedLight);
+		break;
+	case 'g':
+		l.spotlightInner *= 1.01;
+
+		light.updateLight(selectedLight);
+		break;
+	case 'h':
+		l.spotlightInner /= 1.01;
+		if (l.spotlight > l.spotlightInner) l.spotlight = l.spotlightInner;
+		light.updateLight(selectedLight);
+		break;
+	case '.':
+		showIcons = !showIcons;
 		break;
 	}
 }
