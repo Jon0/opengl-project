@@ -108,9 +108,7 @@ void main(){
 			// get spotlight direction if needed
 			if ( Lights[light].spotlight > 0.1 ) {
 				vec3 SpotlightDirection_cameraspace = vec3(0,0,0) - vec3( V * Lights[light].direction );
-
 				LightSpotlight_cameraspace[light] = LightPosition_cameraspace + SpotlightDirection_cameraspace;
-				//LightSpotlight_cameraspace[light] = vec3(V * normalize(Lights[light].direction - Lights[light].position));
 				LightSpotlight_tangentspace[light] = TBN * LightSpotlight_cameraspace[light];
 			}
 		}

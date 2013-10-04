@@ -72,6 +72,9 @@ GRender::GRender():
 	camptr = NULL;
 	t = 0.0;
 
+	lightcontrol = 0;
+	message = "Position";
+
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
@@ -155,8 +158,7 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 }
 
 void GRender::displayUI() {
-	glUseProgram(0);
-	drawString( "test", 10, 10 );
+	drawString( message, 10, 10 );
 }
 
 void GRender::displayGeometry() {
@@ -198,11 +200,35 @@ int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int button, int state,
 		return false;
 	}
 
-	glm::vec3 p = cam->project( glm::vec3(0,0,0) );
-	getArc( p.x, p.y, x, y, 600.0, click_old );
-	click_old = glm::inverse(cam->cameraAngle()) * click_old * cam->cameraAngle();
-	drag = true;
+	if (button == 0) {
+		glm::vec3 p = cam->project(glm::vec3(0, 0, 0));
+		getArc(p.x, p.y, x, y, 600.0, click_old);
+		click_old = glm::inverse(cam->cameraAngle()) * click_old * cam->cameraAngle();
+		drag = true;
+		return true;
+	}
+
+	LightProperties &l = light.getLight(selectedLight);
+	glm::vec4 *var;
+		if (lightcontrol == 0) {
+			var = &l.position;
+	} else if (lightcontrol == 1) {
+		var = &l.direction;
+	} else if (lightcontrol == 2) {
+		var = &l.color;
+	}
+	if (button == 3) {
+		var->x *= 1.05;
+		var->y *= 1.05;
+		var->z *= 1.05;
+	} else if (button == 4) {
+		var->x /= 1.05;
+		var->y /= 1.05;
+		var->z /= 1.05;
+	}
+	light.updateLight(selectedLight);
 	return true;
+
 }
 
 int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
@@ -217,9 +243,16 @@ int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
 
 		//getBoneAlignment(temp, in->cameraAngle(), click_new);
 		glm::quat drag = click_new * glm::inverse(click_old);
-		l.position = drag * l.position;
+		if (lightcontrol == 0) {
+			l.position = drag * l.position;
+		}
+		else if (lightcontrol == 1) {
+			l.direction = drag * l.direction;
+		}
+		else if (lightcontrol == 2) {
+			l.color = drag * l.color;
+		}
 
-		//player.animation[0].modSelection( time, selectedBone, drag );
 		light.updateLight(selectedLight);
 		click_old = click_new;
 		return true;
@@ -232,8 +265,21 @@ void GRender::messageSent(string) {
 
 }
 
-void GRender::keyPressed(unsigned char) {
-
+void GRender::keyPressed(unsigned char c) {
+	switch (c) {
+	case 'a':
+		lightcontrol = 0;
+		message = "Position";
+		break;
+	case 's':
+		lightcontrol = 1;
+		message = "Spot";
+		break;
+	case 'd':
+		lightcontrol = 2;
+		message = "Color";
+		break;
+	}
 }
 
 } /* namespace std */

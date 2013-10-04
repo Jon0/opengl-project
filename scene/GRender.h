@@ -58,6 +58,8 @@ public:
 
 	bool drag;
 	int selectedLight;
+	int lightcontrol;
+	string message;
 	glm::quat click_old, click_new;
 
 	float t;

@@ -21,9 +21,6 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2DShadow shadowMap [8];
-//uniform mat4 V;
-//uniform mat4 M;
-//uniform mat3 MV3x3;
 uniform vec4 LightPosition_worldspace [8];
 uniform bool useDiffTex;
 uniform bool useNormTex;
@@ -69,10 +66,6 @@ vec2 poissonDisk[16] = vec2[](
 );
 
 void main(){
-	// Light emission properties
-	// probably should put them as uniforms
-	//float LightPower = 80.0;
-
 	// Material properties
 	vec3 MaterialDiffuseColor;
 	vec3 MaterialAmbientColor;

@@ -52,7 +52,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 
 	// directional light
 	lights.data()[2].data.position = glm::vec4(-7.5, 8.0, -6.5, 0.0);
-	lights.data()[2].data.color = glm::vec4(0.9, 0.9, 0.9, 1.0);
+	lights.data()[2].data.color = glm::vec4(1.0, 0.95, 0.7, 1.0);
 	lights.data()[2].data.intensity = 0.33;
 	lights.data()[2].data.spotlight = 0.0;
 	lights.data()[2].update();
@@ -187,14 +187,62 @@ void LightingModel::setTransform(glm::mat4 t) {
 
 void LightingModel::drawIcons() {
 	glUseProgram(0);
+	glDisable(GL_CULL_FACE);
 	GLUquadric* quad = gluNewQuadric();
 	for (UBO<LightProperties> &l :lights) {
-		glPushMatrix();
+		glm::vec4 &cl = l.data.color;
+		glColor3f(cl.x, cl.y, cl.z);
+
+
 		glm::vec4 &pos = l.data.position;
-		glTranslatef(pos.x, pos.y, pos.z);
-		gluSphere(quad, 0.50, 12, 12);
-		glPopMatrix();
+		if (l.data.spotlight > 0) {
+
+			glm::vec4 &spot = l.data.direction;
+			glm::vec4 dir = glm::normalize(spot - pos);
+			glPushMatrix();
+			glTranslatef(pos.x, pos.y, pos.z);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, l.data.spotlight);
+			glPopMatrix();
+			glPushMatrix();
+			glTranslatef(spot.x, spot.y, spot.z);
+			gluSphere(quad, 0.50, 12, 12);
+			glPopMatrix();
+		}
+		else if (pos.w == 0) {
+			glPushMatrix();
+			glTranslatef(pos.x, pos.y, pos.z);
+			gluSphere(quad, 0.50, 12, 12);
+			glPopMatrix();
+		}
+		else {
+			glPushMatrix();
+			glTranslatef(pos.x, pos.y, pos.z);
+			gluSphere(quad, 0.50, 12, 12);
+			glPopMatrix();
+		}
 	}
+}
+
+void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float spotangle) {
+	const float rad_to_deg = 360.0/(2 * M_PI);
+	Vec3D z_vec, d_vec;
+	z_vec.v[0] = 0;	z_vec.v[1] = 0;	z_vec.v[2] = 1;
+	d_vec.v[0] = x;	d_vec.v[1] = y;	d_vec.v[2] = z;
+	Vec3D *a = &z_vec, *b = &d_vec;
+	*a = a->crossProduct(*b);
+
+	// dot product simplifies to z axis
+	float angle = rad_to_deg * acos(z);
+	float d = sqrt(a->v[0]*a->v[0] + a->v[1]*a->v[1] + a->v[2]*a->v[2]);
+
+	// draw cylinder, rotated in correct direction
+	glPushMatrix();
+
+	if (d > 0) {
+		glRotatef(angle, a->v[0], a->v[1], a->v[2]);
+	}
+	gluCylinder(q, 0*length, 0.5*length*spotangle, length, 10, 10);
+	glPopMatrix();
 }
 
 } /* namespace std */

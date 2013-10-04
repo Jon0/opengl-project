@@ -21,6 +21,8 @@
 
 namespace std {
 
+void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float spotangle);
+
 class LightingModel {
 public:
 	int shadowMapWidth;

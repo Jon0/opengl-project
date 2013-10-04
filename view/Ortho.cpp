@@ -24,6 +24,8 @@ Ortho::Ortho( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ): scene(s
 Ortho::~Ortho() {}
 
 void Ortho::setView( chrono::duration<double> tick ) {
+	glUseProgram(0);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, view_width, 0.0, view_height, -50.0, 50.0);
