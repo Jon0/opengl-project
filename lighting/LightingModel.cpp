@@ -50,9 +50,9 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	lights.data()[1].update();
 
 	// directional light
-	lights.data()[2].data.position = glm::vec4(-7.5, 8.0, -6.5, 0.0);
-	lights.data()[2].data.color = glm::vec4(1.0, 0.95, 0.7, 1.0);
-	lights.data()[2].data.intensity = 0.33;
+	lights.data()[2].data.position = glm::vec4(-7.5, 5.0, -6.5, 0.0);
+	lights.data()[2].data.color = glm::vec4(1.0, 0.85, 0.05, 1.0);
+	lights.data()[2].data.intensity = 0.85;
 	lights.data()[2].data.spotlight = 0.0;
 	lights.data()[2].update();
 
@@ -145,7 +145,8 @@ void LightingModel::clearDepthMap() {
 }
 
 void LightingModel::createShadow( shared_ptr<Geometry> g ) {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,0,80);
+	//glm::mat4 depthProjectionMatrix = glm::perspective<float>(90.0, 1.0, 1.0, 100.0);
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
@@ -173,7 +174,8 @@ void LightingModel::setLight() {
 }
 
 void LightingModel::setTransform(glm::mat4 t) {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,-80,80);
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-80,80,-80,80,0,80);
+	//glm::mat4 depthProjectionMatrix = glm::perspective<float>(90.0, 1.0, 1.0, 100.0);
 
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
@@ -211,7 +213,7 @@ void LightingModel::drawIcons() {
 			glPushMatrix();
 			glTranslatef(pos.x, pos.y, pos.z);
 			glm::vec4 dir = glm::normalize(-pos);
-			display_cylinder(quad, dir.x, dir.y, dir.z, 1.0, 0.1, 0.0);
+			display_cylinder(quad, dir.x, dir.y, dir.z, 1.5, 0.33, 0.0);
 			glPopMatrix();
 		}
 		else {

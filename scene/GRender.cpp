@@ -102,7 +102,7 @@ GRender::GRender():
 	t = 0.0;
 
 	lightcontrol = 0;
-	message = "Position";
+	message = "Light "+to_string(selectedLight) +" : Position";
 	showIcons = true;
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -307,15 +307,21 @@ void GRender::keyPressed(unsigned char c) {
 	switch (c) {
 	case 'a':
 		lightcontrol = 0;
-		message = "Position";
+		message = "Light "+to_string(selectedLight) +" : Position";
 		break;
 	case 's':
 		lightcontrol = 1;
-		message = "Spot";
+		message = "Light "+to_string(selectedLight) +" : Spot";
 		break;
 	case 'd':
 		lightcontrol = 2;
-		message = "Color";
+		message = "Light "+to_string(selectedLight) +" : Color";
+		break;
+	case 'z':
+		selectedLight = (selectedLight + 1) % 3;
+		if (lightcontrol == 0) message = "Light "+to_string(selectedLight) +" : Position";
+		else if (lightcontrol == 1) message = "Light "+to_string(selectedLight) +" : Spot";
+		else if (lightcontrol == 2) message = "Light "+to_string(selectedLight) +" : Color";
 		break;
 	case '.':
 		showIcons = !showIcons;
