@@ -21,6 +21,10 @@ class Cube:
 
 	/* Indices */
 	GLuint elementbuffer;
+
+	/* material */
+	UBO<MaterialProperties> materialType;
+
 public:
 	Cube(float);
 	virtual ~Cube();

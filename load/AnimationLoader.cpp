@@ -57,10 +57,10 @@ DynamicPose *AnimationLoader::readAMC( const char *filename, shared_ptr<Skeleton
 	}
 
 	// adjust pose movements
-	Vec3D start = state_list[0]->adjust, end = state_list[numStates - 1]->adjust;
+	glm::vec3 start = state_list[0]->adjust, end = state_list[numStates - 1]->adjust;
 	for (int i = 0; i < numStates; ++i) {
 		float percent = (float) i / (float) numStates;
-		Vec3D current = start * (1 - percent) + end * percent;
+		glm::vec3 current = start * (1 - percent) + end * percent;
 		state_list[i]->adjust = state_list[i]->adjust - current;
 	}
 
@@ -68,7 +68,7 @@ DynamicPose *AnimationLoader::readAMC( const char *filename, shared_ptr<Skeleton
 	fclose(file);
 	printf("Read %d frames\n", numStates);
 	DynamicPose *a = new DynamicPose(numStates, state_list, skeleton);
-	a->setPathLength( start.getDistance(end) );
+	a->setPathLength( glm::length(end - start) );
 
 	delete state_list; // hopefully it gets copied by animation
 	return a;
@@ -97,7 +97,7 @@ void AnimationLoader::loadAMCStateBone( char *buff, pose *current, shared_ptr<Sk
 				start += strlen(next);
 				trim(&start);
 			}
-			current->adjust = Vec3D(v);
+			current->adjust = glm::vec3(v[0], v[1], v[2]);
 
 			for (int j = 0; sscanf(start, "%s", next) != 0 && j < 3; ++j) {
 				eularAngle[j] = atof(next);
@@ -158,7 +158,7 @@ void AnimationLoader::loadAMCQBone( char *buff, pose *current, shared_ptr<Skelet
 				start += strlen(next);
 				trim(&start);
 			}
-			current->adjust = Vec3D(v);
+			current->adjust = glm::vec3(v[0], v[1], v[2]);
 
 
 		}
@@ -208,7 +208,7 @@ pose AnimationLoader::loadAMCState( const char *filename, shared_ptr<Skeleton> s
 void AnimationLoader::saveAMCState( const char *filename, pose *drawnState, shared_ptr<Skeleton> skeleton ) {
 	cout << "save to file: " << filename << endl;
 	FILE* f = fopen(filename, "w");
-	fprintf(f, "root %f %f %f ", drawnState->adjust.v[0], drawnState->adjust.v[1], drawnState->adjust.v[2]);
+	fprintf(f, "root %f %f %f ", drawnState->adjust.x, drawnState->adjust.y, drawnState->adjust.z);
 	for (int i = 0; i < skeleton->getNumBones(); ++i) {
 		if (i > 0) {
 			fprintf(f, "%s ", skeleton->getBone(i)->name);

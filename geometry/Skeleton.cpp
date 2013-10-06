@@ -101,7 +101,7 @@ void Skeleton::display() {
 
 	//Actually draw the skeleton
 	glPushMatrix();
-	glTranslatef(current_pose->adjust.getX(), current_pose->adjust.getY(), current_pose->adjust.getZ());
+	glTranslatef(current_pose->adjust.x, current_pose->adjust.y, current_pose->adjust.z);
 	display(root, quad);
 	glPopMatrix();
 
@@ -256,7 +256,7 @@ color *Skeleton::colorStandard(bone *b) {
 }
 
 void makeState( int numBones, pose *next ) {
-	next->adjust = Vec3D{0, 0, 0};
+	next->adjust = glm::vec3(0, 0, 0);
 	next->q.reserve(numBones);
 
 	for (int i = 0; i < numBones; ++i) {

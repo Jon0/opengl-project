@@ -38,7 +38,7 @@ typedef int DOF;
 #define DOF_ROOT 8 // Root has 6, 3 translation and 3 rotation
 
 struct pose {
-	Vec3D adjust;
+	glm::vec3 adjust;
 	vector<glm::quat> q;
 };
 

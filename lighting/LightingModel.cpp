@@ -61,7 +61,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);
 	depthTextureId.resize(numLights);
-	fboId.resize(numLights);
+	fboId.resize(numLights);	//main.setUniform("LightPosition_worldspace", &Positions);
 	generateShadowFBO();
 
 	/* depth shader */
@@ -70,7 +70,6 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	/* main shader */
 	main.setUniform("shadowMap", &shadowMaps);
 	main.setUniform("DepthBiasMVP", &DepthBias);
-	//main.setUniform("LightPosition_worldspace", &Positions);
 
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
@@ -197,11 +196,8 @@ void LightingModel::drawIcons() {
 	for (UBO<LightProperties> &l :lights) {
 		glm::vec4 &cl = l.data.color;
 		glColor3f(cl.x, cl.y, cl.z);
-
-
 		glm::vec4 &pos = l.data.position;
 		if (l.data.spotlight > 0) {
-
 			glm::vec4 &spot = l.data.direction;
 			glm::vec4 dir = glm::normalize(spot - pos);
 			glPushMatrix();
