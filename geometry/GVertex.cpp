@@ -12,11 +12,10 @@
 
 namespace std {
 
-GVertex::GVertex(): e(), basis() {
-}
+GVertex::GVertex() {}
 
 GVertex::GVertex( Vec3D d ) {
-	e[POS] = d;
+	position = glm::vec3( d.v[0], d.v[1], d.v[2] );
 }
 
 GVertex::GVertex(float a, float b, float c) {
@@ -30,71 +29,74 @@ GVertex::GVertex(float a, float b, float c, float na, float nb, float nc, float 
 }
 
 float GVertex::getX() {
-	return e[POS].v[0];
+	return position.x;
 }
 
 float GVertex::getY() {
-	return e[POS].v[1];
+	return position.y;
 }
 
 float GVertex::getZ() {
-	return e[POS].v[2];
+	return position.z;
 }
 
-Vec3D GVertex::getPosition() {
-	return e[POS];
+glm::vec3 GVertex::getPosition() {
+	return position;
 }
 
-Vec3D GVertex::getNormal() {
-	return e[NORM];
+glm::vec3 GVertex::getNormal() {
+	return normal;
 }
 
-Vec3D GVertex::getTexCoord() {
-	return e[UV];
+glm::vec3 GVertex::getTexCoord() {
+	return texCoord;
 }
 
 void GVertex::setPos(float x, float y, float z) {
-	e[POS].v[0] = x;
-	e[POS].v[1] = y;
-	e[POS].v[2] = z;
+	position.x = x;
+	position.y = y;
+	position.z = z;
 }
 
-
 void GVertex::setNormal(float x, float y, float z) {
-	e[NORM].v[0] = x;
-	e[NORM].v[1] = y;
-	e[NORM].v[2] = z;
+	normal.x = x;
+	normal.y = y;
+	normal.z = z;
 }
 
 void GVertex::setTexCoord(float x, float y, float z) {
-	e[UV].v[0] = x;
-	e[UV].v[1] = y;
-	e[UV].v[2] = z;
+	texCoord.x = x;
+	texCoord.y = y;
+	texCoord.z = z;
 }
 
 void GVertex::setNormal( float *v ) {
-	e[NORM] = v;
+	normal.x = v[0];
+	normal.y = v[1];
+	normal.z = v[2];
 }
 
 void GVertex::setTexCoord( float *v ) {
-	e[UV] = v;
+	texCoord.x = v[0];
+	texCoord.y = v[1];
+	texCoord.z = v[2];
 }
 
 /*
- * ordered by position, normal, texture
+ * ordered by position, texture, normal...
  */
 void GVertex::toArray( float *array, int offset) {
 	for (int i = 0; i < 3; ++i) {
-		array[offset + i + 0] = e[POS].v[i];
-		array[offset + i + 3] = e[UV].v[i];
-		array[offset + i + 6] =  e[NORM].v[i];
-		array[offset + i + 9] = basis.v[0].v[i];
-		array[offset + i + 12] = basis.v[1].v[i];
+		array[offset + i + 0] = position[i];
+		array[offset + i + 3] = texCoord[i];
+		array[offset + i + 6] =  normal[i];
+		array[offset + i + 9] = tangent[i];
+		array[offset + i + 12] = bitangent[i];
 	}
 }
 
 void GVertex::print() {
-	cout << "( " << e[POS].v[0] << ", " << e[POS].v[1] << ", " << e[POS].v[2] << " )";
+	cout << "( " << position.x << ", " << position.y << ", " << position.z << " )";
 }
 
 GVertex::~GVertex() {

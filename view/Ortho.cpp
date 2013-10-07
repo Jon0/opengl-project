@@ -89,6 +89,10 @@ glm::mat4 Ortho::projectionMatrix() {
 	return glm::mat4(1.0);
 }
 
+UBO<CameraProperties> *Ortho::properties() {
+	return &ortho_properties;
+}
+
 void drawString(string message, float x, float y) {
 	/* translate and draw text */
 	glPushMatrix();

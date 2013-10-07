@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "../shader/ShaderStructs.h"
+#include "../shader/UBO.h"
 #include "../window/KeyListener.h"
 #include "../window/MouseListener.h"
 
@@ -37,6 +39,7 @@ public:
 	virtual Vec3D unProject(int, int) = 0;
 	virtual glm::mat4 viewMatrix() = 0;
 	virtual glm::mat4 projectionMatrix() = 0;
+	virtual UBO<CameraProperties> *properties() = 0;
 };
 
 } /* namespace std */

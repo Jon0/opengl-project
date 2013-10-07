@@ -10,32 +10,14 @@
 
 #include <memory>
 #include <vector>
-#include <fstream>
-#include <GL/glut.h>
 #include "../geometry/DrawList.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GVertex.h"
 
 namespace std {
 
-struct OBJvertex {
-	int p, n, c, b;
-};
-
-typedef vector<OBJvertex> OBJpolygon;
-
-class GeometryLoader
-{
-public:
-	GeometryLoader(void);
-	~GeometryLoader(void);
-
-	shared_ptr<Geometry> readOBJG( const char* filename );
-	vector<GPolygon> readOBJ( const char* filename );
-	vector<Vec3D> CreateNormals( vector<OBJpolygon>, vector<Vec3D> );
-	void CreateUV( vector<GPolygon> &, int, vector<vector<int>> );
-	void CreateBasis( vector<GPolygon> &, int, vector<vector<int>> );
-};
+vector<GPolygon> readOBJFile( const char* );
+shared_ptr<Geometry> readGeometry( const char* );
 
 } /* namespace std */
 #endif /* GEOMETRYLOADER_H_ */

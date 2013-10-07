@@ -6,287 +6,75 @@
  */
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <stdio.h>
-#include <math.h>
-#include <GL/glut.h>
-#include "LineTokenizer.h"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>
+
 #include "GeometryLoader.h"
 
-using namespace std;
+namespace std {
 
-GeometryLoader::GeometryLoader() {}
-
-GeometryLoader::~GeometryLoader() {}
-
-shared_ptr<Geometry> GeometryLoader::readOBJG(const char* filename) {
-	return shared_ptr<Geometry>( new DrawList( readOBJ(filename) ) );
+void copyVec3(glm::vec3 &out, const aiVector3D &in) {
+	out.x = in.x;
+	out.y = in.y;
+	out.z = in.z;
 }
 
-//-------------------------------------------------------
-// This function read obj file having
-// triangle faces consist of vertex v, texture coordinate vt, and normal vn
-// e.g. f v1/vt1/vn1 v2/vt1/vn2 v3/vt3/vn3
-//--------------------------------------------------------
-vector<GPolygon> GeometryLoader::readOBJ(const char *filename) {
-	ifstream fs(filename);
-	if (fs == NULL)
-			printf("Error reading %s file\n", filename);
-		else
-			printf("Reading %s file\n", filename);
-	fs.seekg(0, ios::beg);
+vector<GPolygon> readOBJFile(const char* filename) {
 
-	vector<Vec3D> points;
-	vector<Vec3D> normals;
-	vector<Vec3D> uvcoords;
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(filename,
+			aiProcess_CalcTangentSpace | aiProcess_Triangulate
+					| aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+
+	cout << "num meshes = " << scene->mNumMeshes << endl;
+
+
+	/* array of all polygons */
 	vector<GPolygon> g_polys;
 
-	// polygon -> set of array position
-	vector<vector<int>> index;
+	/* add each polygon */
+	for (unsigned int m = 0; m < scene->mNumMeshes; ++m) {
+		aiMesh &mesh = *scene->mMeshes[m];
+		cout << "num faces = " << mesh.mNumFaces << endl;
+		cout << "has tangents = " << mesh.HasTangentsAndBitangents() << endl;
 
-	// obj point index -> set of normals
-	vector< vector<Vec3D> > pointNr;
-
-	// obj point index -> normal index
-	vector< vector<int> > pointInd;
-
-	//-----------------------------------------------------------
-	//	Read obj file
-	//-----------------------------------------------------------
-	char mode, vmode;
-	while ( fs.good() ) {
-		fs.get(mode);
-		switch (mode) {
-		case 'v': {	/* vertex, uv, normal */
-			fs.get(vmode);
-			if (vmode == 't') {			// uv coordinate
-				Vec3D uv;
-				fs >> uv.v[0] >> uv.v[1];
-				uvcoords.push_back(uv);
-			} else if (vmode == 'n') {	// normal
-				Vec3D n;
-				fs >> n.v[0] >> n.v[1] >> n.v[2];
-				normals.push_back(n.normalise());
-			} else if (vmode == ' ') {	// vertex
-				Vec3D p;
-				fs >> p.v[0] >> p.v[1] >> p.v[2];
-				points.push_back(p);
-			}
-			fs.ignore(200, '\n');
-		}
-		break;
-		case 'f': {	/* faces */
+		for (unsigned int i = 0; i < mesh.mNumFaces; ++i) {
 			GPolygon plg;
-			vector<int> sub_index;
-			vector<string> g = getLineTokens(fs);
-			for (auto &vt: g) {
 
-				/*
-				 * read a vertex
-				 */
+			for (unsigned int j = 0; j < mesh.mFaces[i].mNumIndices; ++j) {
+				unsigned int ind = mesh.mFaces[i].mIndices[j];
 				GVertex vrt;
-				vector<string> part = stringSplit(vt, "/");
+				copyVec3(vrt.position, mesh.mVertices[ind]);
+				vrt.position *= 10;
 
-				unsigned int index = atoi(part[0].c_str()) - 1;
-				vrt.e[POS] = points.data()[index];
+				copyVec3(vrt.normal, mesh.mNormals[ind]);
 
-
-				bool hasNormal = false;
-				if (part.size() == 2) {
-					vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
-				}
-				else if (part.size() == 3) {
-					if (part[1].length() == 0) {
-						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
-						hasNormal = true;
-					}
-					else {
-						vrt.e[UV] = uvcoords.data()[ atoi(part[1].c_str()) - 1 ];
-						vrt.e[NORM] = normals.data()[ atoi(part[2].c_str()) - 1 ];
-						hasNormal = true;
-					}
+				/* tex coord if available */
+				if (mesh.mNumUVComponents[0]) {
+					aiVector3D &c = mesh.mTextureCoords[0][ind];
+					vrt.texCoord.x = c.x;
+					vrt.texCoord.y = c.y;
 				}
 
-
-
-				/*
-				 * just a little hack to make each point have a unique normal
-				 * if not, a new point is added
-				 */
-				if (hasNormal) {
-					bool match = false;
-
-					if (index < pointNr.size()) {
-						for (unsigned int i = 0; i < pointNr.data()[index].size(); ++i) {
-							if (vrt.e[NORM].similiar(pointNr.data()[index].data()[i])) {
-								match = true;
-								index = pointInd.data()[index].data()[i];
-								break;
-							}
-						}
-					}
-					if (!match) {
-						points.push_back(vrt.e[POS]);
-						if (index >= pointNr.size()) {
-							pointNr.resize(index + 1);
-							pointInd.resize(index + 1);
-						}
-						pointNr.data()[index].push_back( vrt.e[NORM] );
-						pointInd.data()[index].push_back(points.size() - 1);
-						index = points.size() - 1;
-					}
+				/* tangent and bitangent if available */
+				if (mesh.HasTangentsAndBitangents()) {
+					copyVec3(vrt.tangent, mesh.mTangents[ind]);
+					copyVec3(vrt.bitangent, mesh.mBitangents[ind]);
+					vrt.tangent = -vrt.tangent; // this seems to fix something
 				}
 				plg.push_back(vrt);
-				sub_index.push_back(index);
 			}
 
-			/*
-			 * avoid adding silly polygons
-			 */
-			if (plg.size() > 2) {
-				g_polys.push_back(plg);
-				index.push_back( sub_index );
-			}
-		}
-		break;
-		default:
-			fs.ignore(200, '\n');
-			break;
+			g_polys.push_back(plg);
 		}
 	}
-
-	/*
-	 * close file
-	 */
-	fs.close();
-	if (normals.empty()) {
-		cout << filename << " has no normals" << endl;
-	//	printf("Calculate Normals\n");
-	//	normals = CreateNormals(triangles, points);
-	}
-
-	/* normals required for uv generation */
-	if (uvcoords.size() == 0) {
-		CreateUV(g_polys, points.size(), index);
-	}
-	CreateBasis(g_polys, points.size(), index);
 	return g_polys;
 }
 
-
-// TODO integrate into main parsing, since indexs are lost
-vector<Vec3D> GeometryLoader::CreateNormals(vector<OBJpolygon> polys, vector<Vec3D> points) {
-	/* construct array initialise to size of verts */
-	vector<Vec3D> m_pNormalArray( points.size() );
-
-	/* u will be v2 - v1, v will be v3 - v1 used in cross products */
-	Vec3D u, v;
-	float *uf = (float *) &u, *vf = (float *) &v;
-
-
-	for (unsigned int i = 0; i < polys.size(); ++i) {
-		OBJpolygon poly = polys.data()[i];
-
-		// get address of vertices this triangle uses
-		Vec3D v1 = points.data()[poly.data()[0].p];
-		Vec3D v2 = points.data()[poly.data()[1].p];
-		Vec3D v3 = points.data()[poly.data()[2].p];
-
-		// u = v2 - v1 and v = v3 - v1
-		for (int a = 0; a < 3; ++a) {
-			uf[a] = ((float *)&v2)[a] - ((float *)&v1)[a];
-			vf[a] = ((float *)&v3)[a] - ((float *)&v1)[a];
-			poly.data()[a].n = poly.data()[a].c; // each vertex has a unique normal
-		}
-
-		// cross product
-		float cross[3];
-
-		// v iterates over directions x, y, z
-		for (int v = 0; v < 3; ++v) {
-			cross[v] = ( uf[(v+1) % 3] * vf[(v+2) % 3] ) - ( uf[(v+2) % 3] * vf[(v+1) % 3] );
-		}
-
-		// length of normal vector
-		float d = sqrt(cross[0]*cross[0] + cross[1]*cross[1] + cross[2]*cross[2]);
-
-		for (int v = 0; v < 3; ++v) {
-			//	normalising
-			cross[v] /= d;
-
-			// added to each normal
-			for (int a = 0; a < 3; ++a) {
-				((float *)&m_pNormalArray.data()[poly.data()[a].n])[v] += cross[v];
-			}
-		}
-	}
-	return m_pNormalArray;
+shared_ptr<Geometry> readGeometry(const char* filename) {
+	return shared_ptr<Geometry>(new DrawList(readOBJFile(filename)));
 }
 
-void GeometryLoader::CreateUV(vector<GPolygon> &polys, int size, vector<vector<int>> index) {
-	for ( GPolygon &poly: polys ) {
-		for ( GVertex &v: poly ) {
-			Vec3D norm = v.e[NORM];
-
-			float theta = acos(norm.v[1])/(M_PI);
-			float phi = (atan(norm.v[0]/norm.v[2])+M_PI)/(2*M_PI);
-
-			v.e[UV].v[0] = phi;
-			v.e[UV].v[1] = theta;
-			v.e[UV].v[2] = 0;
-
-		}
-	}
 }
-
-void GeometryLoader::CreateBasis(vector<GPolygon> &polys, int size, vector<vector<int>> index) {
-	/* one basis per vertex */
-	vector<Basis> basisArray( size );
-
-	for (unsigned int i = 0; i < polys.size(); ++i) {
-		GPolygon poly = polys.data()[i];
-
-		// get address of vertices this triangle uses
-		GVertex v1 = poly.data()[0];
-		GVertex v2 = poly.data()[1];
-		GVertex v3 = poly.data()[2];
-
-		Basis b = textureBasis(&v1, &v2, &v3);
-
-		for ( int &k: index.data()[i] ) {
-			basisArray.data()[k] += b;
-		}
-	}
-
-	// then normalise all basis
-	for ( Basis &basis: basisArray ) {
-		basis.normalise();
-	}
-
-	// final assignment of basis
-	for (unsigned int i = 0; i < polys.size(); ++i) {
-		GPolygon &poly = polys.data()[i];
-		for (unsigned int j = 0; j < poly.size(); ++j) {
-			int offset = index.data()[i].data()[j];
-			poly.data()[j].basis = basisArray.data()[offset];
-		}
-		//polys.data()[i] = poly;
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

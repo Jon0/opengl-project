@@ -22,7 +22,6 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		control{}
-
 {
 	cam_aspect = 1.0;
 	viewzoom = 41.1614;
@@ -71,10 +70,10 @@ void Camera::setView( chrono::duration<double> tick ) {
 	glGetFloatv( GL_PROJECTION_MATRIX, projectionf );
 
 
-	properties.data.P = glm::make_mat4(projectionf);
-	properties.data.V = glm::make_mat4(modelviewf);
-	properties.data.M = glm::mat4(1.0);
-	properties.update();
+	camera_properties.data.P = glm::make_mat4(projectionf);
+	camera_properties.data.V = glm::make_mat4(modelviewf);
+	camera_properties.data.M = glm::mat4(1.0);
+	camera_properties.update();
 
 	// run prepare
 	scene->prepare();
@@ -165,7 +164,7 @@ glm::quat Camera::cameraAngle() {
 }
 
 glm::vec3 Camera::project(const glm::vec3 &v) {
-	return glm::project( v, properties.data.V, properties.data.P, glm::vec4(0, 0, windowwidth, windowheight) );
+	return glm::project( v, camera_properties.data.V, camera_properties.data.P, glm::vec4(0, 0, windowwidth, windowheight) );
 }
 
 Vec3D Camera::unProject(int x, int y) {
@@ -181,11 +180,11 @@ Vec3D Camera::unProject(int x, int y) {
 }
 
 glm::mat4 Camera::viewMatrix() {
-	return properties.data.V;
+	return camera_properties.data.V;
 }
 
 glm::mat4 Camera::projectionMatrix() {
-	return properties.data.P;
+	return camera_properties.data.P;
 }
 
 
@@ -197,6 +196,10 @@ void Camera::setupMatrix() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMultMatrixf(model_matrix);
+}
+
+UBO<CameraProperties> *Camera::properties() {
+	return &camera_properties;
 }
 
 void getArc(int arcx, int arcy, int ix, int iy, float rad, glm::quat &result) {

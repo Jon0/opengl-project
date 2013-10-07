@@ -57,18 +57,15 @@ void DrawList::drawDebug() {
 	for (GPolygon poly: data) {
 		for (GVertex vert: poly) {
 			glBegin(GL_LINES);
-			glColor3f(1,1,1);
-			glVertex3fv(vert.e[POS].v);
-			glVertex3fv((vert.e[POS] + vert.e[NORM]*0.1).v);
 			glColor3f(1,0,0);
-			glVertex3fv(vert.e[POS].v);
-			glVertex3fv((vert.e[POS] + vert.basis.v[0]*0.1).v);
+			glVertex3fv( &vert.position[0] );
+			glVertex3fv( &(vert.position + vert.normal)[0] );
 			glColor3f(0,1,0);
-			glVertex3fv(vert.e[POS].v);
-			glVertex3fv((vert.e[POS] + vert.basis.v[1]*0.1).v);
+			glVertex3fv( &vert.position[0] );
+			glVertex3fv( &(vert.position + vert.tangent)[0] );
 			glColor3f(0,0,1);
-			glVertex3fv(vert.e[POS].v);
-			glVertex3fv((vert.e[POS] + vert.basis.v[2]*0.1).v);
+			glVertex3fv( &vert.position[0] );
+			glVertex3fv( &(vert.position + vert.bitangent)[0] );
 			glEnd();
 		}
 	}

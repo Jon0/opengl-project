@@ -38,10 +38,9 @@ private:
 	float viewzoom, cam_aspect, arcball_radius, arcball_x, arcball_y;
 	GLfloat temp_matrix [16], proj_matrix [16], model_matrix [16];
 	GLdouble proj_matrixd [16], model_matrixd [16];
+	UBO<CameraProperties> camera_properties;
 
 public:
-	UBO<CameraProperties> properties;
-
 	Camera( shared_ptr<SceneInterface>, shared_ptr<MainWindow> );
 	virtual ~Camera();
 
@@ -55,6 +54,7 @@ public:
 	virtual Vec3D unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();
+	virtual UBO<CameraProperties> *properties();
 
 	/* TODO remove */
 	void setupMatrix();

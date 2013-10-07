@@ -13,7 +13,6 @@
 #include "SceneInterface.h"
 #include "../geometry/Geometry.h"
 #include "../lighting/LightingModel.h"
-#include "../load/GeometryLoader.h"
 #include "../shader/Program.h"
 #include "../view/Camera.h"
 #include "../view/Ortho.h"
@@ -25,15 +24,12 @@ class GRender:
 		public enable_shared_from_this<GRender>,
 		public SceneInterface {
 public:
-	shared_ptr<MainWindow> mWnd;
 	Program program;
 	Program shadow;
 	Program skybox;
 	VertexBuffer vb;
-	GeometryLoader gloader;
-	shared_ptr<Camera> camera;
-	shared_ptr<Ortho> ortho;
 	shared_ptr<Geometry> sky;
+	shared_ptr<Geometry> sponza;
 	shared_ptr<Geometry> box;
 	shared_ptr<Geometry> bunny;
 	shared_ptr<Geometry> sphere;
@@ -55,27 +51,27 @@ public:
 	Tex *normalTex;
 	Tex *cubeTex;
 
+	UniformBlock<CameraProperties> camsky;
+	UniformBlock<CameraProperties> cam;
 	UniformBlock<MaterialProperties> materialUniform;
+
 
 	bool drag, showIcons;
 	int selectedLight;
 	int lightcontrol;
 	string message;
 	glm::quat click_old, click_new;
-
 	float t;
-
-	UBO<CameraProperties> *camptr; // TODO this is a hack
 
 	GRender();
 	virtual ~GRender();
 
 	void start();
-	void drawObject( shared_ptr<Geometry> );
+	void displayGeometry( UBO<CameraProperties> * );
+	void drawObject( shared_ptr<Geometry>, UBO<CameraProperties> * );
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual void displayUI();
-	virtual void displayGeometry();
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
 	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int );
 	virtual void messageSent(string);

@@ -37,11 +37,13 @@ public:
 	virtual Vec3D unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();
+	virtual UBO<CameraProperties> *properties();
 
 protected:
 	int view_width, view_height;
 	shared_ptr<MainWindow> wnd;
 	shared_ptr<SceneInterface> scene;
+	UBO<CameraProperties> ortho_properties;
 	string message;
 };
 

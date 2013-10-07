@@ -9,18 +9,19 @@
 #define V3D_H_
 
 #include <vector>
-#include "../math/Basis.h"
+#include <glm/glm.hpp>
 
-#define POS 0
-#define NORM 1
-#define UV 2
+#include "../math/Basis.h"
 
 namespace std {
 
 class GVertex {
 public:
-	Vec3D e[3];
-	Basis basis;
+	glm::vec3 position;
+	glm::vec3 texCoord;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
 
 	GVertex();
 	GVertex( Vec3D d );
@@ -32,9 +33,9 @@ public:
 	float getY();
 	float getZ();
 
-	Vec3D getPosition();
-	Vec3D getNormal();
-	Vec3D getTexCoord();
+	glm::vec3 getPosition();
+	glm::vec3 getNormal();
+	glm::vec3 getTexCoord();
 
 	void setPos(float x, float y, float z);
 	void setNormal(float x, float y, float z);

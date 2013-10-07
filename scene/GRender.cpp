@@ -6,44 +6,32 @@
  */
 
 #include <iostream>
-#include <assimp/Importer.hpp>      // C++ importer interface
-#include <assimp/scene.h>           // Output data structure
-#include <assimp/postprocess.h>
 
 #include "../geometry/Cube.h"
+#include "../load/GeometryLoader.h"
 #include "../texture/Font.h"
 #include "GRender.h"
 
 namespace std {
 
 GRender::GRender():
-		mWnd { new MainWindow(800, 600, "Scene") },
 		program("phong_bump"),
 		shadow("shadow_depth"),
 		skybox("skybox"),
 		vb(15),
-		gloader(),
 		sky { new Cube(500) },
-		box { gloader.readOBJG("assets/obj/Box.obj") },
-		bunny { gloader.readOBJG("assets/obj/Bunny.obj") },
-		sphere { gloader.readOBJG("assets/obj/Sphere.obj") },
-		table { gloader.readOBJG("assets/obj/Table.obj") },
-		teapot { gloader.readOBJG("assets/obj/Teapot.obj") },
-		torus { gloader.readOBJG("assets/obj/Torus.obj") },
+		sponza { readGeometry("assets/Sponza/SponzaTri.obj") },
+		box { readGeometry("assets/obj/Box.obj") },
+		bunny { readGeometry("assets/obj/Bunny.obj") },
+		sphere { readGeometry("assets/obj/Sphere.obj") },
+		table { readGeometry("assets/obj/Table.obj") },
+		teapot { readGeometry("assets/obj/Teapot.obj") },
+		torus { readGeometry("assets/obj/Torus.obj") },
 		light { shadow, program },
+		camsky { skybox.getBlock<CameraProperties>( "Camera", 1 ) },
+		cam { program.getBlock<CameraProperties>( "Camera", 1 ) },
 		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
 {
-
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile( "assets/Sponza/SponzaTri.obj",
-	        aiProcess_CalcTangentSpace       |
-	        aiProcess_Triangulate            |
-	        aiProcess_JoinIdenticalVertices  |
-	        aiProcess_SortByPType);
-
-
-	mWnd->start();
-
 	/* texturing... */
 	woodTex = new Tex();
 	woodTex->make2DTex("assets/image/Burled Cherry_DIFFUSE.jpg");
@@ -67,6 +55,7 @@ GRender::GRender():
 
 	// setup VBO
 	sky->init(&vb);
+	sponza->init(&vb);
 	box->init(&vb);
 	bunny->init(&vb);
 	sphere->init(&vb);
@@ -75,12 +64,20 @@ GRender::GRender():
 	torus->init(&vb);
 	vb.store();
 
-	table->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)) );
-	box->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(5.0, 2.5, 6.0)) );
-	bunny->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0,0.5,0)) );
-	sphere->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(4,2.0,-7)) );
-	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-4,0.5,-7)) );
-	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-6,1,5)) );
+	sponza->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0.0, 0.0, 0.0)) );
+	table->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0.0, 200.0, 0.0)) );
+	box->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(5.0, 202.5, 6.0)) );
+	bunny->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(0,200.5,0)) );
+	sphere->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(4,202.0,-7)) );
+	teapot->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-4,200.5,-7)) );
+	torus->setTransform( glm::translate(glm::mat4(1.0), glm::vec3(-6,201,5)) );
+
+	MaterialProperties &mpsp = sponza->material();
+	mpsp.AmbientColor = glm::vec4(0.0, 0.0, 0.0, 1.0);
+	mpsp.DiffuseColor = glm::vec4(0.588235, 0.670588, 0.729412, 1.0);
+	mpsp.SpecularColor = glm::vec4(0.3, 0.3, 0.3, 1.0);
+	mpsp.Exponent = 96.0;
+	sponza->updateMaterial();
 
 	MaterialProperties &mpb = bunny->material();
 	mpb.AmbientColor = glm::vec4(0.0, 0.0, 0.0, 0.5);
@@ -111,7 +108,7 @@ GRender::GRender():
 	torus->updateMaterial();
 
 	selectedLight = 1;
-	camptr = NULL;
+	drag = false;
 	t = 0.0;
 
 	lightcontrol = 0;
@@ -127,28 +124,15 @@ GRender::~GRender() {
 }
 
 void GRender::start() {
-	camera = shared_ptr<Camera>{ new Camera( shared_from_this(), mWnd ) };
-	mWnd->addView( camera );
-
-	ortho = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
-	mWnd->addView( ortho );
-
 	/*
 	 * set uniforms
 	 */
-	UniformBlock<CameraProperties> camsky = skybox.getBlock<CameraProperties>( "Camera", 1 );
-	camsky.assign( &camera->properties, 0 );
-
 	skybox.setUniform("cubeTexture", &cubeTex->location);
 
 	program.setUniform("cubeTexture", &cubeTex->location);
 	program.setUniform("diffuseTexture", &brickTex->location);
 	program.setUniform("normalTexture", &normalTex->location);
 	program.setUniform("specularTexture", &woodDispTex->location);
-
-	UniformBlock<CameraProperties> cam = program.getBlock<CameraProperties>( "Camera", 1 );
-	cam.assign( &camera->properties, 0 );
-	camptr = &camera->properties;
 }
 
 /*
@@ -166,6 +150,7 @@ void GRender::prepare() {
 	 * prepare depth map of each light
 	 */
 	light.clearDepthMap();
+	light.createShadow(sponza);
 	light.createShadow(table);
 	light.createShadow(box);
 	light.createShadow(bunny);
@@ -174,13 +159,15 @@ void GRender::prepare() {
 	light.createShadow(torus);
 }
 
-void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> ) {
+void GRender::display( shared_ptr<ViewInterface> c, chrono::duration<double> ) {
 	cubeTex->enable(0);
 
 	/* TODO translate by camera position */
 	glDisable(GL_CULL_FACE);
 	skybox.enable();
+	camsky.assign( c->properties() );
 	vb.enable();
+
 	sky->draw();
 
 	/*
@@ -192,10 +179,11 @@ void GRender::display( shared_ptr<ViewInterface> cam, chrono::duration<double> )
 	cubeTex->enable(3);
 
 	program.enable();
+	cam.assign( c->properties() );
 	glEnable(GL_CULL_FACE);
 
 	light.setLight();
-	displayGeometry();
+	displayGeometry( c->properties() );
 
 	if (showIcons) light.drawIcons();
 }
@@ -204,11 +192,15 @@ void GRender::displayUI() {
 	drawString( message, 10, 10 );
 }
 
-void GRender::displayGeometry() {
+void GRender::displayGeometry( UBO<CameraProperties> *camptr ) {
 	// Enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	vb.enable();
+
+	glUniform1i(useDiffTex, false);
+	glUniform1i(useNormTex, false);
+	drawObject(sponza, camptr);
 
 
 	glUniform1i(useDiffTex, true);
@@ -216,26 +208,26 @@ void GRender::displayGeometry() {
 	woodTex->enable(0);
 	woodNormTex->enable(1);
 	woodDispTex->enable(2);
-	drawObject(table);
+	drawObject(table, camptr);
 
 	brickTex->enable(0);
 	brickNormTex->enable(1);
 	brickTex->enable(2);
-	drawObject(box);
+	drawObject(box, camptr);
 
 	glUniform1i(useDiffTex, false);
 	normalTex->enable(1);
-	drawObject(torus);
+	drawObject(torus, camptr);
 
 	glUniform1i(useNormTex, false);
-	drawObject(sphere);
-	drawObject(teapot);
+	drawObject(sphere, camptr);
+	drawObject(teapot, camptr);
 
 	/* bunny last, it has transperency */
-	drawObject(bunny);
+	drawObject(bunny, camptr);
 }
 
-void GRender::drawObject( shared_ptr<Geometry> g ) {
+void GRender::drawObject( shared_ptr<Geometry> g, UBO<CameraProperties> *camptr ) {
 	materialUniform.assign(g->materialUBO());
 
 	light.setTransform(g->transform());
