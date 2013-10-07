@@ -16,9 +16,7 @@ Cube::Cube(float s) {
 	elementbuffer = 0;
 }
 
-Cube::~Cube() {
-	// TODO Auto-generated destructor stub
-}
+Cube::~Cube() {}
 
 void Cube::init(VertexBuffer *vb) {
 	vector<GVertex> verts;

@@ -24,11 +24,6 @@ ViewSpline::ViewSpline():
 
 ViewSpline::~ViewSpline() {}
 
-void ViewSpline::start() {
-	view = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
-	mWnd->addView( view );
-}
-
 int ViewSpline::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
 	Vec3D click(x, y, 0);
 	if (button == 2 && state) {

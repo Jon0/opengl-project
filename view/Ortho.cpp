@@ -14,11 +14,9 @@
 
 namespace std {
 
-Ortho::Ortho( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ): scene(s) {
+Ortho::Ortho( shared_ptr<SceneInterface> s ): scene(s) {
 	view_width = 1;
 	view_height = 1;
-
-	wnd = mw;
 }
 
 Ortho::~Ortho() {}

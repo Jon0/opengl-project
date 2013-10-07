@@ -25,14 +25,6 @@ Scene::Scene(string filename):
 	clickx = clicky = 0;
 }
 
-void Scene::start() {
-	camera = shared_ptr<Camera>{ new Camera( shared_from_this(), mWnd ) };
-	ortho = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
-	mWnd->addView( camera );
-	mWnd->addView( ortho );
-	//player.speed_curve.start();
-}
-
 Scene::~Scene() {}
 
 void Scene::getBoneAlignment(glm::quat current, glm::quat cam_angle, glm::quat &result) {

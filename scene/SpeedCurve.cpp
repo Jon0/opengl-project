@@ -21,11 +21,6 @@ SpeedCurve::SpeedCurve():
 
 SpeedCurve::~SpeedCurve() {}
 
-void SpeedCurve::start() {
-	view = shared_ptr<Ortho>{ new Ortho( shared_from_this(), mWnd ) };
-	mWnd->addView( view );
-}
-
 void SpeedCurve::reset() {
 	dragSelection = false;
 	pmx = pmy = 0;

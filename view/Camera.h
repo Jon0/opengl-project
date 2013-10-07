@@ -29,7 +29,7 @@ void getUnitCircle(int, int, int, int, glm::quat &);
 
 class Camera: public ViewInterface {
 private:
-	shared_ptr<MainWindow> wnd;
+	//shared_ptr<MainWindow> wnd;
 	shared_ptr<SceneInterface> scene;
 	glm::vec3 focus;
 	glm::quat cam_angle, cam_angle_d, click_old, click_new;
@@ -41,7 +41,7 @@ private:
 	UBO<CameraProperties> camera_properties;
 
 public:
-	Camera( shared_ptr<SceneInterface>, shared_ptr<MainWindow> );
+	Camera( shared_ptr<SceneInterface> );
 	virtual ~Camera();
 
 	virtual void setView( chrono::duration<double> );

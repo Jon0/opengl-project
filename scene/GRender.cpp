@@ -108,6 +108,17 @@ GRender::GRender():
 	mpt.Exponent = 200.0;
 	torus->updateMaterial();
 
+	/*
+	 * set uniforms
+	 */
+	skybox.setUniform("cubeTexture", &cubeTex->location);
+
+	program.setUniform("cubeTexture", &cubeTex->location);
+	program.setUniform("diffuseTexture", &brickTex->location);
+	program.setUniform("normalTexture", &normalTex->location);
+	program.setUniform("specularTexture", &woodDispTex->location);
+
+
 	selectedLight = 1;
 	drag = false;
 	t = 0.0;
@@ -122,18 +133,6 @@ GRender::GRender():
 
 GRender::~GRender() {
 	// TODO Auto-generated destructor stub
-}
-
-void GRender::start() {
-	/*
-	 * set uniforms
-	 */
-	skybox.setUniform("cubeTexture", &cubeTex->location);
-
-	program.setUniform("cubeTexture", &cubeTex->location);
-	program.setUniform("diffuseTexture", &brickTex->location);
-	program.setUniform("normalTexture", &normalTex->location);
-	program.setUniform("specularTexture", &woodDispTex->location);
 }
 
 /*

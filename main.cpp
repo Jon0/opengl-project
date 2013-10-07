@@ -19,13 +19,14 @@ int main(int argc, char *argv[]) {
 	shared_ptr<MainWindow> mWnd( new MainWindow(800, 600, "Scene") );
 	mWnd->start();
 
-	shared_ptr<GRender> r{ new GRender() };
-	r->start();
+	/* the scene to render */
+	shared_ptr<GRender> scene{ new GRender() };
 
-	/** camara to view scene */
-	shared_ptr<Camera> camera = shared_ptr<Camera>( new Camera( r, mWnd ) );
+	/** camara to draw scene onto the window */
+	shared_ptr<Camera> camera = shared_ptr<Camera>( new Camera( scene ) );
 	mWnd->addView( camera );
-	shared_ptr<Ortho> ortho = shared_ptr<Ortho>( new Ortho( r, mWnd ) );
+
+	shared_ptr<Ortho> ortho = shared_ptr<Ortho>( new Ortho( scene ) );
 	mWnd->addView( ortho );
 
 	// start running

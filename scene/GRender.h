@@ -66,7 +66,6 @@ public:
 	GRender();
 	virtual ~GRender();
 
-	void start();
 	void displayGeometry( UBO<CameraProperties> * );
 	void drawObject( shared_ptr<Geometry>, UBO<CameraProperties> * );
 	virtual void prepare();

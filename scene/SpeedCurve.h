@@ -24,7 +24,6 @@ class SpeedCurve:
 public:
 	SpeedCurve();
 	virtual ~SpeedCurve();
-	void start();
 
 	void reset();
 	void calculateValues();

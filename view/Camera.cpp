@@ -14,7 +14,7 @@
 
 namespace std {
 
-Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
+Camera::Camera( shared_ptr<SceneInterface> s ):
 		scene(s),
 		focus{0, 30, 0},
 		cam_angle{0.725405, -0.00180466, 0.688331, -0.000614126},
@@ -31,8 +31,6 @@ Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 	arcball_radius = 1.0;
 	click_x = click_y = 0;
 	windowwidth = windowheight = 1;
-
-	wnd = mw;
 }
 
 Camera::~Camera() {}

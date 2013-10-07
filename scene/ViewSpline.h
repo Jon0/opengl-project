@@ -27,7 +27,6 @@ class ViewSpline:
 public:
 	ViewSpline();
 	virtual ~ViewSpline();
-	void start();
 
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );

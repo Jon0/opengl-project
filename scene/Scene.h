@@ -25,7 +25,6 @@ class Scene:
 public:
 	Scene(string);
 	Scene(const Scene &);
-	void start();
 	virtual ~Scene();
 
 	void getBoneAlignment(glm::quat, glm::quat, glm::quat &);
