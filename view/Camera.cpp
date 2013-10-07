@@ -16,15 +16,15 @@ namespace std {
 
 Camera::Camera( shared_ptr<SceneInterface> s, shared_ptr<MainWindow> mw ):
 		scene(s),
-		focus{0, 0, 0},
-		cam_angle{0.83336, 0.215111, 0.494087, 0.123007},
+		focus{0, 30, 0},
+		cam_angle{0.725405, -0.00180466, 0.688331, -0.000614126},
 		cam_angle_d{1, 0, 0, 0},
 		click_old{1, 0, 0, 0},
 		click_new{1, 0, 0, 0},
 		control{}
 {
 	cam_aspect = 1.0;
-	viewzoom = 41.1614;
+	viewzoom = 81.4968;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
@@ -39,13 +39,12 @@ Camera::~Camera() {}
 
 void Camera::setView( chrono::duration<double> tick ) {
 	cam_angle = cam_angle_d * cam_angle;
-	//cam_angle.rotate( cam_angle_d );
 	cam_angle_d = glm::slerp( glm::quat(), cam_angle_d, ( 1 - (float)tick.count() * 10 ) );
 
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(30.0, cam_aspect, 1.0, 1000.0);
+	gluPerspective(60.0, cam_aspect, 1.0, 5000.0);
 	glGetFloatv(GL_PROJECTION_MATRIX, proj_matrix);
 	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrixd);
 

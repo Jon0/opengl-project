@@ -18,6 +18,7 @@
 #include "../shader/ShaderStructs.h"
 #include "../shader/Program.h"
 #include "../shader/UniformControl.h"
+#include "Light.h"
 
 namespace std {
 
@@ -42,13 +43,14 @@ public:
 	/*
 	 * uniforms
 	 */
-	UniformControl<glm::mat4> modelMatrix;
+
+	UniformControl<glm::mat4> modelMatrix; // TODO remove
 
 	UniformControl<vector<GLint>> shadowMaps;
 	UniformControl<vector<glm::mat4>> DepthBias;
 
 	UniformBlock<LightProperties> lightUniform;
-	vector< UBO<LightProperties> > lights;
+	vector< Light * > lights;
 
 	LightingModel(Program &shadow, Program &);
 	virtual ~LightingModel();
@@ -59,7 +61,6 @@ public:
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );
 	void setLight();
-	void setTransform(glm::mat4);
 	void drawIcons();
 };
 

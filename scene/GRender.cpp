@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "../geometry/Cube.h"
 #include "../load/GeometryLoader.h"
@@ -151,12 +152,12 @@ void GRender::prepare() {
 	 */
 	light.clearDepthMap();
 	light.createShadow(sponza);
-	light.createShadow(table);
-	light.createShadow(box);
-	light.createShadow(bunny);
-	light.createShadow(sphere);
-	light.createShadow(teapot);
-	light.createShadow(torus);
+//	light.createShadow(table);
+//	light.createShadow(box);
+//	light.createShadow(bunny);
+//	light.createShadow(sphere);
+//	light.createShadow(teapot);
+//	light.createShadow(torus);
 }
 
 void GRender::display( shared_ptr<ViewInterface> c, chrono::duration<double> ) {
@@ -203,34 +204,34 @@ void GRender::displayGeometry( UBO<CameraProperties> *camptr ) {
 	drawObject(sponza, camptr);
 
 
-	glUniform1i(useDiffTex, true);
-	glUniform1i(useNormTex, true);
-	woodTex->enable(0);
-	woodNormTex->enable(1);
-	woodDispTex->enable(2);
-	drawObject(table, camptr);
-
-	brickTex->enable(0);
-	brickNormTex->enable(1);
-	brickTex->enable(2);
-	drawObject(box, camptr);
-
-	glUniform1i(useDiffTex, false);
-	normalTex->enable(1);
-	drawObject(torus, camptr);
-
-	glUniform1i(useNormTex, false);
-	drawObject(sphere, camptr);
-	drawObject(teapot, camptr);
-
-	/* bunny last, it has transperency */
-	drawObject(bunny, camptr);
+//	glUniform1i(useDiffTex, true);
+//	glUniform1i(useNormTex, true);
+//	woodTex->enable(0);
+//	woodNormTex->enable(1);
+//	woodDispTex->enable(2);
+//	drawObject(table, camptr);
+//
+//	brickTex->enable(0);
+//	brickNormTex->enable(1);
+//	brickTex->enable(2);
+//	drawObject(box, camptr);
+//
+//	glUniform1i(useDiffTex, false);
+//	normalTex->enable(1);
+//	drawObject(torus, camptr);
+//
+//	glUniform1i(useNormTex, false);
+//	drawObject(sphere, camptr);
+//	drawObject(teapot, camptr);
+//
+//	/* bunny last, it has transperency */
+//	drawObject(bunny, camptr);
 }
 
 void GRender::drawObject( shared_ptr<Geometry> g, UBO<CameraProperties> *camptr ) {
 	materialUniform.assign(g->materialUBO());
 
-	light.setTransform(g->transform());
+	//light.setTransform(g->transform());
 	camptr->data.M = g->transform();
 	camptr->update();
 	g->draw();

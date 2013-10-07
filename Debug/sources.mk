@@ -33,6 +33,7 @@ scene \
 math \
 . \
 load \
+lighting/types \
 lighting \
 geometry \
 buffer \

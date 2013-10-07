@@ -17,6 +17,7 @@ RM := rm -rf
 -include scene/subdir.mk
 -include math/subdir.mk
 -include load/subdir.mk
+-include lighting/types/subdir.mk
 -include lighting/subdir.mk
 -include geometry/subdir.mk
 -include buffer/subdir.mk

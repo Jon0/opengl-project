@@ -1,10 +1,5 @@
 #version 400
 
-// Values that stay constant for the whole mesh
-//uniform mat4 P;
-//uniform mat4 V;
-//uniform mat4 M;
-
 uniform mat4 DepthBiasMVP [8];
 uniform vec4 LightPosition_worldspace [8];
 uniform bool useNormTex;
@@ -97,7 +92,7 @@ void main(){
 	 * per light operations
 	 */
 	 for (int light = 0; light < 3; ++light) {
-		ShadowCoord[light] = DepthBiasMVP[light] * vec4(vertexPosition_modelspace, 1);
+		ShadowCoord[light] = DepthBiasMVP[light] * M * vec4(vertexPosition_modelspace, 1);
 
 		// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.
 		vec3 LightPosition_cameraspace = vec3(V * Lights[light].position);

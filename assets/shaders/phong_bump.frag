@@ -73,7 +73,7 @@ vec2 poissonDisk[16] = vec2[](
    vec2( 0.14383161, -0.14100790 )
 );
 
-void main(){
+void main() {
 	// Material properties
 	vec4 MaterialDiffuseColor = Material.DiffuseColor;
 	vec4 MaterialAmbientColor = Material.AmbientColor;
@@ -84,7 +84,7 @@ void main(){
 		MaterialAmbientColor *= MaterialDiffuseColor;
 		MaterialSpecularColor *= texture2D( specularTexture, UV );
 	}
-	
+
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
 	vec3 TextureNormal_tangentspace;
 	if (useNormTex) {
@@ -147,14 +147,14 @@ void main(){
 		/*
 		 *	Shadows
 		 */
-		float bias = 0.0005*tan(acos(cosTheta));
+		float bias = 0.0005*tan( acos( cosTheta ) );
 		bias = clamp(bias, 0.0, 0.001);
-
 		float visibility = 1.0;
 		for (int i = 0; i < 16; i++){
-			visibility -= 0.0625*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
+			visibility -= 0.0625*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias))/ShadowCoord[light].w ));
 		}
 		visibility = clamp( visibility, 0, 1 );
+
 
 		// dampen spotlight by dot product angle
 		if ( Lights[light].spotlight > 0.1 ) {
