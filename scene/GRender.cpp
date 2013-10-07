@@ -6,6 +6,10 @@
  */
 
 #include <iostream>
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>
+
 #include "../geometry/Cube.h"
 #include "../texture/Font.h"
 #include "GRender.h"
@@ -29,6 +33,15 @@ GRender::GRender():
 		light { shadow, program },
 		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
 {
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile( "assets/Sponza/SponzaTri.obj",
+	        aiProcess_CalcTangentSpace       |
+	        aiProcess_Triangulate            |
+	        aiProcess_JoinIdenticalVertices  |
+	        aiProcess_SortByPType);
+
+
 	mWnd->start();
 
 	/* texturing... */
@@ -195,8 +208,8 @@ void GRender::displayGeometry() {
 	// Enable blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	vb.enable();
+
 
 	glUniform1i(useDiffTex, true);
 	glUniform1i(useNormTex, true);

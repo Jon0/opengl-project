@@ -49,6 +49,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.106650904" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/library}&quot;"/>
+									<listOptionValue builtIn="false" value="/am/phoenix/home1/remnanjona/lib/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.files.884942103" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.674832242" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -57,12 +58,15 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.745520133" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
 								<option id="gnu.cpp.link.option.libs.444793632" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="GL"/>
+									<listOptionValue builtIn="false" value="assimp"/>
 									<listOptionValue builtIn="false" value="GLU"/>
 									<listOptionValue builtIn="false" value="glut"/>
 									<listOptionValue builtIn="false" value="jpeg"/>
 									<listOptionValue builtIn="false" value="png"/>
 								</option>
-								<option id="gnu.cpp.link.option.paths.1585889320" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths"/>
+								<option id="gnu.cpp.link.option.paths.1585889320" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/am/phoenix/home1/remnanjona/lib/lib"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1726228367" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -72,7 +76,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1723214917" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
 								<option id="gnu.both.asm.option.include.paths.467203804" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="../animation/animation/library"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/animation/animation/library}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.192932045" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

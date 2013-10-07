@@ -37,4 +37,5 @@ lighting \
 geometry \
 buffer \
 assets/obj \
+assets/Sponza \
 

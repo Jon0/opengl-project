@@ -21,6 +21,7 @@ RM := rm -rf
 -include geometry/subdir.mk
 -include buffer/subdir.mk
 -include assets/obj/subdir.mk
+-include assets/Sponza/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -56,7 +57,7 @@ all: animation
 animation: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++  -o "animation" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/am/phoenix/home1/remnanjona/lib/lib -o "animation" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
