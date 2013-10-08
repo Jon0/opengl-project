@@ -28,7 +28,7 @@ vector<GPolygon> readOBJFile(const char* filename) {
 					| aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
 
-	cout << "num meshes = " << scene->mNumMeshes << endl;
+	cout << filename << " contains " << scene->mNumMeshes << " meshes" << endl;
 
 
 	/* array of all polygons */
@@ -37,8 +37,8 @@ vector<GPolygon> readOBJFile(const char* filename) {
 	/* add each polygon */
 	for (unsigned int m = 0; m < scene->mNumMeshes; ++m) {
 		aiMesh &mesh = *scene->mMeshes[m];
-		cout << "num faces = " << mesh.mNumFaces << endl;
-		cout << "has tangents = " << mesh.HasTangentsAndBitangents() << endl;
+		//cout << "num faces = " << mesh.mNumFaces << endl;
+		//cout << "has tangents = " << mesh.HasTangentsAndBitangents() << endl;
 
 		for (unsigned int i = 0; i < mesh.mNumFaces; ++i) {
 			GPolygon plg;
