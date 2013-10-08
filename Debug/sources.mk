@@ -30,6 +30,7 @@ spline \
 shader \
 scene/play \
 scene \
+octree \
 math \
 . \
 load \

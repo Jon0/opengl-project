@@ -15,6 +15,7 @@ RM := rm -rf
 -include shader/subdir.mk
 -include scene/play/subdir.mk
 -include scene/subdir.mk
+-include octree/subdir.mk
 -include math/subdir.mk
 -include load/subdir.mk
 -include lighting/types/subdir.mk
@@ -58,7 +59,7 @@ all: animation
 animation: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	g++ -L/am/phoenix/home1/remnanjona/lib/lib -o "animation" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/u/students/remnanjona/lib/lib -o "animation" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

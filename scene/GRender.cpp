@@ -75,9 +75,9 @@ GRender::GRender():
 
 	MaterialProperties &mpsp = sponza->material();
 	mpsp.AmbientColor = glm::vec4(0.0, 0.0, 0.0, 1.0);
-	mpsp.DiffuseColor = glm::vec4(0.588235, 0.670588, 0.729412, 1.0);
+	mpsp.DiffuseColor = glm::vec4(0.9, 0.9, 0.9, 1.0);
 	mpsp.SpecularColor = glm::vec4(0.3, 0.3, 0.3, 1.0);
-	mpsp.Exponent = 96.0;
+	mpsp.Exponent = 10.0;
 	sponza->updateMaterial();
 
 	MaterialProperties &mpb = bunny->material();
