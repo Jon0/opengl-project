@@ -24,6 +24,7 @@ RM := rm -rf
 -include buffer/subdir.mk
 -include assets/obj/subdir.mk
 -include assets/Sponza/subdir.mk
+-include assets/Avatar/subdir.mk
 -include subdir.mk
 -include objects.mk
 
