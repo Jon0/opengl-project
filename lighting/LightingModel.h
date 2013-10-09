@@ -15,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
 
+#include "../octree/Tree.h"
 #include "../shader/ShaderStructs.h"
 #include "../shader/Program.h"
 #include "../shader/UniformControl.h"
@@ -43,7 +44,6 @@ public:
 	/*
 	 * uniforms
 	 */
-
 	UniformControl<glm::mat4> modelMatrix; // TODO remove
 
 	UniformControl<vector<GLint>> shadowMaps;
@@ -51,6 +51,13 @@ public:
 
 	UniformBlock<LightProperties> lightUniform;
 	vector< Light * > lights;
+
+	/*
+	 * Global illumination octree
+	 */
+	Tree tree;
+
+
 
 	LightingModel(Program &shadow, Program &);
 	virtual ~LightingModel();

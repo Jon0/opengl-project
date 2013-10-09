@@ -8,6 +8,7 @@
 #ifndef TREE_H_
 #define TREE_H_
 
+#include "../shader/UniformControl.h"
 #include "TreeNode.h"
 
 namespace std {
@@ -19,10 +20,18 @@ struct innerNode {
 
 class Tree {
 	TreeNode root;
+	GLuint addr;
+	unsigned int levels;
+	unsigned int size;
+	unsigned int *texels;
 
 public:
-	Tree();
+	UniformControl<GLint> location;
+
+	Tree(int);
 	virtual ~Tree();
+
+	void enable(GLuint i);
 };
 
 } /* namespace std */

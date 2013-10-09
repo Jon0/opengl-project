@@ -180,7 +180,6 @@ void GRender::display( shared_ptr<ViewInterface> c, chrono::duration<double> ) {
 
 	program.enable();
 	cam.assign( c->properties() );
-	glEnable(GL_CULL_FACE);
 
 	light.setLight();
 	displayGeometry( c->properties() );

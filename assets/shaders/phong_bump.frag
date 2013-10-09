@@ -24,6 +24,7 @@ layout(std140) uniform MaterialProperties {
 
 
 // Values that stay constant for the whole mesh.
+uniform sampler3D illumination;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
@@ -174,6 +175,9 @@ void main() {
 	 *	    set final color value
 	 * 	*******************************
 	 */
-	color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
+
+	color = 0.2 * texture( illumination, Position_worldspace / 256 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
+
+	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 
 }

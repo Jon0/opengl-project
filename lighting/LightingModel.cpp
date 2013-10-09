@@ -19,7 +19,8 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) }
+		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
+		tree { 128 }
 {
 	shadowMapWidth = 1024 * 4;
 	shadowMapHeight = 1024 * 4;
@@ -49,6 +50,7 @@ LightingModel::LightingModel(Program &shadow, Program &main):
 	/* main shader */
 	main.setUniform("shadowMap", &shadowMaps);
 	main.setUniform("DepthBiasMVP", &DepthBias);
+	main.setUniform("illumination", &tree.location);
 
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
@@ -138,12 +140,20 @@ void LightingModel::setLight() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
+	/*
+	 * bind shadow maps
+	 */
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glActiveTexture(GL_TEXTURE5 + i);
 		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[i]);
 		shadowMaps.data.data()[i] = 5 + i;
 	}
 	shadowMaps.forceUpdate();
+
+	/*
+	 * bind illumination
+	 */
+	tree.enable(5 + numLights);
 
 	for (unsigned int i = 0; i < numLights; ++i) {
 			DepthBias.data.data()[i] = biasMatrix * lights.data()[i]->getTransform();
