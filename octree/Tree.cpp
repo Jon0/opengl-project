@@ -17,8 +17,14 @@ Tree::Tree(int l):
 	levels = l;
 	size = levels * levels * levels;
 	texels = new unsigned int [size];
-	for (unsigned int i = 0; i < size; ++i) {
-		texels[i] = rand() | 0xff000000;
+	for (unsigned int i = 0; i < levels; ++i) {
+		for (unsigned int j = 0; j < levels; ++j) {
+			for (unsigned int k = 0; k < levels; ++k) {
+				unsigned char r = rand() % 256;
+				texels[i + j * levels + k * levels * levels] = (255 << 24) + (r << 16) + (r << 8) + r;
+
+			}
+		}
 	}
 
 	glGenTextures(1, &addr);
