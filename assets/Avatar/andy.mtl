@@ -1,0 +1,40 @@
+newmtl andyRigv1_4_8:hair4_5_lambert3SG
+illum 4
+Kd 0.73 0.55 0.37
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl andyRigv1_4_9:blinn6SG
+illum 4
+Kd 0.92 0.76 0.83
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 1.00 1.00 1.00
+newmtl andyRigv1_4_9:eye:shader:eyetootharm:eye3:phong3SG
+illum 4
+Kd 0.14 0.16 0.18
+Ka 0.11 0.14 0.16
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.09 0.11 0.12
+newmtl andyRigv1_4_9:shader:eye3:lambert2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl blinn1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+newmtl lambert2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd boySmiley.jpg
+Ni 1.00

@@ -40,4 +40,5 @@ geometry \
 buffer \
 assets/obj \
 assets/Sponza \
+assets/Avatar \
 
