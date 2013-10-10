@@ -4,19 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../lighting/LightingModel.cpp \
-../lighting/Tree.cpp \
-../lighting/TreeNode.cpp 
+../lighting/LightingModel.cpp 
 
 OBJS += \
-./lighting/LightingModel.o \
-./lighting/Tree.o \
-./lighting/TreeNode.o 
+./lighting/LightingModel.o 
 
 CPP_DEPS += \
-./lighting/LightingModel.d \
-./lighting/Tree.d \
-./lighting/TreeNode.d 
+./lighting/LightingModel.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
