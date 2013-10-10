@@ -18,4 +18,9 @@ TreeNode::~TreeNode() {
 	// TODO Auto-generated destructor stub
 }
 
+void addLight() {
+	// pass light in 6 directions
+	// then diagonals if adjacent sides are open, so on..
+}
+
 } /* namespace std */

@@ -15,12 +15,12 @@
 
 namespace std {
 
-LightingModel::LightingModel(Program &shadow, Program &main):
+LightingModel::LightingModel(Program &shadow, Program &main, shared_ptr<Geometry> g):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
-		tree { 128 }
+		tree { 128, g }
 {
 	shadowMapWidth = 1024 * 4;
 	shadowMapHeight = 1024 * 4;

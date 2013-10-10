@@ -51,6 +51,10 @@ void Cube::drawDebug() {
 	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
 }
 
+vector<GPolygon> &Cube::polygon() {
+	return data;
+}
+
 glm::mat4 Cube::transform() {
 	return glm::mat4(1.0);
 }

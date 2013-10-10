@@ -8,6 +8,10 @@
 #ifndef TREE_H_
 #define TREE_H_
 
+#include <memory>
+#include <glm/glm.hpp>
+
+#include "../geometry/Geometry.h"
 #include "../shader/UniformControl.h"
 #include "TreeNode.h"
 
@@ -24,14 +28,21 @@ class Tree {
 	unsigned int levels;
 	unsigned int size;
 	unsigned int *texels;
+	glm::vec3 *normals;
+	glm::vec3 mid;
+
+	shared_ptr<Geometry> geom;
 
 public:
 	UniformControl<GLint> location;
 
-	Tree(int);
+	Tree(int, shared_ptr<Geometry>);
 	virtual ~Tree();
 
+
+	glm::vec3 getPoint( glm::vec3 );
 	void enable(GLuint i);
+	void addLight();
 };
 
 } /* namespace std */

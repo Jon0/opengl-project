@@ -16,6 +16,8 @@ class TreeNode {
 public:
 	TreeNode();
 	virtual ~TreeNode();
+
+	void addLight();
 };
 
 } /* namespace std */

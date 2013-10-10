@@ -176,7 +176,7 @@ void main() {
 	 * 	*******************************
 	 */
 
-	color = 0.2 * texture( illumination, Position_worldspace / 256 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
+	color = texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
 
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 

@@ -10,6 +10,7 @@
 #include "../buffer/VertexBuffer.h"
 #include "../shader/UBO.h"
 #include "../shader/ShaderStructs.h"
+#include "GPolygon.h"
 
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
@@ -22,6 +23,7 @@ public:
 	virtual void init(VertexBuffer *) = 0;
 	virtual void draw() = 0;
 	virtual void drawDebug() = 0;
+	virtual vector<GPolygon> &polygon() = 0;
 	virtual glm::mat4 transform() = 0;
 	virtual void setTransform(glm::mat4) = 0;
 	virtual UBO<MaterialProperties> *materialUBO() = 0;

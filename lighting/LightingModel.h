@@ -59,7 +59,7 @@ public:
 
 
 
-	LightingModel(Program &shadow, Program &);
+	LightingModel(Program &, Program &, shared_ptr<Geometry>);
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);

@@ -71,6 +71,10 @@ void DrawList::drawDebug() {
 	}
 }
 
+vector<GPolygon> &DrawList::polygon() {
+	return data;
+}
+
 int DrawList::selectMouse(int, int) {
 	return false;
 }

@@ -25,6 +25,8 @@ class Cube:
 	/* material */
 	UBO<MaterialProperties> materialType;
 
+	vector<GPolygon> data; // TODO: this
+
 public:
 	Cube(float);
 	virtual ~Cube();
@@ -32,6 +34,7 @@ public:
 	void init(VertexBuffer *);
 	virtual void draw();
 	virtual void drawDebug();
+	virtual vector<GPolygon> &polygon();
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);
 	virtual UBO<MaterialProperties> *materialUBO();

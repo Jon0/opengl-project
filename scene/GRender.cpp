@@ -28,7 +28,7 @@ GRender::GRender():
 		table { readGeometry("assets/obj/Table.obj") },
 		teapot { readGeometry("assets/obj/Teapot.obj") },
 		torus { readGeometry("assets/obj/Torus.obj") },
-		light { shadow, program },
+		light { shadow, program, sponza },
 		camsky { skybox.getBlock<CameraProperties>( "Camera", 1 ) },
 		cam { program.getBlock<CameraProperties>( "Camera", 1 ) },
 		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
