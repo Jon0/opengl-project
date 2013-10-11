@@ -30,6 +30,7 @@ private:
 	 */
 	GLuint programID;
 	Shader vert;
+	Shader geom;
 	Shader frag;
 
 	/*
@@ -40,6 +41,7 @@ private:
 
 public:
 	Program(string);
+	Program(string, int);
 	virtual ~Program();
 
 	/*

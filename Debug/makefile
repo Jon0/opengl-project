@@ -15,6 +15,7 @@ RM := rm -rf
 -include shader/subdir.mk
 -include scene/play/subdir.mk
 -include scene/subdir.mk
+-include pipeline/subdir.mk
 -include octree/subdir.mk
 -include math/subdir.mk
 -include load/subdir.mk

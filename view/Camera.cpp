@@ -52,7 +52,6 @@ void Camera::setView( chrono::duration<double> tick ) {
 	// setup camera position
 	glPushMatrix();
 	glTranslatef(0.0, 0.0, -viewzoom);
-	//cam_angle.toMatrix(temp_matrix);
 	glMultMatrixf( &glm::mat4_cast(cam_angle)[0][0] );
 
 	float x = focus.x, y = focus.y, z = focus.z;
@@ -72,13 +71,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	camera_properties.data.M = glm::mat4(1.0);
 	camera_properties.update();
 
-	// run prepare
-	scene->prepare();
-
-	glBindFramebuffer(GL_FRAMEBUFFER,0);
-	glViewport(0, 0, windowwidth, windowheight);
-
-	scene->display( shared_from_this(), tick );
+	scene->display( shared_from_this() );
 	glPopMatrix();
 }
 

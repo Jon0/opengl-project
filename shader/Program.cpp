@@ -48,6 +48,41 @@ Program::Program(string file):
 	}
 }
 
+Program::Program(string file, int):
+		vert("assets/shaders/"+file+".vert", GL_VERTEX_SHADER),
+		geom("assets/shaders/"+file+".geom", GL_GEOMETRY_SHADER),
+		frag("assets/shaders/"+file+".frag", GL_FRAGMENT_SHADER)
+{
+	//Create a program handle.
+	programID = glCreateProgram();
+
+	//Attach the shaders. Here, assume that fragmentHandle is a handle to a fragment shader object,
+	//and that vertexHandle is a handle to a vertex shader object.
+	glAttachShader(programID, vert.ShaderHandle);
+	glAttachShader(programID, geom.ShaderHandle);
+	glAttachShader(programID, frag.ShaderHandle);
+
+	glBindAttribLocation(programID, 0, "vertexPosition_modelspace");
+	glBindAttribLocation(programID, 1, "vertexUV");
+	glBindAttribLocation(programID, 2, "vertexNormal_modelspace");
+	glBindAttribLocation(programID, 3, "vertexTangent_modelspace");
+    glBindAttribLocation(programID, 4, "vertexBitangent_modelspace");
+    //glBindAttribLocation(programID, 2, "in_Color");
+
+	//Link the program.
+	glLinkProgram(programID);
+
+	int rvalue;
+	glGetProgramiv(programID, GL_LINK_STATUS, &rvalue);
+	if (!rvalue) {
+		fprintf(stderr, "Error in linking shader program\n");
+		GLchar log[10240];
+		GLsizei length;
+		glGetProgramInfoLog(programID, 10239, &length, log);
+		fprintf(stderr, "Linker log:\n%s\n", log);
+	}
+}
+
 Program::~Program() {
 	// TODO Auto-generated destructor stub
 }

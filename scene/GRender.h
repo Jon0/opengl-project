@@ -25,12 +25,15 @@ class GRender:
 		public SceneInterface {
 public:
 	Program program;
-	Program shadow;
 	Program skybox;
+	LightingModel light;
+	UniformBlock<CameraProperties> camsky;
+	UniformBlock<CameraProperties> cam;
+	UniformBlock<MaterialProperties> materialUniform;
 	VertexBuffer vb;
 	shared_ptr<Geometry> sky;
 	vector< shared_ptr<Geometry> > objects;
-	LightingModel light;
+
 
 	GLuint useDiffTex, useNormTex;
 
@@ -44,11 +47,6 @@ public:
 
 	Tex *normalTex;
 	Tex *cubeTex;
-
-	UniformBlock<CameraProperties> camsky;
-	UniformBlock<CameraProperties> cam;
-	UniformBlock<MaterialProperties> materialUniform;
-
 
 	/*
 	 * select and control
@@ -68,8 +66,8 @@ public:
 	void displayGeometry( UBO<CameraProperties> * );
 	void drawObject( shared_ptr<Geometry>, UBO<CameraProperties> * );
 	void setSelection(glm::vec4 *, string);
-	virtual void prepare();
-	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual void update( chrono::duration<double> );
+	virtual void display( shared_ptr<ViewInterface> );
 	virtual void displayUI();
 	virtual int mouseClicked( shared_ptr<ViewInterface>, int, int, int, int );
 	virtual int mouseDragged( shared_ptr<ViewInterface>, int, int );

@@ -86,12 +86,12 @@ float SpeedCurve::getTotalDistance() {
 	return total_distance;
 }
 
-void SpeedCurve::prepare() {
+void SpeedCurve::update( chrono::duration<double> ) {
 	// do nothing
 }
 
 
-void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) {
+void SpeedCurve::display( shared_ptr<ViewInterface> ) {
 	speed.displayline();
 
 	if (speed.getNumKeyFrames() > 1) {

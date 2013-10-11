@@ -15,7 +15,8 @@
 
 namespace std {
 
-LightingModel::LightingModel(Program &shadow, Program &main):
+LightingModel::LightingModel(Program &main):
+		shadow("shadow_depth"),
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
@@ -119,6 +120,7 @@ void LightingModel::generateShadowFBO() {
 
 void LightingModel::clearDepthMap() {
 	//First step: Render from the light POV to a FBO, story depth values only
+	shadow.enable();
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
 		glViewport(0, 0, shadowMapWidth, shadowMapHeight);

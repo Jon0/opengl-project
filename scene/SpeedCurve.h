@@ -32,8 +32,8 @@ public:
 	float getDistanceValue(float);
 	float getTotalDistance();
 
-	virtual void prepare();
-	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
+	virtual void update( chrono::duration<double> );
+	virtual void display( shared_ptr<ViewInterface> );
 	virtual void displayUI();
 	virtual void displayGeometry();
 	virtual int mouseClicked(shared_ptr<ViewInterface>, int, int, int, int);

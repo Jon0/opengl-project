@@ -82,7 +82,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="input|octree|types|lighting|library|view|texture|spline|shader|src|geometry|old|math|window|buffer|vertex|scene|load" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="pipeline|input|octree|types|lighting|library|view|texture|spline|shader|src|geometry|old|math|window|buffer|vertex|scene|load" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="buffer"/>
 						<entry excluding="vertex" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="geometry"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="geometry/vertex"/>
@@ -92,6 +92,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="load"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="math"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="octree"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="pipeline"/>
 						<entry excluding="play" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="scene"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="scene/play"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="shader"/>
@@ -146,7 +147,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="input|octree|types|old|vertex|lighting|shader|texture|buffer|geometry|view|math|spline|window|scene|src|load" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="pipeline|input|octree|types|old|vertex|lighting|shader|texture|buffer|geometry|view|math|spline|window|scene|src|load" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="buffer"/>
 						<entry excluding="vertex" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="geometry"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="geometry/vertex"/>
@@ -156,6 +157,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="load"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="math"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="octree"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="pipeline"/>
 						<entry excluding="play" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="scene"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="scene/play"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="shader"/>

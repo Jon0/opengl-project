@@ -13,6 +13,7 @@
 namespace std {
 
 Tree::Tree(int l):
+	voxelize("voxelization", 1),
 	location { [](GLuint i, GLint v){ glUniform1i(i, v); } }
 {
 	levels = l;
@@ -59,17 +60,6 @@ glm::vec3 Tree::getPoint( glm::vec3 in ) {
 }
 
 void Tree::enable(GLuint i) {
-	//for (unsigned int i = 0; i < levels; ++i) {
-	//	for (unsigned int j = 0; j < levels; ++j) {
-	//		for (unsigned int k = 0; k < levels; ++k) {
-	//			unsigned char r = rand() % 256;
-	//			texels[i + j * levels + k * levels * levels] = (255 << 24) + (r << 16) + (r << 8) + r;
-	//
-	//		}
-	//	}
-	//}
-
-
 	glActiveTexture(GL_TEXTURE0 + i);
 	glBindTexture(GL_TEXTURE_3D, addr);
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, levels, levels, levels, 0, GL_RGBA,

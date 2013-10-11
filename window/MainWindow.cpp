@@ -12,6 +12,9 @@ namespace std {
 /* pointer to the running instance */
 map<int, shared_ptr<MainWindow>> instances;
 
+/* current tick */
+chrono::time_point<chrono::high_resolution_clock> lastTime;
+
 MainWindow::MainWindow(int width, int height, string title) {
 	wnd_width = width;
 	wnd_height = height;
@@ -23,10 +26,8 @@ MainWindow::MainWindow(int width, int height, string title) {
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseCallbackMotionFunc);
-	glutIdleFunc(idleFunc);
-
-	// get initial time
-	time = chrono::high_resolution_clock::now();
+	glutIdleFunc(updateWindows);
+	update = NULL;
 }
 
 MainWindow::~MainWindow() {}
@@ -44,15 +45,22 @@ void MainWindow::addView(shared_ptr<ViewInterface> vi) {
 	g_view.push_back(vi);
 }
 
+void MainWindow::setUpdateFunc( void (*u)(chrono::duration<double>) ) {
+	update = u;
+}
+
 void MainWindow::display() {
 	chrono::time_point<chrono::high_resolution_clock> newTime = chrono::system_clock::now();
-	chrono::duration<double> tick = newTime - time;
-	time = newTime;
+	chrono::duration<double> windowTick = newTime - lastTime;
+	lastTime = newTime;
+	update( windowTick );
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, wnd_width, wnd_height);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	for (auto &view: g_view) {
-		view->setView( tick );
+		view->setView( windowTick );
 	}
 	glutSwapBuffers();
 }
@@ -103,7 +111,7 @@ void MainWindow::mouseCallbackMotionFunc(int x, int y) {
 	instances[ glutGetWindow() ]->mouseDrag(x, y);
 }
 
-void MainWindow::idleFunc() {
+void MainWindow::updateWindows() {
 	for(auto iter=instances.begin(); iter!=instances.end(); ++iter) {
 		glutSetWindow(iter->first);
 		glutPostRedisplay();

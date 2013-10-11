@@ -12,17 +12,14 @@
 #include <glm/glm.hpp>
 
 #include "../geometry/Geometry.h"
+#include "../shader/Program.h"
 #include "../shader/UniformControl.h"
 #include "TreeNode.h"
 
 namespace std {
 
-struct innerNode {
-	char child[15], far, contour[24];
-	int validMask, leafMask, contourMask;
-};
-
 class Tree {
+	Program voxelize;
 	TreeNode root;
 	GLuint addr;
 	unsigned int levels;

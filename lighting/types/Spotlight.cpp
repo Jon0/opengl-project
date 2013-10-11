@@ -13,7 +13,7 @@ namespace std {
 
 Spotlight::Spotlight() {
 
-	data.position = glm::vec4(-74.9906, 53.8912, -13.388, 1.0);
+	data.position = glm::vec4(-112.4859, 80.8368, -20.082, 1.0);
 	data.color = glm::vec4(0.3, 0.5, 0.9, 1.0);
 	data.direction = glm::vec4(14.5201, 26.7082, 1.26496, 1.0);
 	data.intensity = 20000.0;

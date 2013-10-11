@@ -10,8 +10,16 @@
 
 namespace std {
 
+struct innerNode {
+	char child[15], far, contour[24];
+	int validMask, leafMask, contourMask;
+};
+
 class TreeNode {
-	TreeNode *inner;
+	TreeNode *parent;
+	TreeNode *inner[8];
+
+	// 26 adjacent directions
 
 public:
 	TreeNode();

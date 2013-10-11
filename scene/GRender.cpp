@@ -17,14 +17,13 @@ namespace std {
 
 GRender::GRender():
 		program("phong_bump"),
-		shadow("shadow_depth"),
 		skybox("skybox"),
+		light {program},
+		camsky {skybox.getBlock<CameraProperties>( "Camera", 1 )},
+		cam {program.getBlock<CameraProperties>( "Camera", 1 )},
+		materialUniform {program.getBlock<MaterialProperties>("MaterialProperties", 1)},
 		vb(15),
-		sky { new Cube(500) },
-		light { shadow, program },
-		camsky { skybox.getBlock<CameraProperties>( "Camera", 1 ) },
-		cam { program.getBlock<CameraProperties>( "Camera", 1 ) },
-		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
+		sky { new Cube(500) }
 {
 	objects.push_back( readGeometry("assets/Sponza/SponzaTri.obj") );
 	//objects.push_back( readGeometry("assets/obj/Box.obj") );
@@ -52,9 +51,6 @@ GRender::GRender():
 	cubeTex = new Tex();
 	cubeTex->make3DTex("assets/image/sky2.png");
 
-	useDiffTex = program.addUniform("useDiffTex");
-	useNormTex = program.addUniform("useNormTex");
-
 	// setup VBO, and lighting tracking
 	sky->init(&vb);
 	for (auto &g: objects) {
@@ -66,6 +62,9 @@ GRender::GRender():
 	/*
 	 * set uniforms
 	 */
+	useDiffTex = program.addUniform("useDiffTex");
+	useNormTex = program.addUniform("useNormTex");
+
 	skybox.setUniform("cubeTexture", &cubeTex->location);
 
 	program.setUniform("cubeTexture", &cubeTex->location);
@@ -94,16 +93,11 @@ GRender::~GRender() {
 	// TODO Auto-generated destructor stub
 }
 
-/*
- * TODO only call this once
- */
-void GRender::prepare() {
+void GRender::update( chrono::duration<double> ) {
 	LightProperties &p = light.getLight(0);
 	p.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
 	light.updateLight(0);
 	t += 0.01;
-
-	shadow.enable();
 
 	/*
 	 * prepare depth map of each light
@@ -112,7 +106,7 @@ void GRender::prepare() {
 	for (auto &g: objects) light.createShadow(g);
 }
 
-void GRender::display( shared_ptr<ViewInterface> c, chrono::duration<double> ) {
+void GRender::display( shared_ptr<ViewInterface> c ) {
 	cubeTex->enable(0);
 
 	/* TODO translate by camera position */

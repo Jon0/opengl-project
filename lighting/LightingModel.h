@@ -27,6 +27,7 @@ void display_cylinder(GLUquadric* q, float x, float y, float z, float length, fl
 
 class LightingModel {
 public:
+	Program shadow;
 	int shadowMapWidth;
 	int shadowMapHeight;
 	unsigned int numLights;
@@ -50,6 +51,7 @@ public:
 	UniformControl<vector<glm::mat4>> DepthBias;
 
 	UniformBlock<LightProperties> lightUniform;
+
 	vector< Light * > lights;
 
 	/*
@@ -59,7 +61,7 @@ public:
 
 
 
-	LightingModel(Program &, Program &);
+	LightingModel(Program &);
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);
