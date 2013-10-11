@@ -55,10 +55,11 @@ GRender::GRender():
 	useDiffTex = program.addUniform("useDiffTex");
 	useNormTex = program.addUniform("useNormTex");
 
-	// setup VBO
+	// setup VBO, and lighting tracking
 	sky->init(&vb);
 	for (auto &g: objects) {
 		g->init(&vb);
+		light.track( g );
 	}
 	vb.store();
 

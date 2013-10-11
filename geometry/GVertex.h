@@ -48,7 +48,5 @@ public:
 	void print();
 };
 
-typedef vector<GVertex> GPolygon;
-
 } /* namespace std */
 #endif /* V3D_H_ */

@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../geometry/Cube.cpp \
 ../geometry/DrawList.cpp \
+../geometry/GPolygon.cpp \
 ../geometry/GVertex.cpp \
 ../geometry/Skeleton.cpp \
 ../geometry/Teapot.cpp 
@@ -13,6 +14,7 @@ CPP_SRCS += \
 OBJS += \
 ./geometry/Cube.o \
 ./geometry/DrawList.o \
+./geometry/GPolygon.o \
 ./geometry/GVertex.o \
 ./geometry/Skeleton.o \
 ./geometry/Teapot.o 
@@ -20,6 +22,7 @@ OBJS += \
 CPP_DEPS += \
 ./geometry/Cube.d \
 ./geometry/DrawList.d \
+./geometry/GPolygon.d \
 ./geometry/GVertex.d \
 ./geometry/Skeleton.d \
 ./geometry/Teapot.d 

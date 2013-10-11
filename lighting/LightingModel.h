@@ -59,11 +59,12 @@ public:
 
 
 
-	LightingModel(Program &shadow, Program &);
+	LightingModel(Program &, Program &);
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);
 	void updateLight(int);
+	void track(shared_ptr<Geometry>);
 	void generateShadowFBO();
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );

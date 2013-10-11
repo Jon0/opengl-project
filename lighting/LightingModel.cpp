@@ -73,6 +73,10 @@ void LightingModel::updateLight(int i) {
 	lights.data()[i]->update();
 }
 
+void LightingModel::track(shared_ptr<Geometry> g) {
+	tree.calc(g);
+}
+
 void LightingModel::generateShadowFBO() {
 	GLenum FBOstatus;
 
