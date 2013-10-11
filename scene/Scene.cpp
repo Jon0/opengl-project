@@ -126,8 +126,8 @@ void Scene::display( shared_ptr<ViewInterface> in, chrono::duration<double> tick
 					float path_offset = p * player.path->getArcLength()
 							/ player.speed_curve.getTotalDistance();
 
-					Vec3D vc = player.path->getDistPoint(path_offset);
-					glVertex3f(vc.v[0], vc.v[1], vc.v[2]);
+					glm::vec3 vc = player.path->getDistPoint(path_offset);
+					glVertex3f(vc.x, vc.y, vc.z);
 
 				}
 				glEnd();

@@ -14,8 +14,9 @@
 #include <chrono>
 #include <string>
 #include <GL/glut.h>
-#include "KeyListener.h"
-#include "MouseListener.h"
+
+#include "../input/KeyListener.h"
+#include "../input/MouseListener.h"
 #include "../view/ViewInterface.h"
 
 namespace std {

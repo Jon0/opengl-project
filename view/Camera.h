@@ -12,7 +12,7 @@
 #include <GL/glut.h>
 #include <glm/glm.hpp>
 
-#include "ViewInterface.h"
+#include "../input/MouseListener.h"
 #include "../math/Vec3D.h"
 #include "../math/Quaternion.h"
 #include "../scene/SceneInterface.h"
@@ -20,7 +20,7 @@
 #include "../shader/UBO.h"
 #include "../shader/UniformControl.h"
 #include "../window/MainWindow.h"
-#include "../window/MouseListener.h"
+#include "ViewInterface.h"
 
 namespace std {
 
@@ -51,7 +51,7 @@ public:
 	virtual int mouseDragged(int, int);
 	virtual glm::quat cameraAngle();
 	virtual glm::vec3 project(const glm::vec3 &);
-	virtual Vec3D unProject(int, int);
+	virtual glm::vec3 unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();
 	virtual UBO<CameraProperties> *properties();

@@ -13,14 +13,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "../input/KeyListener.h"
+#include "../input/MouseListener.h"
 #include "../shader/ShaderStructs.h"
 #include "../shader/UBO.h"
-#include "../window/KeyListener.h"
-#include "../window/MouseListener.h"
 
 namespace std {
-
-class Vec3D; // TODO remove
 
 class ViewInterface:
 		public enable_shared_from_this<ViewInterface>,
@@ -36,7 +34,7 @@ public:
 	virtual int mouseDragged(int, int) = 0;
 	virtual glm::quat cameraAngle() = 0;
 	virtual glm::vec3 project(const glm::vec3 &) = 0;
-	virtual Vec3D unProject(int, int) = 0;
+	virtual glm::vec3 unProject(int, int) = 0;
 	virtual glm::mat4 viewMatrix() = 0;
 	virtual glm::mat4 projectionMatrix() = 0;
 	virtual UBO<CameraProperties> *properties() = 0;

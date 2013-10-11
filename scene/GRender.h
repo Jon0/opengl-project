@@ -29,13 +29,7 @@ public:
 	Program skybox;
 	VertexBuffer vb;
 	shared_ptr<Geometry> sky;
-	shared_ptr<Geometry> sponza;
-	shared_ptr<Geometry> box;
-	shared_ptr<Geometry> bunny;
-	shared_ptr<Geometry> sphere;
-	shared_ptr<Geometry> table;
-	shared_ptr<Geometry> teapot;
-	shared_ptr<Geometry> torus;
+	vector< shared_ptr<Geometry> > objects;
 	LightingModel light;
 
 	GLuint useDiffTex, useNormTex;
@@ -56,11 +50,16 @@ public:
 	UniformBlock<MaterialProperties> materialUniform;
 
 
+	/*
+	 * select and control
+	 */
 	bool drag, showIcons;
 	int selectedLight;
-	int lightcontrol;
-	string message;
 	glm::quat click_old, click_new;
+	float *selFloat;
+	glm::vec4 *selVec;
+
+	string message;
 	float t;
 
 	GRender();
@@ -68,6 +67,7 @@ public:
 
 	void displayGeometry( UBO<CameraProperties> * );
 	void drawObject( shared_ptr<Geometry>, UBO<CameraProperties> * );
+	void setSelection(glm::vec4 *, string);
 	virtual void prepare();
 	virtual void display( shared_ptr<ViewInterface>, chrono::duration<double> );
 	virtual void displayUI();

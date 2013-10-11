@@ -40,17 +40,17 @@ void SpeedCurve::calculateValues() {
 	distance.clear();
 
 	/* initial point */
-	values.push_back( speed.getPoint(0).getY() );
+	values.push_back( speed.getPoint(0).y );
 	distance.push_back( 0.0 );
 
-	float x = speed.getPoint(0).getX() + values_dx;
-	float k = speed.getPoint(speed.getULength() - ud).getX();
+	float x = speed.getPoint(0).x + values_dx;
+	float k = speed.getPoint(speed.getULength() - ud).x;
 	float u = 0;
 	for (; x < k; x += values_dx) {
-		while (speed.getPoint(u).getX() < x) {
+		while (speed.getPoint(u).x < x) {
 			u += ud;
 		}
-		values.push_back( speed.getPoint(u).getY() );
+		values.push_back( speed.getPoint(u).y );
 
 		/* work distance covers */
 		float a = values.at( values.size() - 2 );
@@ -96,7 +96,7 @@ void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) 
 
 	if (speed.getNumKeyFrames() > 1) {
 		float modTime = fmod(time, values_dx * (values.size() - 1));
-		float x = speed.getPoint(0).getX();
+		float x = speed.getPoint(0).x;
 
 		glBegin(GL_LINES);
 		glColor3f(0.2, 0.2, 0.2);
@@ -124,8 +124,8 @@ void SpeedCurve::display( shared_ptr<ViewInterface>, chrono::duration<double> ) 
 	glPointSize(8.0);
 	glBegin(GL_POINTS);
 	for (unsigned int i = 0; i < speed.points.size(); ++i) {
-		auto *v = speed.points.data()[i].v;
-		glVertex3f(v[0], v[1], v[2]);
+		glm::vec3 v = speed.points.data()[i];
+		glVertex3f(v.x, v.y, v.z);
 	}
 	glEnd();
 }
@@ -139,14 +139,15 @@ void SpeedCurve::displayGeometry() {
 }
 
 int SpeedCurve::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
-	Vec3D click(x, y, 0);
+	glm::vec3 click(x, y, 0);
 	if (!state) {
 
 		/* get nearby points */
 		float distance = 30;
 		selection = -1;
 		for ( unsigned int i = 0; i < speed.points.size(); ++i ) {
-			float dt = speed.points[i].getDistance({ (float)x, (float)y, 0 });
+
+			float dt = glm::distance(speed.points.data()[i], glm::vec3(x, y, 0));
 			if (dt < distance) {
 				selection = i;
 				distance = dt;
@@ -178,8 +179,8 @@ int SpeedCurve::mouseDragged(shared_ptr<ViewInterface>, int x, int y) {
 	 * drag selected data point
 	 */
 	if (dragSelection) {
-		speed.points.data()[selection].v[0] += x - pmx;
-		speed.points.data()[selection].v[1] += y - pmy;
+		speed.points.data()[selection].x += x - pmx;
+		speed.points.data()[selection].y += y - pmy;
 		pmx = x;
 		pmy = y;
 		return true;
@@ -195,8 +196,8 @@ void SpeedCurve::keyPressed(unsigned char) {
 
 }
 
-bool vec_comp_x(const Vec3D &a, const Vec3D &b) {
-	return a.getX() < b.getX();
+bool vec_comp_x(const glm::vec3 &a, const glm::vec3 &b) {
+	return a.x < b.x;
 }
 
 } /* namespace std */

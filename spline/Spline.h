@@ -9,6 +9,8 @@
 #define SPLINE_H_
 
 #include <vector>
+#include <glm/glm.hpp>
+
 #include "../math/PointArray.h"
 #include "../math/Vec3D.h"
 
@@ -20,16 +22,16 @@ public:
 	virtual ~Spline() {};
 	float getULength();
 	float getArcLength();
-	Vec3D getPoint(float);
-	Vec3D getDistPoint(float);
+	glm::vec3 getPoint(float);
+	glm::vec3 getDistPoint(float);
 	float calcPointInc(float, float);
 	void displayline();
 	void equaliseLength();
-	virtual Vec3D getKeyPoint(int) = 0;
+	virtual glm::vec3 getKeyPoint(int) = 0;
 	virtual int getNumKeyFrames() = 0;
 
 protected:
-	Vec3D catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u);
+	glm::vec3 catmull_rom(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, float u);
 	float spline_length;
 	PointArray<float> distance;
 };

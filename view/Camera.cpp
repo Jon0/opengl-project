@@ -164,7 +164,7 @@ glm::vec3 Camera::project(const glm::vec3 &v) {
 	return glm::project( v, camera_properties.data.V, camera_properties.data.P, glm::vec4(0, 0, windowwidth, windowheight) );
 }
 
-Vec3D Camera::unProject(int x, int y) {
+glm::vec3 Camera::unProject(int x, int y) {
 	GLdouble point[3];
     GLint viewport[4];
     GLdouble modelview[16];
@@ -173,7 +173,7 @@ Vec3D Camera::unProject(int x, int y) {
     glGetDoublev( GL_PROJECTION_MATRIX, projection );
     glGetIntegerv( GL_VIEWPORT, viewport );
 	gluUnProject(x, y, 0.99, modelview, projection, viewport, &point[0], &point[1], &point[2]);
-	return Vec3D(point[0], point[1], point[2]);
+	return glm::vec3(point[0], point[1], point[2]);
 }
 
 glm::mat4 Camera::viewMatrix() {

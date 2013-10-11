@@ -17,9 +17,10 @@ DrawList::DrawList(vector<GPolygon> shape) {
 
 	transform_matrix = glm::mat4(1.0f);
 
-	materialType.data.AmbientColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-	materialType.data.DiffuseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-	materialType.data.SpecularColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+	glm::vec3 color =  glm::normalize(glm::vec3(rand() % 256, rand() % 256, rand() % 256));
+	materialType.data.AmbientColor = glm::vec4(color.x, color.y, color.z, 1.0);
+	materialType.data.DiffuseColor = glm::vec4(color.x, color.y, color.z, 1.0);
+	materialType.data.SpecularColor = glm::vec4(color.x / 5, color.y / 5, color.z / 5, 1.0);
 	materialType.data.Exponent = 8.0;
 	materialType.update();
 }

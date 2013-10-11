@@ -10,10 +10,12 @@
 
 #include <memory>
 #include <string>
-#include "ViewInterface.h"
+
+#include "../input/KeyListener.h"
+#include "../input/MouseListener.h"
 #include "../spline/Spline.h"
-#include "../window/KeyListener.h"
-#include "../window/MouseListener.h"
+#include "ViewInterface.h"
+
 
 namespace std {
 
@@ -34,7 +36,7 @@ public:
 	virtual int mouseDragged(int, int);
 	virtual glm::quat cameraAngle();
 	virtual glm::vec3 project(const glm::vec3 &);
-	virtual Vec3D unProject(int, int);
+	virtual glm::vec3 unProject(int, int);
 	virtual glm::mat4 viewMatrix();
 	virtual glm::mat4 projectionMatrix();
 	virtual UBO<CameraProperties> *properties();

@@ -22,22 +22,23 @@ Path::Path():
 Path::~Path() {}
 
 void Path::reset() {
-	trans_point = Vec3D(0.0, 0.0, 0.0);
-	trans_point_n = Vec3D(0.0, 0.0, 0.0);
-	rot_point = Quaternion(1.0, 0.0, 0.0, 0.0);
+	trans_point = glm::vec3(0.0, 0.0, 0.0);
+	trans_point_n = glm::vec3(0.0, 0.0, 0.0);
+	rot_point = glm::quat(1.0, 0.0, 0.0, 0.0);
 	points.clear();
 	spline_length = 0.0;
 	distance.point.clear();
 }
 
-void Path::append(Vec3D point) {
+void Path::append(glm::vec3 point) {
 	points.push_back(point);
 	equaliseLength();
 }
 
-bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
+bool Path::getNearestPoint(glm::vec3 vec, int *index, float *dist) {
 	for (unsigned int i = 0; i < points.size(); ++i) {
-		float newd = ((Vec3D)points.front()).getDistance(vec);
+
+		float newd = glm::distance( (glm::vec3)points.front(), vec );
 		if (newd < *dist) {
 			*dist = newd;
 			*index = i;
@@ -49,27 +50,23 @@ bool Path::getNearestPoint(Vec3D vec, int *index, float *dist) {
 
 void Path::translate(float distance) {
 	if (getNumKeyFrames() >= 2) {
-		Vec3D newpoint =  getDistPoint(distance);
-		Vec3D v1 = (newpoint - trans_point).normalise();
-		Vec3D v2 = (trans_point - trans_point_n).normalise();
+		glm::vec3 newpoint =  getDistPoint(distance);
+		glm::vec3 v1 = glm::normalize( newpoint - trans_point );
+		glm::vec3 v2 = glm::normalize( trans_point - trans_point_n );
 		if (v1.length() > 0 && v2.length() > 0) {
-			Quaternion k = Quaternion(0, v1.v[0], v1.v[1], v1.v[2]).normalise() * Quaternion(0, v2.v[0], v2.v[1], v2.v[2]).normalise().multiplicativeInverse();
-
-			Quaternion s = slerp({1,0,0,0}, k, 0.5);
-			rot_point.rotate( s );
-
+			glm::quat k = glm::quat(0, v1.x, v1.y, v1.z) * glm::inverse( glm::quat(0, v2.x, v2.y, v2.z) );
+			glm::quat s = glm::slerp(glm::quat(1,0,0,0), k, 0.5f);
+			rot_point = s * rot_point;
 		}
 		trans_point_n = trans_point;
 		trans_point = newpoint;
 	}
 
-	glTranslatef(trans_point.getX(), trans_point.getY(), trans_point.getZ());
-	GLfloat mat[16];
-	rot_point.toMatrix(mat);
-	glMultMatrixf(mat);
+	glTranslatef(trans_point.x, trans_point.y, trans_point.z);
+	glMultMatrixf( &glm::mat4_cast(rot_point)[0][0] );
 }
 
-Vec3D Path::getKeyPoint(int i) {
+glm::vec3 Path::getKeyPoint(int i) {
 	return points.at(i + 1);
 }
 

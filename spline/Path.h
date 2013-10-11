@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <chrono>
+
 #include "../geometry/Skeleton.h"
 #include "Spline.h"
 
@@ -21,15 +22,15 @@ public:
 	Path();
 	virtual ~Path();
 
-	vector<Vec3D> points;
-	Vec3D trans_point, trans_point_n;
-	Quaternion rot_point;
+	vector<glm::vec3> points;
+	glm::vec3 trans_point, trans_point_n;
+	glm::quat rot_point;
 
 	void reset();
-	void append(Vec3D);
-	bool getNearestPoint(Vec3D, int *, float *);
+	void append(glm::vec3);
+	bool getNearestPoint(glm::vec3, int *, float *);
 	void translate(float);
-	virtual Vec3D getKeyPoint(int);
+	virtual glm::vec3 getKeyPoint(int);
 	virtual int getNumKeyFrames();
 };
 

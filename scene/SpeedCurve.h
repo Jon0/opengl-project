@@ -16,7 +16,7 @@
 
 namespace std {
 
-bool vec_comp_x(const Vec3D &, const Vec3D &);
+bool vec_comp_x(const glm::vec3 &, const glm::vec3 &);
 
 class SpeedCurve:
 		public enable_shared_from_this<SpeedCurve>,

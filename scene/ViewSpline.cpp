@@ -25,7 +25,7 @@ ViewSpline::ViewSpline():
 ViewSpline::~ViewSpline() {}
 
 int ViewSpline::mouseClicked(shared_ptr<ViewInterface> v, int button, int state, int x, int y) {
-	Vec3D click(x, y, 0);
+	glm::vec3 click(x, y, 0);
 	if (button == 2 && state) {
 		message.clear();
 		message += "click ";

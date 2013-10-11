@@ -31,8 +31,8 @@ void Spline::displayline() {
 
 	int length = getNumKeyFrames() + 1;
 	for (int i = -1; i < length; ++i) {
-		Vec3D vec = getKeyPoint(i);
-		glVertex3f(vec.getX(), vec.getY(), vec.getZ());
+		glm::vec3 vec = getKeyPoint(i);
+		glVertex3f(vec.x, vec.y, vec.z);
 	}
 	glEnd();
 
@@ -40,9 +40,9 @@ void Spline::displayline() {
 	glBegin(GL_LINE_STRIP);
 	length = getNumKeyFrames() - 1;
 	for (float u = 0; u < length; u += 0.02) {
-		Vec3D v = getPoint(u);
+		glm::vec3 v = getPoint(u);
 		//glColor3f(0.5 + sin(u * 2 * M_PI) / 2.0, 0.5 + cos(u * 2 * M_PI) / 2.0, 0);
-		glVertex3f(v.getX(), v.getY(), v.getZ());
+		glVertex3f(v.x, v.y, v.z);
 	}
 	glEnd();
 }
@@ -50,21 +50,21 @@ void Spline::displayline() {
 /*
  * u >= 0 only
  */
-Vec3D Spline::getPoint(float u) {
+glm::vec3 Spline::getPoint(float u) {
 	double part;
 	double frac = modf(u, &part);
 	int v = ((int) part ) % (getNumKeyFrames() - 1);
 	return catmull_rom(getKeyPoint(v-1), getKeyPoint(v), getKeyPoint(v+1), getKeyPoint(v+2), frac);
 }
 
-Vec3D Spline::getDistPoint(float dist) {
+glm::vec3 Spline::getDistPoint(float dist) {
 	return getPoint( distance.getPoint(dist) );
  }
 
 /* at point u on the spline find the increment
  * required to move forward the given distance */
 float Spline::calcPointInc(float u, float dist_inc) {
-	Vec3D v1, v2 = getPoint(u);
+	glm::vec3 v1, v2 = getPoint(u);
 	float dist = 0, u_inc = 0;
 
 	// TODO: binary search might be faster, and more accurate
@@ -72,7 +72,7 @@ float Spline::calcPointInc(float u, float dist_inc) {
 		u_inc += 0.001;
 		v1 = v2;
 		v2 = getPoint(u+u_inc);
-		dist += v1.getDistance(v2);
+		dist += glm::distance(v1, v2);
 	}
 
 	// distance is >= to dist_inc
@@ -80,9 +80,9 @@ float Spline::calcPointInc(float u, float dist_inc) {
 	return u_inc; // * ratio
 }
 
-Vec3D Spline::catmull_rom(Vec3D a, Vec3D b, Vec3D c, Vec3D d, float u) {
-	Vec3D v = b*2 + (c-a)*u + (a*2 - b*5 + c*4 - d)*pow(u, 2) + (b*3-c*3+d-a)*pow(u, 3);
-	return v / 2.0;
+glm::vec3 Spline::catmull_rom(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, float u) {
+	glm::vec3 v = b*2.0f + (c-a)*u + (a*2.0f - b*5.0f + c*4.0f - d)*(float)pow(u, 2) + (b*3.0f-c*3.0f+d-a)*(float)pow(u, 3);
+	return v / 2.0f;
 }
 
 /*
