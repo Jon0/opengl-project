@@ -23,11 +23,12 @@ GRender::GRender():
 		cam {program.getBlock<CameraProperties>( "Camera", 1 )},
 		materialUniform {program.getBlock<MaterialProperties>("MaterialProperties", 1)},
 		vb(15),
-		sky { new Cube(500) }
+		sky { new Cube(500) },
+		skel { sload.readASF( "assets/skeleton/priman.asf" ) }
 {
-  
-        model = readGeometry("assets/Avatar/andy.obj");
-        objects.push_back(model);
+
+    model = readGeometry("assets/Avatar/andy.obj");
+    objects.push_back(model);
 	objects.push_back( readGeometry("assets/Sponza/SponzaTri.obj") );
 	//objects.push_back( readGeometry("assets/obj/Box.obj") );
 	//objects.push_back( readGeometry("assets/obj/Bunny.obj") );
@@ -35,6 +36,10 @@ GRender::GRender():
 	//objects.push_back( readGeometry("assets/obj/Table.obj") );
 	//objects.push_back( readGeometry("assets/obj/Teapot.obj") );
 	//objects.push_back( readGeometry("assets/obj/Torus.obj") );
+
+	/* set skel pose */
+	makeState( skel->getNumBones(), &current_pose );
+	current_pose.adjust = glm::vec3(0.0, 18.0, 5.0);
 
 	/* texturing... */
 	woodTex = new Tex();
@@ -62,7 +67,7 @@ GRender::GRender():
 	}
 	vb.store();
 
-	
+
 	//	model->setTransform(glm::translate(glm::mat4(1.0),glm::vec3(0.0,0.0,0.0)));
 	model->setTransform(glm::translate(glm::mat4(1.0), glm::vec3(0.0,15.0,0.0))*glm::scale(glm::mat4(1.0), glm::vec3(.015)));
 
@@ -137,6 +142,14 @@ void GRender::display( shared_ptr<ViewInterface> c ) {
 
 	light.setLight();
 	displayGeometry( c->properties() );
+
+	/*
+	 * do some fixed pipeline rendering
+	 */
+	glUseProgram(0);
+	skel->setCurrentPose( &current_pose );
+	skel->display();
+
 
 	if (showIcons) light.drawIcons();
 }

@@ -12,6 +12,7 @@
 #include <vector>
 #include "SceneInterface.h"
 #include "../geometry/Geometry.h"
+#include "../load/SkeletonLoader.h"
 #include "../lighting/LightingModel.h"
 #include "../shader/Program.h"
 #include "../view/Camera.h"
@@ -34,6 +35,9 @@ public:
 	shared_ptr<Geometry> sky;
 	shared_ptr<Geometry> model;
 	vector< shared_ptr<Geometry> > objects;
+	SkeletonLoader sload;
+	shared_ptr<Skeleton> skel;
+	pose current_pose;
 
 
 	GLuint useDiffTex, useNormTex;

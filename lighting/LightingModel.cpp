@@ -168,7 +168,6 @@ void LightingModel::setLight() {
 }
 
 void LightingModel::drawIcons() {
-	glUseProgram(0);
 	glDisable(GL_CULL_FACE);
 	GLUquadric* quad = gluNewQuadric();
 	gluQuadricDrawStyle(quad, GLU_LINE);
