@@ -25,9 +25,12 @@ GRender::GRender():
 		vb(15),
 		sky { new Cube(500) }
 {
+  
+        model = readGeometry("assets/Avatar/andy.obj");
+        objects.push_back(model);
 	objects.push_back( readGeometry("assets/Sponza/SponzaTri.obj") );
 	//objects.push_back( readGeometry("assets/obj/Box.obj") );
-	objects.push_back( readGeometry("assets/obj/Bunny.obj") );
+	//objects.push_back( readGeometry("assets/obj/Bunny.obj") );
 	//objects.push_back( readGeometry("assets/obj/Sphere.obj") );
 	//objects.push_back( readGeometry("assets/obj/Table.obj") );
 	//objects.push_back( readGeometry("assets/obj/Teapot.obj") );
@@ -58,6 +61,10 @@ GRender::GRender():
 		light.track( g );
 	}
 	vb.store();
+
+	
+	//	model->setTransform(glm::translate(glm::mat4(1.0),glm::vec3(0.0,0.0,0.0)));
+	model->setTransform(glm::translate(glm::mat4(1.0), glm::vec3(0.0,15.0,0.0))*glm::scale(glm::mat4(1.0), glm::vec3(.015)));
 
 	/*
 	 * set uniforms

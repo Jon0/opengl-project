@@ -32,6 +32,7 @@ public:
 	UniformBlock<MaterialProperties> materialUniform;
 	VertexBuffer vb;
 	shared_ptr<Geometry> sky;
+	shared_ptr<Geometry> model;
 	vector< shared_ptr<Geometry> > objects;
 
 
