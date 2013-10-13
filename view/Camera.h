@@ -24,13 +24,15 @@
 
 namespace std {
 
+class Pipeline;
+
 void getArc(int, int, int, int, float, glm::quat &);
 void getUnitCircle(int, int, int, int, glm::quat &);
 
 class Camera: public ViewInterface {
 private:
 	//shared_ptr<MainWindow> wnd;
-	shared_ptr<SceneInterface> scene;
+	shared_ptr<Pipeline> pipeline;
 	glm::vec3 focus;
 	glm::quat cam_angle, cam_angle_d, click_old, click_new;
 	bool control[3];
@@ -41,7 +43,7 @@ private:
 	UBO<CameraProperties> camera_properties;
 
 public:
-	Camera( shared_ptr<SceneInterface> );
+	Camera( shared_ptr<Pipeline> );
 	virtual ~Camera();
 
 	virtual void setView( chrono::duration<double> );

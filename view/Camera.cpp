@@ -10,18 +10,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../pipeline/Pipeline.h"
 #include "Camera.h"
 
 namespace std {
 
-Camera::Camera( shared_ptr<SceneInterface> s ):
-		scene(s),
-		focus{0, 30, 0},
-		cam_angle{0.725405, -0.00180466, 0.688331, -0.000614126},
-		cam_angle_d{1, 0, 0, 0},
-		click_old{1, 0, 0, 0},
-		click_new{1, 0, 0, 0},
-		control{}
+Camera::Camera( shared_ptr<Pipeline> p ):
+		pipeline { p },
+		focus {0, 30, 0},
+		cam_angle {0.725405, -0.00180466, 0.688331, -0.000614126},
+		cam_angle_d {1, 0, 0, 0},
+		click_old {1, 0, 0, 0},
+		click_new {1, 0, 0, 0}
 {
 	cam_aspect = 1.0;
 	viewzoom = 81.4968;
@@ -71,7 +71,7 @@ void Camera::setView( chrono::duration<double> tick ) {
 	camera_properties.data.M = glm::mat4(1.0);
 	camera_properties.update();
 
-	scene->display( shared_from_this() );
+	pipeline->output( shared_from_this() );
 	glPopMatrix();
 }
 
@@ -85,14 +85,16 @@ void Camera::resize(int x, int y) {
 }
 
 void Camera::keyPressed(unsigned char c) {
-	scene->keyPressed(c);
+	// TODO fix this
+	pipeline->scene->keyPressed(c);
 }
 
 int Camera::mouseClicked(int button, int state, int x, int y) {
 	if (state) {
 		control[0] = control[1] = control[2] = false;
 		setupMatrix();
-		return scene->mouseClicked( shared_from_this(), button, state, x, y );
+		// TODO fix this
+		return pipeline->scene->mouseClicked( shared_from_this(), button, state, x, y );
 	}
 
 	/* controls while holding shift */
@@ -118,7 +120,8 @@ int Camera::mouseClicked(int button, int state, int x, int y) {
 	}
 	else  {
 		setupMatrix();
-		return scene->mouseClicked( shared_from_this(), button, state, x, y );
+		// TODO fix this
+		return pipeline->scene->mouseClicked( shared_from_this(), button, state, x, y );
 	}
 }
 
@@ -145,7 +148,8 @@ int Camera::mouseDragged(int x, int y) {
 	}
 	else {
 		setupMatrix();
-		return scene->mouseDragged( shared_from_this(), x, y );
+		// TODO fix this
+		return pipeline->scene->mouseDragged( shared_from_this(), x, y );
 	}
 }
 

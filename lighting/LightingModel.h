@@ -16,6 +16,7 @@
 #include <GL/gl.h>
 
 #include "../octree/Tree.h"
+#include "../pipeline/Step.h"
 #include "../shader/ShaderStructs.h"
 #include "../shader/Program.h"
 #include "../shader/UniformControl.h"
@@ -25,7 +26,9 @@ namespace std {
 
 void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float width, float spotangle);
 
-class LightingModel {
+class LightingModel:
+		public Step
+{
 public:
 	Program shadow;
 	int shadowMapWidth;
@@ -50,8 +53,9 @@ public:
 	UniformControl<vector<GLint>> shadowMaps;
 	UniformControl<vector<glm::mat4>> DepthBias;
 
-	UniformBlock<LightProperties> lightUniform;
-
+	/*
+	 * set of lights used
+	 */
 	vector< Light * > lights;
 
 	/*
@@ -59,9 +63,15 @@ public:
 	 */
 	Tree tree;
 
+	/*
+	 * the scene geometry
+	 */
+	shared_ptr<SceneInterface> scene;
 
+	/* time */
+	float t;
 
-	LightingModel(Program &);
+	LightingModel( shared_ptr<SceneInterface> si );
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);
@@ -70,8 +80,12 @@ public:
 	void generateShadowFBO();
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );
-	void setLight();
+	void setLight(Program &, UniformBlock<LightProperties> &);
 	void drawIcons();
+
+	virtual Program &getProgram();
+	virtual void update( chrono::duration<double> );
+	virtual void run( shared_ptr<ViewInterface> );
 };
 
 } /* namespace std */

@@ -86,6 +86,10 @@ float SpeedCurve::getTotalDistance() {
 	return total_distance;
 }
 
+vector< shared_ptr<Geometry> > &SpeedCurve::content() {
+	return objects;
+}
+
 void SpeedCurve::update( chrono::duration<double> ) {
 	// do nothing
 }

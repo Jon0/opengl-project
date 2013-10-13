@@ -15,15 +15,7 @@
 
 namespace std {
 
-GRender::GRender():
-		program("phong_bump"),
-		skybox("skybox"),
-		light {program},
-		camsky {skybox.getBlock<CameraProperties>( "Camera", 1 )},
-		cam {program.getBlock<CameraProperties>( "Camera", 1 )},
-		materialUniform {program.getBlock<MaterialProperties>("MaterialProperties", 1)},
-		vb(15),
-		sky { new Cube(500) },
+GRender::GRender( VertexBuffer &vb ):
 		skel { sload.readASF( "assets/skeleton/priman.asf" ) }
 {
 
@@ -41,61 +33,25 @@ GRender::GRender():
 	makeState( skel->getNumBones(), &current_pose );
 	current_pose.adjust = glm::vec3(0.0, 18.0, 5.0);
 
-	/* texturing... */
-	woodTex = new Tex();
-	woodTex->make2DTex("assets/image/Burled Cherry_DIFFUSE.jpg");
-	woodNormTex = new Tex();
-	woodNormTex->make2DTex("assets/image/Burled Cherry_NORMAL.jpg");
-	woodDispTex = new Tex();
-	woodDispTex->make2DTex("assets/image/Burled Cherry_DISP.jpg");
-
-	brickTex = new Tex();
-	brickTex->make2DTex("assets/image/brickdiff.jpg");
-	brickNormTex = new Tex();
-	brickNormTex->make2DTex("assets/image/bricknorm.jpg");
-
-	normalTex = new Tex();
-	normalTex->make2DTex("assets/image/normal.jpg");
-	cubeTex = new Tex();
-	cubeTex->make3DTex("assets/image/sky2.png");
-
 	// setup VBO, and lighting tracking
-	sky->init(&vb);
 	for (auto &g: objects) {
 		g->init(&vb);
-		light.track( g );
 	}
-	vb.store();
-
 
 	//	model->setTransform(glm::translate(glm::mat4(1.0),glm::vec3(0.0,0.0,0.0)));
 	model->setTransform(glm::translate(glm::mat4(1.0), glm::vec3(0.0,15.0,0.0))*glm::scale(glm::mat4(1.0), glm::vec3(.015)));
 
 	/*
-	 * set uniforms
-	 */
-	useDiffTex = program.addUniform("useDiffTex");
-	useNormTex = program.addUniform("useNormTex");
-
-	skybox.setUniform("cubeTexture", &cubeTex->location);
-
-	program.setUniform("cubeTexture", &cubeTex->location);
-	program.setUniform("diffuseTexture", &brickTex->location);
-	program.setUniform("normalTexture", &normalTex->location);
-	program.setUniform("specularTexture", &woodDispTex->location);
-
-	/*
 	 * selection
 	 */
+	lightmodel = NULL;
 	selectedLight = 1;
-	LightProperties &l = light.getLight(selectedLight);
 	selFloat = NULL;
-	selVec = &l.position;
+	selVec = NULL;
 	drag = false;
 
 	message = "Light "+to_string(selectedLight) +" : Position";
 	showIcons = true;
-	t = 0.0;
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -105,43 +61,25 @@ GRender::~GRender() {
 	// TODO Auto-generated destructor stub
 }
 
-void GRender::update( chrono::duration<double> ) {
-	LightProperties &p = light.getLight(0);
-	p.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
-	light.updateLight(0);
-	t += 0.01;
+void GRender::setLightModel( LightingModel *lm ) {
+	lightmodel = lm;
+	for (auto &g: objects) {
+		lightmodel->track( g );
+	}
 
-	/*
-	 * prepare depth map of each light
-	 */
-	light.clearDepthMap();
-	for (auto &g: objects) light.createShadow(g);
+	LightProperties &l = lightmodel->getLight(selectedLight);
+	selVec = &l.position;
 }
 
-void GRender::display( shared_ptr<ViewInterface> c ) {
-	cubeTex->enable(0);
+vector< shared_ptr<Geometry> > &GRender::content() {
+	return objects;
+}
 
-	/* TODO translate by camera position */
-	glDisable(GL_CULL_FACE);
-	skybox.enable();
-	camsky.assign( c->properties() );
-	vb.enable();
+void GRender::update( chrono::duration<double> ) {
+	// update scene
+}
 
-	sky->draw();
-
-	/*
-	 * Draw the scene objects
-	 */
-	brickTex->enable(0);
-	normalTex->enable(1);
-	woodDispTex->enable(2);
-	cubeTex->enable(3);
-
-	program.enable();
-	cam.assign( c->properties() );
-
-	light.setLight();
-	displayGeometry( c->properties() );
+void GRender::debug( shared_ptr<ViewInterface> c ) {
 
 	/*
 	 * do some fixed pipeline rendering
@@ -151,32 +89,11 @@ void GRender::display( shared_ptr<ViewInterface> c ) {
 	skel->display();
 
 
-	if (showIcons) light.drawIcons();
+	if (showIcons) lightmodel->drawIcons();
 }
 
 void GRender::displayUI() {
 	drawString( message, 10, 10 );
-}
-
-void GRender::displayGeometry( UBO<CameraProperties> *camptr ) {
-	// Enable blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	vb.enable();
-
-	glUniform1i(useDiffTex, false);
-	glUniform1i(useNormTex, false);
-
-	for (auto &g: objects) drawObject(g, camptr);
-}
-
-void GRender::drawObject( shared_ptr<Geometry> g, UBO<CameraProperties> *camptr ) {
-	materialUniform.assign(g->materialUBO());
-
-	//light.setTransform(g->transform());
-	camptr->data.M = g->transform();
-	camptr->update();
-	g->draw();
 }
 
 int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int button, int state, int x, int y ) {
@@ -203,7 +120,7 @@ int GRender::mouseClicked( shared_ptr<ViewInterface> cam, int button, int state,
 			selVec->y /= 1.05;
 			selVec->z /= 1.05;
 		}
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		return true;
 	}
 
@@ -223,7 +140,7 @@ int GRender::mouseDragged(shared_ptr<ViewInterface> cam, int x, int y) {
 		 * update selected variable
 		 */
 		*selVec = drag * *selVec;
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		click_old = click_new;
 		return true;
 	}
@@ -241,7 +158,7 @@ void GRender::setSelection(glm::vec4 *i, string type) {
 }
 
 void GRender::keyPressed(unsigned char c) {
-	LightProperties &l = light.getLight(selectedLight);
+	LightProperties &l = lightmodel->getLight(selectedLight);
 	switch (c) {
 	case 'a':
 		setSelection(&l.position, "Position");
@@ -254,7 +171,7 @@ void GRender::keyPressed(unsigned char c) {
 		break;
 	case 'z':
 		selectedLight = (selectedLight + 1) % 3;
-		setSelection( &light.getLight(selectedLight).position, "Position" );
+		setSelection( &lightmodel->getLight(selectedLight).position, "Position" );
 		break;
 
 	/*
@@ -263,25 +180,26 @@ void GRender::keyPressed(unsigned char c) {
 	case 't':
 		l.spotlight *= 1.01;
 		if (l.spotlight > l.spotlightInner) l.spotlightInner = l.spotlight;
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		break;
 	case 'y':
 		l.spotlight /= 1.01;
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		break;
 	case 'g':
 		l.spotlightInner *= 1.01;
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		break;
 	case 'h':
 		l.spotlightInner /= 1.01;
 		if (l.spotlight > l.spotlightInner) l.spotlight = l.spotlightInner;
-		light.updateLight(selectedLight);
+		lightmodel->updateLight(selectedLight);
 		break;
 	case '.':
 		showIcons = !showIcons;
 		break;
 	}
+	cout << message << endl;
 }
 
 } /* namespace std */

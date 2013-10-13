@@ -11,26 +11,29 @@
 #include <memory>
 
 #include "../lighting/LightingModel.h"
+#include "../scene/GRender.h"
 #include "../shader/Program.h"
 #include "../shader/UniformBlock.h"
-#include "../scene/SceneInterface.h"
+#include "Render.h"
+#include "Skybox.h"
+#include "Step.h"
 
 namespace std {
 
 class Pipeline {
-private:
-	Program program;
-	Program skybox;
-	LightingModel light;
-	UniformBlock<CameraProperties> camsky;
-	UniformBlock<CameraProperties> cam;
-	UniformBlock<MaterialProperties> materialUniform;
-
 public:
+	VertexBuffer vb;
+	vector< shared_ptr<Step> > steps;
+	shared_ptr<GRender> scene;
+	shared_ptr<Skybox> sky;
+	shared_ptr<Render> render;
+	shared_ptr<LightingModel> lm;
+
 	Pipeline();
 	virtual ~Pipeline();
 
-	void run( shared_ptr<SceneInterface> );
+	void update( chrono::duration<double> );
+	void output( shared_ptr<ViewInterface> );
 };
 
 } /* namespace std */

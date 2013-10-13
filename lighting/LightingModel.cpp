@@ -15,13 +15,13 @@
 
 namespace std {
 
-LightingModel::LightingModel(Program &main):
+LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		shadow("shadow_depth"),
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
-		tree { 128 }
+		tree { 128 },
+		scene { si }
 {
 	shadowMapWidth = 1024 * 4;
 	shadowMapHeight = 1024 * 4;
@@ -34,11 +34,6 @@ LightingModel::LightingModel(Program &main):
 	lights.push_back( new Directional() );
 	numLights = lights.size();
 
-	// map each light to its index
-	lightUniform.assign(lights.data()[0], 0);
-	lightUniform.assign(lights.data()[1], 1);
-	lightUniform.assign(lights.data()[2], 2);
-
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);
 	depthTextureId.resize(numLights);
@@ -48,11 +43,6 @@ LightingModel::LightingModel(Program &main):
 	/* depth shader */
 	shadow.setUniform("depthMVP", &modelMatrix);
 
-	/* main shader */
-	main.setUniform("shadowMap", &shadowMaps);
-	main.setUniform("DepthBiasMVP", &DepthBias);
-	main.setUniform("illumination", &tree.location);
-
 	/* texture translation matrix */
 	biasMatrix = glm::mat4(
 			0.5, 0.0, 0.0, 0.0,
@@ -60,6 +50,8 @@ LightingModel::LightingModel(Program &main):
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 	);
+
+	t = 0.0;
 }
 
 LightingModel::~LightingModel() {
@@ -139,9 +131,7 @@ void LightingModel::createShadow( shared_ptr<Geometry> g ) {
 	}
 }
 
-
-
-void LightingModel::setLight() {
+void LightingModel::setLight(Program &prg, UniformBlock<LightProperties> &lp ) {
 	// Now rendering from the camera POV, using the FBO to generate shadows
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -165,6 +155,18 @@ void LightingModel::setLight() {
 			DepthBias.data.data()[i] = biasMatrix * lights.data()[i]->getTransform();
 	}
 	DepthBias.forceUpdate();
+
+	/*
+	 * light properties
+	 */
+	lp.assign(lights.data()[0], 0);
+	lp.assign(lights.data()[1], 1);
+	lp.assign(lights.data()[2], 2);
+
+	/* main shader */
+	prg.setUniform("shadowMap", &shadowMaps);
+	prg.setUniform("DepthBiasMVP", &DepthBias);
+	prg.setUniform("illumination", &tree.location);
 }
 
 void LightingModel::drawIcons() {
@@ -201,6 +203,27 @@ void LightingModel::drawIcons() {
 			glPopMatrix();
 		}
 	}
+}
+
+Program &LightingModel::getProgram() {
+	return shadow;
+}
+
+void LightingModel::update( chrono::duration<double> ) {
+	LightProperties &p = getLight(0);
+	p.position = glm::vec4( 12.5f * sin(t), 8.0f, 12.5f * cos(t), 1.0 );
+	updateLight(0);
+	t += 0.01;
+
+	/*
+	 * prepare depth map of each light
+	 */
+	clearDepthMap();
+	for ( auto &g: scene->content() ) createShadow(g);
+}
+
+void LightingModel::run( shared_ptr<ViewInterface> ) {
+
 }
 
 void display_cylinder(GLUquadric* q, float x, float y, float z, float length, float width, float spotangle) {

@@ -32,6 +32,7 @@ public:
 	float getDistanceValue(float);
 	float getTotalDistance();
 
+	virtual vector< shared_ptr<Geometry> > &content();
 	virtual void update( chrono::duration<double> );
 	virtual void display( shared_ptr<ViewInterface> );
 	virtual void displayUI();
@@ -41,7 +42,7 @@ public:
 	virtual void messageSent(string);
 	virtual void keyPressed(unsigned char);
 
-
+	vector< shared_ptr<Geometry> > objects;
 	shared_ptr<MainWindow> mWnd;
 	shared_ptr<Ortho> view;
 	Path speed;

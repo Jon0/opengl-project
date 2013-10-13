@@ -5,14 +5,23 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../pipeline/Pipeline.cpp \
+../pipeline/Render.cpp \
+../pipeline/Shadow.cpp \
+../pipeline/Skybox.cpp \
 ../pipeline/Voxelize.cpp 
 
 OBJS += \
 ./pipeline/Pipeline.o \
+./pipeline/Render.o \
+./pipeline/Shadow.o \
+./pipeline/Skybox.o \
 ./pipeline/Voxelize.o 
 
 CPP_DEPS += \
 ./pipeline/Pipeline.d \
+./pipeline/Render.d \
+./pipeline/Shadow.d \
+./pipeline/Skybox.d \
 ./pipeline/Voxelize.d 
 
 

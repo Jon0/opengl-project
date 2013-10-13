@@ -5,26 +5,47 @@
  *      Author: remnanjona
  */
 
+#include "../scene/GRender.h"
 #include "Pipeline.h"
 
 namespace std {
 
 Pipeline::Pipeline():
-		program("phong_bump"),
-		skybox("skybox"),
-		light {program},
-		camsky { skybox.getBlock<CameraProperties>( "Camera", 1 ) },
-		cam { program.getBlock<CameraProperties>( "Camera", 1 ) },
-		materialUniform { program.getBlock<MaterialProperties>("MaterialProperties", 1) }
+		vb { 15 },
+		scene { new GRender( vb ) },
+		sky { new Skybox( vb ) },
+		render { new Render( scene ) },
+		lm { new LightingModel( scene ) }
 {
+	scene->setLightModel( lm.get() );
 
+	steps.push_back( sky );
+	steps.push_back( lm );
+	steps.push_back( render );
+
+	/* finalise vb */
+	vb.store();
 }
 
 Pipeline::~Pipeline() {
 	// TODO Auto-generated destructor stub
 }
 
-void Pipeline::run( shared_ptr<SceneInterface> s ) {
+void Pipeline::update( chrono::duration<double> tick ) {
+	scene->update( tick );
+	lm->update( tick );
+}
+
+void Pipeline::output( shared_ptr<ViewInterface> v ) {
+	vb.enable();
+
+	lm->setLight( render->getProgram(), render->lightUniform );
+
+	sky->run( v );
+	lm->run( v );
+	render->run( v );
+
+	scene->debug( v );
 }
 
 } /* namespace std */
