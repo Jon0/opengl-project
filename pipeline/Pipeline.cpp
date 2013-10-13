@@ -16,7 +16,8 @@ Pipeline::Pipeline():
 		sky { new Skybox( vb ) },
 		render { new Render( scene ) },
 		voxelize { new Voxelize( scene ) },
-		lm { new LightingModel( scene ) }
+		lm { new LightingModel( scene ) },
+		tree { 128 }
 {
 	scene->setLightModel( lm.get() );
 
@@ -34,12 +35,24 @@ Pipeline::~Pipeline() {
 
 void Pipeline::update( chrono::duration<double> tick ) {
 	scene->update( tick );
+
+	/*
+	 * fill image with lighting information
+	 */
+	tree.enable( lm->getProgram(), 8);
+
+
 	lm->update( tick );
 	voxelize->update( tick );
 }
 
 void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	vb.enable();
+
+	/*
+	 * bind illumination
+	 */
+	tree.enable( render->getProgram(), 8);
 
 	lm->setLight( render->getProgram(), render->lightUniform );
 

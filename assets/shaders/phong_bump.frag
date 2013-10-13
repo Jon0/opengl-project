@@ -1,4 +1,4 @@
-#version 400
+#version 420
 
 layout(std140) uniform LightProperties {
 	vec4 position;
@@ -24,7 +24,7 @@ layout(std140) uniform MaterialProperties {
 
 
 // Values that stay constant for the whole mesh.
-uniform sampler3D illumination;
+uniform layout (rgba32f) image3D illumination;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
@@ -156,7 +156,6 @@ void main() {
 		}
 		visibility = clamp( visibility, 0, 1 );
 
-
 		// dampen spotlight by dot product angle
 		if ( Lights[light].spotlight > 0.1 ) {
 			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(LightDirection_tangentspace[light]));
@@ -169,15 +168,20 @@ void main() {
 		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha, MaterialExponent) / (distance*distance);
 	}
 
-
 	/*
 	 *	*******************************
 	 *	    set final color value
 	 * 	*******************************
 	 */
 
-	color = texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
+	memoryBarrier();
+	imageStore( illumination, ivec3(0, 0, 0), vec4(0.0, 0.5, 0.0, 1.0) );
+	memoryBarrier();
 
+	color = imageLoad( illumination, ivec3(0, 0, 0) ); // ivec3(64, 64, 64) + ivec3( Position_worldspace )
+	memoryBarrier();
+
+
+	//color = texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
-
 }

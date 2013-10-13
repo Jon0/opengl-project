@@ -19,26 +19,25 @@
 namespace std {
 
 class Tree {
-	Program voxelize;
 	TreeNode root;
 	GLuint addr;
 	unsigned int levels;
 	unsigned int size;
-	unsigned int *texels;
+	float *texels;
 	glm::vec3 *normals;
 	glm::vec3 mid;
 
 	shared_ptr<Geometry> geom;
 
 public:
-	UniformControl<GLint> location;
+	UniformControl<GLint> location, image;
 
 	Tree(int);
 	virtual ~Tree();
 
 
 	glm::vec3 getPoint( glm::vec3 );
-	void enable(GLuint i);
+	void enable( Program &, GLuint );
 	void addLight();
 	void calc(shared_ptr<Geometry>);
 };

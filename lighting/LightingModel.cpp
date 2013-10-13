@@ -20,7 +20,6 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
-		tree { 128 },
 		scene { si }
 {
 	shadowMapWidth = 1024 * 4;
@@ -64,10 +63,6 @@ LightProperties &LightingModel::getLight(int i) {
 
 void LightingModel::updateLight(int i) {
 	lights.data()[i]->update();
-}
-
-void LightingModel::track(shared_ptr<Geometry> g) {
-	tree.calc(g);
 }
 
 void LightingModel::generateShadowFBO() {
@@ -146,11 +141,6 @@ void LightingModel::setLight(Program &prg, UniformBlock<LightProperties> &lp ) {
 	}
 	shadowMaps.forceUpdate();
 
-	/*
-	 * bind illumination
-	 */
-	tree.enable(5 + numLights);
-
 	for (unsigned int i = 0; i < numLights; ++i) {
 			DepthBias.data.data()[i] = biasMatrix * lights.data()[i]->getTransform();
 	}
@@ -166,7 +156,6 @@ void LightingModel::setLight(Program &prg, UniformBlock<LightProperties> &lp ) {
 	/* main shader */
 	prg.setUniform("shadowMap", &shadowMaps);
 	prg.setUniform("DepthBiasMVP", &DepthBias);
-	prg.setUniform("illumination", &tree.location);
 }
 
 void LightingModel::drawIcons() {

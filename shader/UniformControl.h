@@ -79,7 +79,5 @@ public:
 	}
 };
 
-
-
 } /* namespace std */
 #endif /* UNIFORMCONTROL_H_ */

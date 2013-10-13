@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "../lighting/LightingModel.h"
+#include "../octree/Tree.h"
 #include "../scene/GRender.h"
 #include "../shader/Program.h"
 #include "../shader/UniformBlock.h"
@@ -30,6 +31,11 @@ public:
 	shared_ptr<Render> render;
 	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;
+
+	/*
+	 * Global illumination octree
+	 */
+	Tree tree;
 
 	Pipeline();
 	virtual ~Pipeline();

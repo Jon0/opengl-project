@@ -1,4 +1,4 @@
-#version 400
+#version 420
 
 uniform mat4 DepthBiasMVP [8];
 uniform vec4 LightPosition_worldspace [8];

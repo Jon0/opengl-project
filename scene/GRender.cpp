@@ -63,9 +63,6 @@ GRender::~GRender() {
 
 void GRender::setLightModel( LightingModel *lm ) {
 	lightmodel = lm;
-	for (auto &g: objects) {
-		lightmodel->track( g );
-	}
 
 	LightProperties &l = lightmodel->getLight(selectedLight);
 	selVec = &l.position;

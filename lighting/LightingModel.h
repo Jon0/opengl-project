@@ -15,7 +15,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/gl.h>
 
-#include "../octree/Tree.h"
 #include "../pipeline/Step.h"
 #include "../shader/ShaderStructs.h"
 #include "../shader/Program.h"
@@ -59,11 +58,6 @@ public:
 	vector< Light * > lights;
 
 	/*
-	 * Global illumination octree
-	 */
-	Tree tree;
-
-	/*
 	 * the scene geometry
 	 */
 	shared_ptr<SceneInterface> scene;
@@ -76,7 +70,6 @@ public:
 
 	LightProperties &getLight(int);
 	void updateLight(int);
-	void track(shared_ptr<Geometry>);
 	void generateShadowFBO();
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );

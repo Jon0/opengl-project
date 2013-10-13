@@ -18,6 +18,7 @@ class Voxelize:
 private:
 	Program vox;
 	shared_ptr<SceneInterface> scene;
+	UniformControl<GLint> location;
 
 public:
 	Voxelize( shared_ptr<SceneInterface> );
