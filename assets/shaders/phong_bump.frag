@@ -24,7 +24,8 @@ layout(std140) uniform MaterialProperties {
 
 
 // Values that stay constant for the whole mesh.
-uniform layout (rgba32f) image3D illumination;
+layout(binding = 0, rgba8) coherent uniform image3D illumination;
+//uniform layout (rgba32f) image3D illumination;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
@@ -111,6 +112,44 @@ void main() {
 							pow(ReflectionColor.y, MaterialExponent),
 							pow(ReflectionColor.z, MaterialExponent), 1.0 ) * MaterialSpecularColor;
 
+	// Eye vector (towards the camera)
+	vec3 E = normalize(EyeDirection_tangentspace);
+
+
+	/*
+	 *	*******************************
+	 *	calculate for each light in each voxel
+	 * 	*******************************
+	 */
+	float cosTheta [8];
+	float cosAlpha [8];
+	for (int light = 0; light < 3; ++light) {
+
+		// Direction of the light (from the fragment to the light)
+		vec3 l = normalize(LightDirection_tangentspace[light]);
+
+		// Cosine of the angle between the normal and the light direction,
+		cosTheta[light] = clamp( dot( n, l ), 0, 1 );
+
+		// Direction in which the triangle reflects the light
+		vec3 R = reflect( -l , n);
+
+		// Cosine of the angle between the Eye vector and the Reflect vector,
+		cosAlpha[light] = clamp( dot( E, R ), 0,1 );
+
+		/*
+		 *	Shadows
+		 */
+		float bias = 0.0005*tan( acos( cosTheta[light] ) );
+		bias = clamp(bias, 0.0, 0.001);
+		float visibility = 1.0;
+		for (int i = 0; i < 16; i++){
+			visibility -= 0.0625*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias))/ShadowCoord[light].w ));
+		}
+		visibility = clamp( visibility, 0, 1 );
+
+		imageStore( illumination, ivec3(0, 0, 0), vec4(0.0, 0.5, 0.0, 1.0) );
+	}
 
 	/*
 	 *	*******************************
@@ -130,31 +169,8 @@ void main() {
 			distance = 1.0;
 		}
 
-		// Direction of the light (from the fragment to the light)
-		vec3 l = normalize(LightDirection_tangentspace[light]);
-
-		// Cosine of the angle between the normal and the light direction,
-		float cosTheta = clamp( dot( n,l ), 0, 1 );
-
-		// Eye vector (towards the camera)
-		vec3 E = normalize(EyeDirection_tangentspace);
-
-		// Direction in which the triangle reflects the light
-		vec3 R = reflect(-l, n);
-
-		// Cosine of the angle between the Eye vector and the Reflect vector,
-		float cosAlpha = clamp( dot( E,R ), 0,1 );
-
-		/*
-		 *	Shadows
-		 */
-		float bias = 0.0005*tan( acos( cosTheta ) );
-		bias = clamp(bias, 0.0, 0.001);
-		float visibility = 1.0;
-		for (int i = 0; i < 16; i++){
-			visibility -= 0.0625*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias))/ShadowCoord[light].w ));
-		}
-		visibility = clamp( visibility, 0, 1 );
+		//vec4 visibility = imageLoad( illumination, ivec3(64, 64, 64) + ivec3( Position_worldspace ) / 4 );
+		vec4 visibility = vec4(1.0);
 
 		// dampen spotlight by dot product angle
 		if ( Lights[light].spotlight > 0.1 ) {
@@ -164,8 +180,8 @@ void main() {
 
 		}
 
-		DiffuseTotal += MaterialDiffuseColor * Lights[light].color * Lights[light].intensity * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha, MaterialExponent) / (distance*distance);
+		DiffuseTotal += MaterialDiffuseColor * Lights[light].color * Lights[light].intensity * visibility * cosTheta[light] / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha[light], MaterialExponent) / (distance*distance);
 	}
 
 	/*
@@ -174,14 +190,12 @@ void main() {
 	 * 	*******************************
 	 */
 
-	memoryBarrier();
-	imageStore( illumination, ivec3(0, 0, 0), vec4(0.0, 0.5, 0.0, 1.0) );
-	memoryBarrier();
-
-	color = imageLoad( illumination, ivec3(0, 0, 0) ); // ivec3(64, 64, 64) + ivec3( Position_worldspace )
-	memoryBarrier();
+	//memoryBarrier();
+	//imageStore( illumination, ivec3(0, 0, 0), vec4(0.0, 0.5, 0.0, 1.0) );
+	//memoryBarrier();
+	//
 
 
 	//color = texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
-	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
+	color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 }

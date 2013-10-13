@@ -9,13 +9,30 @@
 
 namespace std {
 
-Shadow::Shadow() {
+Shadow::Shadow():
+		main { "light_trace" }
+{
 	// TODO Auto-generated constructor stub
 
 }
 
 Shadow::~Shadow() {
 	// TODO Auto-generated destructor stub
+}
+
+Program &Shadow::getProgram() {
+	return main;
+}
+
+void Shadow::update( chrono::duration<double> ) {
+	main.enable();
+
+
+
+}
+
+void Shadow::run( shared_ptr<ViewInterface> ) {
+
 }
 
 } /* namespace std */

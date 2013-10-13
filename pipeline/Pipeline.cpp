@@ -33,26 +33,38 @@ Pipeline::~Pipeline() {
 	// TODO Auto-generated destructor stub
 }
 
+/*
+ * process scene information that is not camera specific
+ */
 void Pipeline::update( chrono::duration<double> tick ) {
 	scene->update( tick );
+
+
+	/*
+	 * gather light into tree
+	 */
+	//shadow->update( tick );
 
 	/*
 	 * fill image with lighting information
 	 */
-	tree.enable( lm->getProgram(), 8);
+	tree.enable( 0 );
 
 
 	lm->update( tick );
 	voxelize->update( tick );
 }
 
+/*
+ * render scene from a given viewpoint
+ */
 void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	vb.enable();
 
 	/*
 	 * bind illumination
 	 */
-	tree.enable( render->getProgram(), 8);
+	tree.enable( 0 );
 
 	lm->setLight( render->getProgram(), render->lightUniform );
 

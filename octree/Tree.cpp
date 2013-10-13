@@ -18,7 +18,7 @@ Tree::Tree(int l):
 {
 	levels = l;
 	size = levels * levels * levels;
-	texels = new float [size * 4];
+	texels = new unsigned int [size];
 	normals = new glm::vec3 [size];
 	int h = levels / 2;
 	mid = glm::vec3(h, h, h);
@@ -26,17 +26,12 @@ Tree::Tree(int l):
 	for (unsigned int i = 0; i < levels; ++i) {
 		for (unsigned int j = 0; j < levels; ++j) {
 			for (unsigned int k = 0; k < levels; ++k) {
-				//unsigned char r = 80; //3 % 256;
+				int offset = (i + j * levels + k * levels * levels);
+
 				//float f = glm::distance(mid, glm::vec3(i, j, k));
 				//unsigned char r = (int)(256.0 * (1 / f));
-				//texels[offset] = (255 << 24) + (r << 16) + (r << 8) + r;
-
-				int offset = 4 * (i + j * levels + k * levels * levels);
-
-				texels[offset + 0] = 1.0 / rand();
-				texels[offset + 1] = 1.0 / rand();
-				texels[offset + 2] = 1.0 / rand();
-				texels[offset + 3] = 1.0 / rand();
+				unsigned char r = 0;
+				texels[offset] = (255 << 24) + (r << 16) + (r << 8) + r;
 			}
 		}
 	}
@@ -48,15 +43,12 @@ Tree::Tree(int l):
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, levels, levels, levels, 0, GL_RGBA,
-	             GL_FLOAT, texels);
+
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, levels, levels, levels, 0, GL_RGBA,
+	             GL_UNSIGNED_BYTE, texels);
+
+	//glTexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, levels, levels, levels);
 	glBindTexture(GL_TEXTURE_3D, 0);
-
-	glMemoryBarrier(GL_ALL_BARRIER_BITS);
-
-	glBindImageTexture(0, addr, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8UI);
-	location.setV( 0 );
-	//prg.setUniform("illumination", &location);
 }
 
 Tree::~Tree() {
@@ -70,17 +62,8 @@ glm::vec3 Tree::getPoint( glm::vec3 in ) {
 	return c;
 }
 
-void Tree::enable( Program &prg, GLuint i ) {
-	//glActiveTexture(GL_TEXTURE0 + i);
-	//glBindTexture(GL_TEXTURE_3D, addr);
-	//glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, levels, levels, levels, 0, GL_RGBA,
-	//           GL_FLOAT, texels);
-
-	glMemoryBarrier(GL_ALL_BARRIER_BITS);
-
-	glBindImageTexture(0, addr, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8UI);
-	location.setV( 0 );
-	prg.setUniform("illumination", &location);
+void Tree::enable( GLuint i ) {
+	glBindImageTexture(i, addr, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
 }
 
 void Tree::addLight() {

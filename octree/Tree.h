@@ -23,7 +23,7 @@ class Tree {
 	GLuint addr;
 	unsigned int levels;
 	unsigned int size;
-	float *texels;
+	unsigned int *texels;
 	glm::vec3 *normals;
 	glm::vec3 mid;
 
@@ -37,7 +37,7 @@ public:
 
 
 	glm::vec3 getPoint( glm::vec3 );
-	void enable( Program &, GLuint );
+	void enable( GLuint );
 	void addLight();
 	void calc(shared_ptr<Geometry>);
 };
