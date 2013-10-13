@@ -15,6 +15,7 @@ Pipeline::Pipeline():
 		scene { new GRender( vb ) },
 		sky { new Skybox( vb ) },
 		render { new Render( scene ) },
+		voxelize { new Voxelize( scene ) },
 		lm { new LightingModel( scene ) }
 {
 	scene->setLightModel( lm.get() );
@@ -34,6 +35,7 @@ Pipeline::~Pipeline() {
 void Pipeline::update( chrono::duration<double> tick ) {
 	scene->update( tick );
 	lm->update( tick );
+	voxelize->update( tick );
 }
 
 void Pipeline::output( shared_ptr<ViewInterface> v ) {

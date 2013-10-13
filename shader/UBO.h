@@ -12,8 +12,14 @@
 
 namespace std {
 
+/*
+ * count number of ubo's that exist, to assign unique indexes
+ */
 extern int ubocount;
 
+/*
+ * Wraps a struct which is used in a shader program
+ */
 template<class T> class UBO {
 private:
 	GLuint buffer;

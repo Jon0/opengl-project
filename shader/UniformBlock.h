@@ -17,6 +17,10 @@
 
 namespace std {
 
+/**
+ * Controls UBO bindings in a shader program,
+ * Uniform blocks can be assigned any UBO with the same struct type.
+ */
 template<class T> class UniformBlock {
 private:
 	int length;

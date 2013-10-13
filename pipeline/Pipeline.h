@@ -17,6 +17,7 @@
 #include "Render.h"
 #include "Skybox.h"
 #include "Step.h"
+#include "Voxelize.h"
 
 namespace std {
 
@@ -27,6 +28,7 @@ public:
 	shared_ptr<GRender> scene;
 	shared_ptr<Skybox> sky;
 	shared_ptr<Render> render;
+	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;
 
 	Pipeline();
