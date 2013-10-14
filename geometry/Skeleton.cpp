@@ -21,10 +21,12 @@
 #include <math.h>
 #include <iostream>
 #include <GL/glut.h>
+#include <map>
+#include <vector>
 
 #include "Skeleton.h"
 
-Skeleton::Skeleton( int numOfBones, bone *bones ) {
+Skeleton::Skeleton( int numOfBones, bone *bones, map<string, vector<double> > *ws ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
@@ -51,10 +53,13 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 
 	// default colour function
 	cf = &Skeleton::colorStandard;
+
+	weights = ws;
 }
 
 Skeleton::~Skeleton() {
 	deleteBones(root);
+	delete weights;
 }
 
 void Skeleton::deleteBones(bone* root) {

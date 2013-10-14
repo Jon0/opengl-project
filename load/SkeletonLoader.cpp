@@ -8,6 +8,11 @@
 #include <string.h>
 #include <iostream>
 #include "SkeletonLoader.h"
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <map>
 
 namespace std {
 
@@ -20,7 +25,7 @@ SkeletonLoader::~SkeletonLoader() {
 	// TODO Auto-generated destructor stub
 }
 
-Skeleton *SkeletonLoader::readASF(const char* filename) {
+  Skeleton *SkeletonLoader::readASF(const char* filename) {
 	FILE* file = fopen(filename, "r");
 	if (file == NULL) {
 		printf("Failed to open file %s\n", filename);
@@ -93,7 +98,8 @@ Skeleton *SkeletonLoader::readASF(const char* filename) {
 	}
 	delete root;
 
-	Skeleton *skel = new Skeleton(numBones, bones);
+	//just hardcoded in the weights path, didn't feel like refactor everything to take two arguments lol.
+	Skeleton *skel = new Skeleton(numBones, bones, readJointWeights("assets/Avatar/weights.csv"));
 	printf("Completed reading skeleton file\n");
 	return skel;
 }
@@ -338,6 +344,54 @@ DOF SkeletonLoader::dofFromString(char* s) {
 	return DOF_NONE;
 }
 
+  map<string, vector<double> > *SkeletonLoader::readJointWeights(char* filename){
+    ifstream infile(filename);
+    map<string, vector<double> > *weights = new map<string, vector<double> >;
+    string s;
+    getline(infile, s);
+    istringstream ss(s);
+    //parse first line as keys
+    vector<string> bonenames;
+    while (ss)
+      {
+	string bonename;
+	if(!getline(ss, bonename, ',')) break;
+	vector<double> v;
+	(*weights)[bonename] = v;
+	bonenames.push_back(bonename);
+      }
+
+    //parse rest  
+    while (infile)
+      {
+	string s;
+	if(!getline( infile, s)) break;
+	istringstream ss(s);
+	int index = 0;
+	while (ss)
+	  {
+	    string s;
+	    if(!getline(ss, s, ',' )) break;
+	    istringstream fd (s);
+	    double d;
+	    /**
+	       NOTE:: this loses precision, converting string to double int his way. will this be a problem?? 
+	       EG 0.15969951968 -> 0.1597.
+	    **/
+	    fd >> d;
+
+	    (*weights)[bonenames.at(index)].push_back(d);
+	    index++;
+	  }
+      }
+    if(!infile.eof()){
+      cerr << "ERROR, should be end of file";
+    }
+    return weights;
+
+	
+  }
+
 /*
  * Remove leading and trailing whitespace. Increments the
  * pointer until it points to a non whitespace char
@@ -367,3 +421,4 @@ void trim(char **p) {
 }
 
 } /* namespace std */
+

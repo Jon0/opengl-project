@@ -27,6 +27,7 @@ protected:
 	void readBone(char *, FILE *, int &, bone * );
 	DOF dofFromString(char* s);
 	void decomment(char *);
+	map<string, vector<double> > *readJointWeights(char*);
 
 private:
 	int buffSize, maxBones;

@@ -19,6 +19,8 @@
 #define SKELETONH
 
 #include <vector>
+#include <map>
+#include <string>
 #include <GL/glut.h>
 #include <glm/gtc/quaternion.hpp>
 
@@ -68,7 +70,7 @@ typedef color *(Skeleton::*colorfunc)(bone *);
 
 class Skeleton: public Drawable {
 public:
-	Skeleton( int, bone * );
+  Skeleton( int, bone *, map<string, vector<double> >* );
 	~Skeleton();
 
 	virtual void display();
@@ -85,6 +87,16 @@ public:
 	glm::quat getSelectionRot();
 	glm::quat getBoneAxis(int);
 	void setCurrentPose(pose *p);
+
+	// not void, but idk what the type of 'matrix' is
+	void getAffineTransformationForBone(char *);
+
+	//in goes a vertex, out comes its deformation vertex
+	GVertex* linearBlending(GVertex*, Skeleton *, char *);
+
+	
+	
+	
 
 
 protected:
@@ -111,6 +123,8 @@ private:
 	// color functions
 	color *colorAsID(bone *);
 	color *colorStandard(bone *);
+
+	map<string, vector<double> > *weights;
 };
 
 #endif
