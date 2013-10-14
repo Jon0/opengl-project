@@ -69,7 +69,6 @@ void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	lm->setLight( render->getProgram(), render->lightUniform );
 
 	sky->run( v );
-	lm->run( v );
 	render->run( v );
 
 	scene->debug( v );

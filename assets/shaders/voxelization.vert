@@ -6,5 +6,5 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 out vec3 vertexPosition;
 
 void main () {
-	vertexPosition = vertexPosition_modelspace;
+	vertexPosition = vec3(64, 64, 64) + vertexPosition_modelspace / 4;
 }
