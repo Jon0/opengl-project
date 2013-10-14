@@ -30,10 +30,7 @@ class LightingModel:
 {
 public:
 	Program shadow;
-	int shadowMapWidth;
-	int shadowMapHeight;
 	unsigned int numLights;
-	GLuint test;
 
 	// Hold id of the framebuffer for light POV rendering
 	vector<GLuint> fboId;

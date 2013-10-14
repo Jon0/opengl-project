@@ -52,9 +52,6 @@ GRender::GRender( VertexBuffer &vb ):
 
 	message = "Light "+to_string(selectedLight) +" : Position";
 	showIcons = true;
-
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 GRender::~GRender() {

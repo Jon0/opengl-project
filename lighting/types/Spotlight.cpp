@@ -27,6 +27,14 @@ Spotlight::~Spotlight() {
 	// TODO Auto-generated destructor stub
 }
 
+unsigned int Spotlight::mapSize() {
+	return 1024 * 4;
+}
+
+unsigned int Spotlight::cull() {
+	return GL_FRONT;
+}
+
 glm::mat4 Spotlight::getTransform() {
 	glm::mat4 depthProjectionMatrix = glm::perspective<float>(45.0, 1.0, 10.0, 5000.0);
 	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(data.position), glm::vec3(data.direction), glm::vec3(0,1,0));

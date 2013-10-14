@@ -25,6 +25,14 @@ Positional::~Positional() {
 	// TODO Auto-generated destructor stub
 }
 
+unsigned int Positional::mapSize() {
+	return 1024 * 4;
+}
+
+unsigned int Positional::cull() {
+	return GL_FRONT;
+}
+
 glm::mat4 Positional::getTransform() {
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-20, 20, -20, 20, 0, 800);
 	glm::vec3 p = glm::vec3(data.position);

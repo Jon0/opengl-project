@@ -16,6 +16,8 @@ class Spotlight: public Light {
 public:
 	Spotlight();
 	virtual ~Spotlight();
+	virtual unsigned int mapSize();
+	virtual unsigned int cull();
 	virtual glm::mat4 getTransform();
 };
 

@@ -31,6 +31,8 @@ Camera::Camera( shared_ptr<Pipeline> p ):
 	arcball_radius = 1.0;
 	click_x = click_y = 0;
 	windowwidth = windowheight = 1;
+
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 Camera::~Camera() {}

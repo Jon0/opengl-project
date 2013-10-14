@@ -50,7 +50,6 @@ void Pipeline::update( chrono::duration<double> tick ) {
 	 */
 	tree.enable( 0 );
 
-
 	lm->update( tick );
 	voxelize->update( tick );
 }

@@ -30,7 +30,7 @@ class Tree {
 	shared_ptr<Geometry> geom;
 
 public:
-	UniformControl<GLint> location, image;
+	UniformControl<GLint> location;
 
 	Tree(int);
 	virtual ~Tree();
@@ -38,6 +38,7 @@ public:
 
 	glm::vec3 getPoint( glm::vec3 );
 	void enable( GLuint );
+	void enableTex( Program &, string, GLuint );
 	void addLight();
 	void calc(shared_ptr<Geometry>);
 };

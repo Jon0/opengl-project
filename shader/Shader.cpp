@@ -23,13 +23,16 @@ Shader::Shader(string filename, GLenum type) {
 	// load the fragment shader.
 	fstream fragmentShaderFile(filename, std::ios::in);
 	string fragmentShaderSource;
+
 	if (fragmentShaderFile.is_open()) {
 		stringstream buffer;
 		buffer << fragmentShaderFile.rdbuf();
 		fragmentShaderSource = buffer.str();
 	}
 	else {
-		cerr << "file not found" << endl;
+		fragmentShaderFile.close();
+		ShaderHandle = 0;
+		return;
 	}
 	fragmentShaderFile.close();
 

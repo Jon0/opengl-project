@@ -24,6 +24,14 @@ Directional::~Directional() {
 	// TODO Auto-generated destructor stub
 }
 
+unsigned int Directional::mapSize() {
+	return 1024 * 12;
+}
+
+unsigned int Directional::cull() {
+	return GL_BACK;
+}
+
 glm::mat4 Directional::getTransform() {
 	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-400, 400, -400, 400, -1000, 1000);
 	glm::vec3 p = glm::vec3(data.position);

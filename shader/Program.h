@@ -29,6 +29,7 @@ private:
 	 * shaders
 	 */
 	GLuint programID;
+	Shader comp;
 	Shader vert;
 	Shader geom;
 	Shader frag;

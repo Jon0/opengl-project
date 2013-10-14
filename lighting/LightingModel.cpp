@@ -22,9 +22,6 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
 		scene { si }
 {
-	shadowMapWidth = 1024 * 4;
-	shadowMapHeight = 1024 * 4;
-
 	/*
 	 * setup lights
 	 */
@@ -72,7 +69,7 @@ void LightingModel::generateShadowFBO() {
 	glGenTextures(numLights, depthTextureId.data());
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, lights.data()[i]->mapSize(), lights.data()[i]->mapSize(), 0,
 				GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -110,18 +107,21 @@ void LightingModel::clearDepthMap() {
 	shadow.enable();
 	for (unsigned int i = 0; i < numLights; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
-		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
 }
 
 void LightingModel::createShadow( shared_ptr<Geometry> g ) {
 	// Compute the MVP matrix from the light's point of view
 	for (unsigned int i = 0; i < numLights; ++i) {
+		Light &l = *lights.data()[i];
+		unsigned int size = l.mapSize();
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, fboId.data()[i]);	//Rendering offscreen
-		modelMatrix.setV( lights.data()[i]->getTransform() * g->transform() );
+		glViewport(0, 0, size, size);
+		glCullFace( l.cull() );
+		modelMatrix.setV( l.getTransform() * g->transform() );
 		g->draw();
 	}
 }
