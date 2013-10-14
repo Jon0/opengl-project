@@ -79,15 +79,16 @@ Program::~Program() {
 }
 
 GLuint Program::addUniform(string name) {
-	auto value = uniformName.find(name);
-	if (value == uniformName.end()) {
-		GLuint id = glGetUniformLocation(programID, name.c_str());
-		uniformName[name] = id;
-		return id;
-	}
-	else {
-		return value->second;
-	}
+	return glGetUniformLocation(programID, name.c_str());
+//	auto value = uniformName.find(name);
+//	if (value == uniformName.end()) {
+//		GLuint id =
+//		uniformName[name] = id;
+//		return id;
+//	}
+//	else {
+//		return value->second;
+//	}
 }
 
 void Program::enable() {

@@ -17,6 +17,7 @@ namespace std {
 
 LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		shadow("shadow_depth"),
+		insert("shadow_depth", 1),
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },

@@ -25,13 +25,11 @@ layout(std140) uniform MaterialProperties {
 
 // Values that stay constant for the whole mesh.
 layout(binding = 0, rgba8) coherent uniform image3D illumination;
-//uniform layout (rgba32f) image3D illumination;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2DShadow shadowMap [8];
-uniform vec4 LightPosition_worldspace [8];
 uniform bool useDiffTex;
 uniform bool useNormTex;
 

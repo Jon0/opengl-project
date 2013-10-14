@@ -30,6 +30,7 @@ class LightingModel:
 {
 public:
 	Program shadow;
+	Program insert;
 	unsigned int numLights;
 
 	// Hold id of the framebuffer for light POV rendering

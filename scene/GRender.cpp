@@ -78,12 +78,14 @@ void GRender::debug( shared_ptr<ViewInterface> c ) {
 	/*
 	 * do some fixed pipeline rendering
 	 */
-	glUseProgram(0);
-	skel->setCurrentPose( &current_pose );
-	skel->display();
+	if (showIcons) {
 
+		glUseProgram(0);
+		skel->setCurrentPose(&current_pose);
+		skel->display();
 
-	if (showIcons) lightmodel->drawIcons();
+		lightmodel->drawIcons();
+	}
 }
 
 void GRender::displayUI() {

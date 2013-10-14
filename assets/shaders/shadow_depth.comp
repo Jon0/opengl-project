@@ -1,7 +1,12 @@
 #version 430
 
-// Values that stay constant for the whole mesh.
-uniform mat4 depthMVP;
+layout( local_size_x = 1, local_size_y = 1, local_size_z = 1 ) in;
+
+layout(binding = 0, rgba8) coherent uniform image3D illumination;
+
+uniform sampler2DShadow shadowMap;
+
+uniform mat4x4 light_transform;
 
 void main(){
 
