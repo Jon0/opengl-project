@@ -21,7 +21,6 @@ void copyVec3(glm::vec3 &out, const aiVector3D &in) {
 }
 
 vector<GMesh> readOBJFile(const char* filename) {
-
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename,
 			aiProcess_CalcTangentSpace | aiProcess_Triangulate
@@ -38,8 +37,6 @@ vector<GMesh> readOBJFile(const char* filename) {
 		scene->mMaterials[m]->GetTexture( aiTextureType_DIFFUSE, texIndex, &path);
 		texList.push_back(path.C_Str());
 	}
-
-
 
 	/* array of all polygons */
 	vector<GMesh> g_meshes;

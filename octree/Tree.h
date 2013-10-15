@@ -19,6 +19,7 @@
 namespace std {
 
 class Tree {
+public:
 	TreeNode root;
 	GLuint addr;
 	unsigned int levels;
@@ -28,8 +29,6 @@ class Tree {
 	glm::vec3 mid;
 
 	shared_ptr<Geometry> geom;
-
-public:
 	UniformControl<GLint> location;
 
 	Tree(int);

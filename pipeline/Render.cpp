@@ -9,14 +9,16 @@
 
 namespace std {
 
-Render::Render( shared_ptr<SceneInterface> s ):
+Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 		main { "phong_bump" },
 		scene { s },
+		tree { t },
 		cam { main.getBlock<CameraProperties>( "Camera", 1 ) },
 		materialUniform { main.getBlock<MaterialProperties>("MaterialProperties", 1) },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
 		diffuse_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
 		specular_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } }
+		//node { main.getBlock<OctreeNode>("OctreeNode", 1) }
 {
 	/*
 	 * set uniforms
@@ -26,6 +28,9 @@ Render::Render( shared_ptr<SceneInterface> s ):
 
 	main.setUniform("diffuseTexture", &diffuse_tex);
 	main.setUniform("specularTexture", &specular_tex);
+
+	GLuint treeUniform = main.addUniform("tree");
+	glUniformui64NV(treeUniform, tree->root.gpuAddr);
 }
 
 Render::~Render() {
@@ -47,6 +52,8 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 	//cubeTex->enable(3);
 
 	main.enable();
+
+	//node.assign( &tree->root );
 	cam.assign( c->properties() );
 	UBO<CameraProperties> *camptr = c->properties();
 

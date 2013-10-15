@@ -8,21 +8,22 @@
 #ifndef TREENODE_H_
 #define TREENODE_H_
 
+#include "../shader/ShaderStructs.h"
+#include "../shader/UBO.h"
+
 namespace std {
 
-struct innerNode {
-	char child[15], far, contour[24];
-	int validMask, leafMask, contourMask;
-};
-
-class TreeNode {
-	TreeNode *parent;
-	TreeNode *inner[8];
-
-	// 26 adjacent directions
-
+class TreeNode: public UBO<OctreeNode> {
 public:
-	TreeNode();
+	int level;
+	GLuint bufferAddr;
+	GLuint64 gpuAddr;
+	TreeNode *parent;
+	TreeNode *children[8];
+
+
+	TreeNode(int);
+	TreeNode(int, TreeNode *);
 	virtual ~TreeNode();
 
 	void addLight();

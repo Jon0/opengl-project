@@ -1,4 +1,5 @@
 #version 420
+#extension GL_NV_shader_buffer_load : enable
 
 layout(std140) uniform LightProperties {
 	vec4 position;
@@ -21,6 +22,19 @@ layout(std140) uniform MaterialProperties {
 	vec4 SpecularColor;
 	float Exponent;
 } Material;
+
+struct OctreeNode {
+	// pointers to gpu memory
+	OctreeNode *parent;
+	OctreeNode *children [8];
+
+	// node attributes
+	vec4 normal;
+	vec4 color;
+	vec4 emission;
+};
+
+uniform OctreeNode *tree;
 
 
 // Values that stay constant for the whole mesh.
@@ -180,4 +194,7 @@ void main() {
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 	color = DiffuseTotal + SpecularTotal;
 	color.w = 1.0;
+
+
+
 }

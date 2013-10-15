@@ -8,6 +8,7 @@
 #ifndef SHADERSTRUCTS_H_
 #define SHADERSTRUCTS_H_
 
+#include <GL/gl.h>
 #include <glm/glm.hpp>
 
 namespace std {
@@ -32,6 +33,17 @@ struct MaterialProperties {
 	glm::vec4 AmbientColor;
 	glm::vec4 SpecularColor;
 	float Exponent;
+};
+
+struct OctreeNode {
+	// pointers to gpu memory
+	GLuint64 parent;
+	GLuint64 children [8];
+
+	// node attributes
+	glm::vec4 normal;
+	glm::vec4 color;
+	glm::vec4 emission;
 };
 
 } /* namespace std */

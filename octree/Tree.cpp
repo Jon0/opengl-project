@@ -13,6 +13,7 @@
 namespace std {
 
 Tree::Tree(int l):
+	root { 1 },
 	location { [](GLuint i, GLint v){ glUniform1i(i, v); } }
 {
 	levels = l;

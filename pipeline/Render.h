@@ -10,9 +10,11 @@
 
 #include <memory>
 
+#include "../octree/Tree.h"
 #include "../pipeline/Step.h"
 #include "../scene/SceneInterface.h"
 #include "../shader/Program.h"
+#include "../shader/ShaderStructs.h"
 
 namespace std {
 
@@ -22,7 +24,7 @@ class Render:
 private:
 	Program main;
 	shared_ptr<SceneInterface> scene;
-
+	shared_ptr<Tree> tree;
 	GLuint useDiffTex, useNormTex;
 
 public:
@@ -30,8 +32,9 @@ public:
 	UniformBlock<MaterialProperties> materialUniform;
 	UniformBlock<LightProperties> lightUniform;
 	UniformControl<GLint> diffuse_tex, specular_tex;
+	//UniformBlock<OctreeNode> node;
 
-	Render( shared_ptr<SceneInterface> );
+	Render( shared_ptr<SceneInterface>, shared_ptr<Tree>  );
 	virtual ~Render();
 
 	virtual Program &getProgram();
