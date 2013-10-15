@@ -86,7 +86,6 @@ vector<GMesh> readOBJFile(const char* filename) {
 		gm.texaddr = 0;
 		string name = texList[mesh.mMaterialIndex];
 		if (name.length() > 1) {
-			cout << "opening " << "assets/Sponza/"+name << endl;
 			gm.texture = new Tex();
 			gm.texture->make2DTex( "assets/Sponza/"+name );
 			gm.texaddr = gm.texture->getAddr();

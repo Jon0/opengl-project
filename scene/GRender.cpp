@@ -25,11 +25,6 @@ GRender::GRender( VertexBuffer &vb ):
     gm->texture->make2DTex("assets/Avatar/boySmiley.jpg");
     gm->texaddr = gm->texture->getAddr();
 
-    gm->texture->enable(1);
-
-    cout << model->data.data()[0].texaddr << endl;
-
-
     objects.push_back(model);
 	objects.push_back( readGeometry("assets/Sponza/SponzaTri.obj") );
 	//objects.push_back( readGeometry("assets/obj/Box.obj") );
