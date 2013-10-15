@@ -13,11 +13,12 @@
 #include "../geometry/DrawList.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GVertex.h"
+#include "../geometry/GMesh.h"
 
 namespace std {
 
-vector<GPolygon> readOBJFile( const char* );
-shared_ptr<Geometry> readGeometry( const char* );
+vector<GMesh> readOBJFile( const char* );
+shared_ptr<DrawList> readGeometry( const char* );
 
 } /* namespace std */
 #endif /* GEOMETRYLOADER_H_ */

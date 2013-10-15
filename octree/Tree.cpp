@@ -78,7 +78,7 @@ void Tree::addLight() {
 
 void Tree::calc(shared_ptr<Geometry> g) {
 	// TODO another texture for normals of each voxel
-	vector<GPolygon> &gp = g->polygon();
+	vector<GPolygon> &gp = g->polygon(0);
 	for (GPolygon &p: gp) {
 		glm::vec3 c = getPoint( p.center() );
 		int i = c.x, j = c.y, k = c.z;

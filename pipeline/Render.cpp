@@ -14,7 +14,9 @@ Render::Render( shared_ptr<SceneInterface> s ):
 		scene { s },
 		cam { main.getBlock<CameraProperties>( "Camera", 1 ) },
 		materialUniform { main.getBlock<MaterialProperties>("MaterialProperties", 1) },
-		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) }
+		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
+		diffuse_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
+		specular_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } }
 {
 	/*
 	 * set uniforms
@@ -22,7 +24,8 @@ Render::Render( shared_ptr<SceneInterface> s ):
 	useDiffTex = main.addUniform("useDiffTex");
 	useNormTex = main.addUniform("useNormTex");
 
-	//program.setUniform("cubeTexture", &cubeTex->location);
+	main.setUniform("diffuseTexture", &diffuse_tex);
+	main.setUniform("specularTexture", &specular_tex);
 }
 
 Render::~Render() {
@@ -51,14 +54,18 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	glUniform1i(useDiffTex, true);
+	diffuse_tex.setV( 1 );
+	specular_tex.setV( 1 );
+
 	for ( auto &g: scene->content() ) {
 
 		materialUniform.assign( g->materialUBO() );
 
-
 		//light.setTransform(g->transform());
 		camptr->data.M = g->transform();
 		camptr->update();
+
 		g->draw();
 	}
 

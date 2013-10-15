@@ -6,6 +6,7 @@
 CPP_SRCS += \
 ../geometry/Cube.cpp \
 ../geometry/DrawList.cpp \
+../geometry/GMesh.cpp \
 ../geometry/GPolygon.cpp \
 ../geometry/GVertex.cpp \
 ../geometry/Skeleton.cpp \
@@ -14,6 +15,7 @@ CPP_SRCS += \
 OBJS += \
 ./geometry/Cube.o \
 ./geometry/DrawList.o \
+./geometry/GMesh.o \
 ./geometry/GPolygon.o \
 ./geometry/GVertex.o \
 ./geometry/Skeleton.o \
@@ -22,6 +24,7 @@ OBJS += \
 CPP_DEPS += \
 ./geometry/Cube.d \
 ./geometry/DrawList.d \
+./geometry/GMesh.d \
 ./geometry/GPolygon.d \
 ./geometry/GVertex.d \
 ./geometry/Skeleton.d \

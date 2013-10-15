@@ -160,10 +160,10 @@ GLuint Tex::loadGLTexture(const string filename) {
 
 int loadTexture(const string filename, TextureInfo *t) {
 	vector<string> ext = stringSplit(filename, ".");
-	if (ext[1] == "jpg" || ext[1] == "jpeg") {
+	if (ext[1] == "jpg" || ext[1] == "jpeg" || ext[1] == "JPG" || ext[1] == "JPEG") {
 		return loadTextureFromJPEG(filename, t);
 	}
-	else if (ext[1] == "png") {
+	else if (ext[1] == "png" || ext[1] == "PNG") {
 		return loadTextureFromPNG(filename, t);
 	}
 	else {

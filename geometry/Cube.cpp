@@ -51,7 +51,7 @@ void Cube::drawDebug() {
 	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);
 }
 
-vector<GPolygon> &Cube::polygon() {
+vector<GPolygon> &Cube::polygon(int) {
 	return data;
 }
 

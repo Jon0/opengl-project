@@ -29,6 +29,7 @@ public:
 	UniformBlock<CameraProperties> cam;
 	UniformBlock<MaterialProperties> materialUniform;
 	UniformBlock<LightProperties> lightUniform;
+	UniformControl<GLint> diffuse_tex, specular_tex;
 
 	Render( shared_ptr<SceneInterface> );
 	virtual ~Render();

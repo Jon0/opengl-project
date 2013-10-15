@@ -34,7 +34,7 @@ public:
 	void init(VertexBuffer *);
 	virtual void draw();
 	virtual void drawDebug();
-	virtual vector<GPolygon> &polygon();
+	virtual vector<GPolygon> &polygon(int);
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);
 	virtual UBO<MaterialProperties> *materialUBO();
