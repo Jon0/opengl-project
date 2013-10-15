@@ -25,7 +25,16 @@ namespace std {
 
 class Pipeline {
 public:
+	/*
+	 * vertex storage
+	 */
 	VertexBuffer vb;
+
+	/*
+	 * Global illumination octree
+	 */
+	shared_ptr<Tree> tree;
+
 	vector< shared_ptr<Step> > steps;
 	shared_ptr<GRender> scene;
 	shared_ptr<Skybox> sky;
@@ -34,10 +43,7 @@ public:
 	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;
 
-	/*
-	 * Global illumination octree
-	 */
-	Tree tree;
+
 
 	Pipeline();
 	virtual ~Pipeline();

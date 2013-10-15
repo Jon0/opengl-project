@@ -10,7 +10,8 @@
 
 #include <memory>
 #include <vector>
-#include "SceneInterface.h"
+
+#include "../geometry/DrawList.h"
 #include "../geometry/Geometry.h"
 #include "../load/SkeletonLoader.h"
 #include "../lighting/LightingModel.h"
@@ -19,6 +20,7 @@
 #include "../view/Camera.h"
 #include "../view/Ortho.h"
 #include "../window/MainWindow.h"
+#include "SceneInterface.h"
 
 namespace std {
 
@@ -28,7 +30,7 @@ class GRender:
 {
 public:
 	LightingModel *lightmodel;
-	shared_ptr<Geometry> model;
+	shared_ptr<DrawList> model;
 	vector< shared_ptr<Geometry> > objects;
 	SkeletonLoader sload;
 	shared_ptr<Skeleton> skel;

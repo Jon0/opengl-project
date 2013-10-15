@@ -25,11 +25,17 @@ Positional::~Positional() {
 	// TODO Auto-generated destructor stub
 }
 
-glm::mat4 Positional::getTransform() {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-20, 20, -20, 20, 0, 800);
-	glm::vec3 p = glm::vec3(data.position);
-	glm::mat4 depthViewMatrix = glm::lookAt(p, glm::vec3(0,0,0), glm::vec3(0,1,0));
+unsigned int Positional::mapSize() {
+	return 1024 * 4;
+}
 
+unsigned int Positional::cull() {
+	return GL_FRONT;
+}
+
+glm::mat4 Positional::getTransform() {
+	glm::mat4 depthProjectionMatrix = glm::perspective<float>(90.0, 1.0, 10.0, 5000.0);
+	glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(data.position * 2), glm::vec3(0,0,0), glm::vec3(0,1,0));
 	return depthProjectionMatrix * depthViewMatrix;
 }
 

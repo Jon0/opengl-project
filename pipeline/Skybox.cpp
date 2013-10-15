@@ -22,6 +22,8 @@ Skybox::Skybox( VertexBuffer &vb ):
 	skybox.setUniform("cubeTexture", &cubeTex->location);
 
 	sky->init(&vb);
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
 
 Skybox::~Skybox() {

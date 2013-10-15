@@ -53,8 +53,9 @@ public:
 		blockSource.resize(length);
 
 		glGetActiveUniformBlockiv(programID, blockIndex.data()[0], GL_UNIFORM_BLOCK_DATA_SIZE, &blockDataSize);
-		//cout << "block data size: " << blockDataSize << endl;
-		//cout << "type data size: " << sizeof(T) << endl;
+		cout << n << endl;
+		cout << "block data size: " << blockDataSize << endl;
+		cout << "type data size: " << sizeof(T) << endl;
 	}
 
 	virtual ~UniformBlock() {}

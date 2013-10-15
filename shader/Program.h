@@ -29,6 +29,7 @@ private:
 	 * shaders
 	 */
 	GLuint programID;
+	Shader comp;
 	Shader vert;
 	Shader geom;
 	Shader frag;
@@ -36,7 +37,6 @@ private:
 	/*
 	 * attached uniforms
 	 */
-	map<string, GLuint> uniformName;
 	map<GLuint, UniformControlBase *> uniformControl;
 
 public:
@@ -49,15 +49,18 @@ public:
 	 * updated when calling enable()
 	 */
 	template<class T> void setUniform(string name, UniformControl<T> *c) {
-		auto value = uniformName.find(name);	// check for existing value
-		if (value == uniformName.end()) {
-			GLuint id = glGetUniformLocation(programID, name.c_str());
-			uniformName[name] = id;
-			uniformControl[id] = c;
-		}
-		else {
-			uniformControl.at( uniformName[name] ) = c;
-		}
+		GLuint id = glGetUniformLocation(programID, name.c_str());
+		uniformControl[id] = c;
+
+//		auto value = uniformName.find(name);	// check for existing value
+//		if (value == uniformName.end()) {
+//			GLuint id = glGetUniformLocation(programID, name.c_str());
+//			uniformName[name] = id;
+//			uniformControl[id] = c;
+//		}
+//		else {
+//			uniformControl.at( uniformName[name] ) = c;
+//		}
 	}
 
 	template<class T> UniformBlock<T> getBlock(string name, int length) {

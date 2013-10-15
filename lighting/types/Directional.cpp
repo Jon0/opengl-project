@@ -13,8 +13,8 @@ namespace std {
 
 Directional::Directional() {
 	// directional light
-	data.position = glm::vec4(-15.0, 10.0, -13.0, 0.0);
-	data.color = glm::vec4(1.0, 0.85, 0.05, 1.0);
+	data.position = glm::vec4(-0.106064, 21.095, 3.11255, 0.0);
+	data.color = glm::vec4(2.08103, 2.15291, 2.1031, 1.0);
 	data.intensity = 0.85;
 	data.spotlight = 0.0;
 	update();
@@ -22,6 +22,14 @@ Directional::Directional() {
 
 Directional::~Directional() {
 	// TODO Auto-generated destructor stub
+}
+
+unsigned int Directional::mapSize() {
+	return 1024 * 12;
+}
+
+unsigned int Directional::cull() {
+	return GL_BACK;
 }
 
 glm::mat4 Directional::getTransform() {

@@ -12,12 +12,12 @@ namespace std {
 
 Pipeline::Pipeline():
 		vb { 15 },
+		tree { new Tree(128) },
 		scene { new GRender( vb ) },
 		sky { new Skybox( vb ) },
-		render { new Render( scene ) },
+		render { new Render( scene, tree ) },
 		voxelize { new Voxelize( scene ) },
-		lm { new LightingModel( scene ) },
-		tree { 128 }
+		lm { new LightingModel( scene ) }
 {
 	scene->setLightModel( lm.get() );
 
@@ -48,8 +48,7 @@ void Pipeline::update( chrono::duration<double> tick ) {
 	/*
 	 * fill image with lighting information
 	 */
-	tree.enable( 0 );
-
+	tree->enable( 0 );
 
 	lm->update( tick );
 	voxelize->update( tick );
@@ -64,7 +63,7 @@ void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	/*
 	 * bind illumination
 	 */
-	tree.enable( 0 );
+	tree->enable( 0 );
 
 	lm->setLight( render->getProgram(), render->lightUniform );
 

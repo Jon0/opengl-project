@@ -20,23 +20,34 @@ void copyVec3(glm::vec3 &out, const aiVector3D &in) {
 	out.z = in.z;
 }
 
-vector<GPolygon> readOBJFile(const char* filename) {
-
+vector<GMesh> readOBJFile(const char* filename) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filename,
 			aiProcess_CalcTangentSpace | aiProcess_Triangulate
 					| aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
-
 	cout << filename << " contains " << scene->mNumMeshes << " meshes" << endl;
+	cout << filename << " contains " << scene->mNumMaterials << " materials" << endl;
+	vector<string> texList;
 
+	/* scan scene's materials for textures */
+	for (unsigned int m = 0; m < scene->mNumMaterials; ++m) {
+		int texIndex = 0;
+		aiString path;  // filename
+		scene->mMaterials[m]->GetTexture( aiTextureType_DIFFUSE, texIndex, &path);
+		texList.push_back(path.C_Str());
+	}
 
 	/* array of all polygons */
-	vector<GPolygon> g_polys;
+	vector<GMesh> g_meshes;
 
 	/* add each polygon */
 	for (unsigned int m = 0; m < scene->mNumMeshes; ++m) {
+		/*
+		 * copy data to the mesh
+		 */
 		aiMesh &mesh = *scene->mMeshes[m];
+		GMesh gm;
 		//cout << "num faces = " << mesh.mNumFaces << endl;
 		//cout << "has tangents = " << mesh.HasTangentsAndBitangents() << endl;
 
@@ -66,15 +77,23 @@ vector<GPolygon> readOBJFile(const char* filename) {
 				}
 				plg.push_back(vrt);
 			}
-
-			g_polys.push_back(plg);
+			gm.push_back(plg);
 		}
+
+		gm.texaddr = 0;
+		string name = texList[mesh.mMaterialIndex];
+		if (name.length() > 1) {
+			gm.texture = new Tex();
+			gm.texture->make2DTex( "assets/Sponza/"+name );
+			gm.texaddr = gm.texture->getAddr();
+		}
+		g_meshes.push_back(gm);
 	}
-	return g_polys;
+	return g_meshes;
 }
 
-shared_ptr<Geometry> readGeometry(const char* filename) {
-	return shared_ptr<Geometry>(new DrawList(readOBJFile(filename)));
+shared_ptr<DrawList> readGeometry(const char* filename) {
+	return shared_ptr<DrawList>(new DrawList(readOBJFile(filename)));
 }
 
 }

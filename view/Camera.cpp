@@ -18,19 +18,21 @@ namespace std {
 Camera::Camera( shared_ptr<Pipeline> p ):
 		pipeline { p },
 		focus {0, 30, 0},
-		cam_angle {0.725405, -0.00180466, 0.688331, -0.000614126},
+		cam_angle {0.999891, 0.00239877, 0.0153423, -0.00016302},
 		cam_angle_d {1, 0, 0, 0},
 		click_old {1, 0, 0, 0},
 		click_new {1, 0, 0, 0}
 {
 	cam_aspect = 1.0;
-	viewzoom = 81.4968;
+	viewzoom = 67.0476;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;
 	arcball_radius = 1.0;
 	click_x = click_y = 0;
 	windowwidth = windowheight = 1;
+
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 Camera::~Camera() {}
@@ -85,6 +87,11 @@ void Camera::resize(int x, int y) {
 }
 
 void Camera::keyPressed(unsigned char c) {
+	if (c == '/') {
+		cout << "camera quat = " << cam_angle.w << ", " << cam_angle.x << ", " <<  cam_angle.y << ", " <<  cam_angle.z << endl;
+		cout << "camera zoom = " << viewzoom << endl;
+	}
+
 	// TODO fix this
 	pipeline->scene->keyPressed(c);
 }

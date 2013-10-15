@@ -43,6 +43,17 @@ public:
 		glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer); //bindBufferRange...
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
+
+	GLuint64 make_gpu_Addr() {
+		GLuint64 gpuAddrs;
+		// get the address of this buffer and make it resident.
+		glGetBufferParameterui64vNV(GL_UNIFORM_BUFFER, GL_BUFFER_GPU_ADDRESS_NV, &gpuAddrs);
+		glMakeBufferResidentNV(GL_UNIFORM_BUFFER, GL_READ_ONLY);
+
+		return gpuAddrs;
+	}
+
+
 };
 
 } /* namespace std */

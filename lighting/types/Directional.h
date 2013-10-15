@@ -16,6 +16,8 @@ class Directional: public Light {
 public:
 	Directional();
 	virtual ~Directional();
+	virtual unsigned int mapSize();
+	virtual unsigned int cull();
 	virtual glm::mat4 getTransform();
 };
 

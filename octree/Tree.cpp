@@ -13,8 +13,8 @@
 namespace std {
 
 Tree::Tree(int l):
-	location { [](GLuint i, GLint v){ glUniform1i(i, v); } },
-	image { [](GLuint i, GLint v){ glUniform1i(i, v); } }
+	root { 1 },
+	location { [](GLuint i, GLint v){ glUniform1i(i, v); } }
 {
 	levels = l;
 	size = levels * levels * levels;
@@ -66,13 +66,20 @@ void Tree::enable( GLuint i ) {
 	glBindImageTexture(i, addr, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
 }
 
+void Tree::enableTex( Program &prg, string s, GLuint i ) {
+	glActiveTexture(GL_TEXTURE0 + i);
+	glBindTexture(GL_TEXTURE_3D, addr);
+	location.setV( i );
+	prg.setUniform( s, &location );
+}
+
 void Tree::addLight() {
 	// add light to octree root
 }
 
 void Tree::calc(shared_ptr<Geometry> g) {
 	// TODO another texture for normals of each voxel
-	vector<GPolygon> &gp = g->polygon();
+	vector<GPolygon> &gp = g->polygon(0);
 	for (GPolygon &p: gp) {
 		glm::vec3 c = getPoint( p.center() );
 		int i = c.x, j = c.y, k = c.z;

@@ -12,19 +12,19 @@
 
 #include "../texture/Tex.h"
 #include "Geometry.h"
-#include "GVertex.h"
+#include "GMesh.h"
 
 namespace std {
 
 class DrawList: public Geometry {
 public:
-	DrawList( vector<GPolygon> );
+	DrawList( vector<GMesh> );
 	virtual ~DrawList();
 
 	virtual void init(VertexBuffer *);
 	virtual void draw();
 	virtual void drawDebug();
-	virtual vector<GPolygon> &polygon();
+	virtual vector<GPolygon> &polygon(int);
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);
 	virtual int selectMouse( int, int );
@@ -32,17 +32,19 @@ public:
 	virtual MaterialProperties &material();
 	virtual void updateMaterial();
 
+	GMesh &getMesh(int);
+
 	/*
 	 * do these need to be kept?
 	 */
-	unsigned int s;
-	vector<GPolygon> data;
+	vector<GMesh> data;
 
 	/* Transformation */
 	glm::mat4 transform_matrix;
 
 	/* Indices */
-	GLuint elementbuffer;
+	GLuint *length;
+	GLuint *elementbuffer;
 
 	/* material */
 	UBO<MaterialProperties> materialType;

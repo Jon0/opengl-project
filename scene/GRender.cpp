@@ -18,8 +18,13 @@ namespace std {
 GRender::GRender( VertexBuffer &vb ):
   skel { sload.readASF( "assets/Avatar/priman.asf" ) }
 {
-
     model = readGeometry("assets/Avatar/andy.obj");
+
+    GMesh *gm = &model->data.data()[6]; //model->getMesh(0);
+    gm->texture = new Tex();
+    gm->texture->make2DTex("assets/Avatar/boySmiley.jpg");
+    gm->texaddr = gm->texture->getAddr();
+
     objects.push_back(model);
 	objects.push_back( readGeometry("assets/Sponza/SponzaTri.obj") );
 	//objects.push_back( readGeometry("assets/obj/Box.obj") );
@@ -52,9 +57,6 @@ GRender::GRender( VertexBuffer &vb ):
 
 	message = "Light "+to_string(selectedLight) +" : Position";
 	showIcons = true;
-
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
 GRender::~GRender() {
@@ -81,12 +83,14 @@ void GRender::debug( shared_ptr<ViewInterface> c ) {
 	/*
 	 * do some fixed pipeline rendering
 	 */
-	glUseProgram(0);
-	skel->setCurrentPose( &current_pose );
-	skel->display();
+	if (showIcons) {
 
+		glUseProgram(0);
+		skel->setCurrentPose(&current_pose);
+		skel->display();
 
-	if (showIcons) lightmodel->drawIcons();
+		lightmodel->drawIcons();
+	}
 }
 
 void GRender::displayUI() {
@@ -152,6 +156,7 @@ void GRender::messageSent(string) {
 void GRender::setSelection(glm::vec4 *i, string type) {
 	selVec = i;
 	message = "Light "+to_string(selectedLight) + " : " + type;
+	cout << message << endl;
 }
 
 void GRender::keyPressed(unsigned char c) {
@@ -162,6 +167,7 @@ void GRender::keyPressed(unsigned char c) {
 		break;
 	case 's':
 		setSelection(&l.direction, "Spot");
+
 		break;
 	case 'd':
 		setSelection(&l.color, "Color");
@@ -195,8 +201,16 @@ void GRender::keyPressed(unsigned char c) {
 	case '.':
 		showIcons = !showIcons;
 		break;
+	case ',':
+		for (int i = 0; i < 3; ++i) {
+			LightProperties &l = lightmodel->getLight(i);
+			cout << "color " << l.color.w << ", " << l.color.x << ", " << l.color.y << ", " << l.color.z << endl;
+			cout << "position " << l.position.w << ", " << l.position.x << ", " << l.position.y << ", " << l.position.z << endl;
+			cout << "direction " << l.direction.w << ", " << l.direction.x << ", " << l.direction.y << ", " << l.direction.z << endl;
+			cout << "intensity " << l.intensity << endl;
+		}
+		break;
 	}
-	cout << message << endl;
 }
 
 } /* namespace std */

@@ -10,19 +10,22 @@
 
 namespace std {
 
-DrawList::DrawList(vector<GPolygon> shape) {
+DrawList::DrawList(vector<GMesh> shape) {
 	data = shape;
-	s = shape.size();
 	elementbuffer = 0;
 
 	transform_matrix = glm::mat4(1.0f);
 
-	glm::vec3 color =  glm::normalize(glm::vec3(rand() % 256, rand() % 256, rand() % 256));
+	//glm::vec3 color =  glm::normalize(glm::vec3(rand() % 256, rand() % 256, rand() % 256));
+	glm::vec3 color =  glm::normalize(glm::vec3(1, 1, 1));
 	materialType.data.AmbientColor = glm::vec4(color.x, color.y, color.z, 1.0);
 	materialType.data.DiffuseColor = glm::vec4(color.x, color.y, color.z, 1.0);
 	materialType.data.SpecularColor = glm::vec4(color.x / 5, color.y / 5, color.z / 5, 1.0);
 	materialType.data.Exponent = 8.0;
 	materialType.update();
+
+	length = NULL;
+	elementbuffer = NULL;
 }
 
 DrawList::~DrawList() {}
@@ -30,44 +33,72 @@ DrawList::~DrawList() {}
 void DrawList::init(VertexBuffer *vb) {
 	/* the order verticies get drawn */
 	std::vector<unsigned int> indices;
-	int off = vb->size();
+
+	length = new GLuint [ data.size() ];
+	GLuint *offset = new GLuint [ data.size() + 1 ];
+	offset[0] = 0;
+	int m = 0, off = vb->size();
 
 	vector<GVertex> verts;
-	for (GPolygon poly: data) {
-		for (GVertex vert: poly) {
-			verts.push_back(vert);
-			indices.push_back(off);
-			off++;
+
+	for (GMesh mesh : data) {
+		length[m] = 0;
+
+		for (GPolygon poly : mesh) {
+			for (GVertex vert : poly) {
+				verts.push_back(vert);
+				indices.push_back(off);
+				off++;
+				length[m]++;
+			}
+
 		}
+		offset[m+1] = offset[m] + length[m];
+		m++;
 	}
 	vb->add(verts);
 
+	elementbuffer = new GLuint [ data.size() ];
+
 	// Generate a buffer for the indices
-	glGenBuffers(1, &elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glGenBuffers(data.size(), elementbuffer);
+	for (unsigned int i = 0; i < data.size(); ++i) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer[i]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, length[i] * sizeof(unsigned int), &indices[ offset[i] ], GL_STATIC_DRAW);
+	}
+	delete offset;
 }
 
 void DrawList::draw() {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glDrawElements(GL_TRIANGLES, s * 3, GL_UNSIGNED_INT, 0);
+	for (unsigned int i = 0; i < data.size(); ++i) {
+		// bind texture
+		glActiveTexture(GL_TEXTURE0 + 1);
+		glBindTexture(GL_TEXTURE_2D, data.data()[i].texaddr);
+
+		// bind indices
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer[i]);
+
+		// output list
+		glDrawElements(GL_TRIANGLES, length[i], GL_UNSIGNED_INT, 0);
+	}
 }
 
 void DrawList::drawDebug() {
-	vector<GVertex> verts;
-	for (GPolygon poly: data) {
-		for (GVertex vert: poly) {
-			glBegin(GL_LINES);
-			glColor3f(1,0,0);
-			glVertex3fv( &vert.position[0] );
-			glVertex3fv( &(vert.position + vert.normal)[0] );
-			glColor3f(0,1,0);
-			glVertex3fv( &vert.position[0] );
-			glVertex3fv( &(vert.position + vert.tangent)[0] );
-			glColor3f(0,0,1);
-			glVertex3fv( &vert.position[0] );
-			glVertex3fv( &(vert.position + vert.bitangent)[0] );
-			glEnd();
+	for (GMesh mesh : data) {
+		for (GPolygon poly : mesh) {
+			for (GVertex vert : poly) {
+				glBegin(GL_LINES);
+				glColor3f(1, 0, 0);
+				glVertex3fv(&vert.position[0]);
+				glVertex3fv(&(vert.position + vert.normal)[0]);
+				glColor3f(0, 1, 0);
+				glVertex3fv(&vert.position[0]);
+				glVertex3fv(&(vert.position + vert.tangent)[0]);
+				glColor3f(0, 0, 1);
+				glVertex3fv(&vert.position[0]);
+				glVertex3fv(&(vert.position + vert.bitangent)[0]);
+				glEnd();
+			}
 		}
 	}
 }
@@ -78,8 +109,9 @@ void DrawList::drawDebug() {
   //   **/
   // }
 
-vector<GPolygon> &DrawList::polygon() {
-	return data;
+
+vector<GPolygon> &DrawList::polygon(int mesh) {
+	return data.data()[mesh];
 }
 
 int DrawList::selectMouse(int, int) {
@@ -104,6 +136,10 @@ MaterialProperties &DrawList::material() {
 
 void DrawList::updateMaterial() {
 	return materialType.update();
+}
+
+GMesh &DrawList::getMesh(int i) {
+	return data.data()[i];
 }
 
 } /* namespace std */

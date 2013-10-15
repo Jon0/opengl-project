@@ -16,6 +16,8 @@ class Positional: public Light {
 public:
 	Positional();
 	virtual ~Positional();
+	virtual unsigned int mapSize();
+	virtual unsigned int cull();
 	virtual glm::mat4 getTransform();
 };
 

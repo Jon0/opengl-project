@@ -17,6 +17,7 @@ Program *active = NULL;
 
 Program::Program(string file):
 		vert("assets/shaders/"+file+".vert", GL_VERTEX_SHADER),
+		geom("assets/shaders/"+file+".geom", GL_GEOMETRY_SHADER),
 		frag("assets/shaders/"+file+".frag", GL_FRAGMENT_SHADER)
 {
 	//Create a program handle.
@@ -26,6 +27,7 @@ Program::Program(string file):
 	//and that vertexHandle is a handle to a vertex shader object.
 	glAttachShader(programID, vert.ShaderHandle);
 	glAttachShader(programID, frag.ShaderHandle);
+	glAttachShader(programID, geom.ShaderHandle);
 
 	glBindAttribLocation(programID, 0, "vertexPosition_modelspace");
 	glBindAttribLocation(programID, 1, "vertexUV");
@@ -48,26 +50,15 @@ Program::Program(string file):
 	}
 }
 
-Program::Program(string file, int):
-		vert("assets/shaders/"+file+".vert", GL_VERTEX_SHADER),
-		geom("assets/shaders/"+file+".geom", GL_GEOMETRY_SHADER),
-		frag("assets/shaders/"+file+".frag", GL_FRAGMENT_SHADER)
+Program::Program(string file, int compute):
+		comp("assets/shaders/"+file+".comp", GL_COMPUTE_SHADER)
 {
 	//Create a program handle.
 	programID = glCreateProgram();
 
 	//Attach the shaders. Here, assume that fragmentHandle is a handle to a fragment shader object,
 	//and that vertexHandle is a handle to a vertex shader object.
-	glAttachShader(programID, vert.ShaderHandle);
-	glAttachShader(programID, geom.ShaderHandle);
-	glAttachShader(programID, frag.ShaderHandle);
-
-	glBindAttribLocation(programID, 0, "vertexPosition_modelspace");
-	glBindAttribLocation(programID, 1, "vertexUV");
-	glBindAttribLocation(programID, 2, "vertexNormal_modelspace");
-	glBindAttribLocation(programID, 3, "vertexTangent_modelspace");
-    glBindAttribLocation(programID, 4, "vertexBitangent_modelspace");
-    //glBindAttribLocation(programID, 2, "in_Color");
+	glAttachShader(programID, comp.ShaderHandle);
 
 	//Link the program.
 	glLinkProgram(programID);
@@ -88,15 +79,16 @@ Program::~Program() {
 }
 
 GLuint Program::addUniform(string name) {
-	auto value = uniformName.find(name);
-	if (value == uniformName.end()) {
-		GLuint id = glGetUniformLocation(programID, name.c_str());
-		uniformName[name] = id;
-		return id;
-	}
-	else {
-		return value->second;
-	}
+	return glGetUniformLocation(programID, name.c_str());
+//	auto value = uniformName.find(name);
+//	if (value == uniformName.end()) {
+//		GLuint id =
+//		uniformName[name] = id;
+//		return id;
+//	}
+//	else {
+//		return value->second;
+//	}
 }
 
 void Program::enable() {
