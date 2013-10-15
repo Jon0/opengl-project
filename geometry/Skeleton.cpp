@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+ //---------------------------------------------------------------------------
 //
 // This software is provided 'as-is' for assignment of COMP308
 // in ECS, Victoria University of Wellington,
@@ -280,3 +280,21 @@ void copyState( int numBones, pose *other, pose *next ) {
 }
 
 
+glm::quat getAffineTransformationForBone(char *name){
+  //how??
+}
+
+GVertex* linearBlending(GVertex *vertex, Skeleton *skelly, int vertexIndex){
+  //pseudocode really,, idk how to do...
+
+
+  // mat4 matrixSum;
+  // for(std::map<string, vector<double> >::iterator it=weights.begin(); it!=weights.end(); ++it)
+  //   {
+  //     mat4 matrix = toMat4(getAffineTransformationForBone(it->first));
+  //     matrix = matrix* it->second[vertexIndex];
+  //     matrixSum += matrix;
+  //   }
+  // return matrixSum*vertex;
+    
+}
