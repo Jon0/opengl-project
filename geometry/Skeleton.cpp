@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+ //---------------------------------------------------------------------------
 //
 // This software is provided 'as-is' for assignment of COMP308
 // in ECS, Victoria University of Wellington,
@@ -21,10 +21,14 @@
 #include <math.h>
 #include <iostream>
 #include <GL/glut.h>
+#include <map>
+#include <vector>
+#include <quaternion>
+
 
 #include "Skeleton.h"
 
-Skeleton::Skeleton( int numOfBones, bone *bones ) {
+Skeleton::Skeleton( int numOfBones, bone *bones, map<string, vector<double> > *ws ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
@@ -51,10 +55,13 @@ Skeleton::Skeleton( int numOfBones, bone *bones ) {
 
 	// default colour function
 	cf = &Skeleton::colorStandard;
+
+	weights = ws;
 }
 
 Skeleton::~Skeleton() {
 	deleteBones(root);
+	delete weights;
 }
 
 void Skeleton::deleteBones(bone* root) {
@@ -275,3 +282,50 @@ void copyState( int numBones, pose *other, pose *next ) {
 }
 
 
+glm::quat Skeleton::getAffineTransformationForBone(string name){
+  
+  //convert string to char* aswell  , implement inverse function, bones rotation needs to be convert to matrix 4?
+  return restTransformation(name) * getBone(name)->rotation * inverse(restTransformation(name))
+}
+
+glm::quat restTransformation(string boneName){
+  vec3 translation;
+  return restTransformationRec(boneName, root, translation);
+}
+
+
+glm::quat restTransformationRec(string boneName, bone* root, vec3 translation){
+
+  if (root->name == boneName) return translation; //comparing string with char here, fix this
+  
+  translation.x += root->dirx*root->length; //get right type of vector and right syntax here, fix
+  translation.y += root->diry*root->length;
+  translation.z += root->dirz*root->length;
+  for (int i = 0; i < root->numChildren; ++i) {
+
+    //will this recursion work?? or will it not?? do i need to create new translation vector for each recursive call?
+    return restTransformationRec(boneName, root->children[i], translation);
+  }
+ 
+}
+
+
+
+GVertex* Skeleton::linearBlending(GVertex *vertex, Skeleton *skelly, int vertexIndex){
+
+
+  //can't seem to reference toMat4 function properly
+
+  glm::mat4 matrixSum;
+  for(std::map<string, vector<double> >::iterator it=weights->begin(); it!=weights->end(); ++it)
+    {
+      glm::mat4 matrix = quaternion::toMat4(getAffineTransformationForBone(it->first));
+      matrix = matrix* it->second[vertexIndex]; //might need to implement this * as scalar multiply by matrix
+      matrixSum += matrix;
+    }
+  return matrixSum*vertex; //might need to implement this * as matrix multiply a vertex
+  
+
+  return vertex;
+    
+}

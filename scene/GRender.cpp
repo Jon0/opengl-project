@@ -16,7 +16,7 @@
 namespace std {
 
 GRender::GRender( VertexBuffer &vb ):
-		skel { sload.readASF( "assets/skeleton/priman.asf" ) }
+  skel { sload.readASF( "assets/Avatar/priman.asf" ) }
 {
     model = readGeometry("assets/Avatar/andy.obj");
 

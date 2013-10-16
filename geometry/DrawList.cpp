@@ -103,6 +103,13 @@ void DrawList::drawDebug() {
 	}
 }
 
+  // void DrawList::drawSkinnning(){
+  //   /**
+  //      should I do this here??
+  //   **/
+  // }
+
+
 vector<GPolygon> &DrawList::polygon(int mesh) {
 	return data.data()[mesh];
 }
