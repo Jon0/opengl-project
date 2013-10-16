@@ -88,7 +88,7 @@ public:
 	glm::quat getBoneAxis(int);
 	void setCurrentPose(pose *p);
 
-	glm::quat getAffineTransformationForBone(char *);
+	glm::quat getAffineTransformationForBone(string);
 
 	//in goes a vertex, out comes its deformation vertex
 	GVertex* linearBlending(GVertex*, Skeleton *, int);

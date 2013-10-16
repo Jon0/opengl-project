@@ -385,7 +385,7 @@ DOF SkeletonLoader::dofFromString(char* s) {
 	  }
       }
     if(!infile.eof()){
-      cerr << "ERROR, should be end of file";
+      cerr << "ERROR, should be end of file" << endl;
     }
     return weights;
 
