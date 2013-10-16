@@ -7,8 +7,8 @@ uniform bool useWeights;
 uniform sampler2D weights;
 
 layout(std140) uniform BoneProperties {
-	vec4 position;
-} Bones [64];
+	vec4 position [32];
+};
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;

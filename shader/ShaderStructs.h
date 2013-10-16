@@ -47,7 +47,7 @@ struct OctreeNode {
 };
 
 struct BoneProperties {
-	glm::vec4 position;
+	glm::vec4 position [32];
 };
 
 } /* namespace std */
