@@ -21,6 +21,8 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		shadowMaps { [](GLuint i, vector<GLint> v){ glUniform1iv(i, v.size(), v.data()); } },
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
+		insertShadow { [](GLuint i, GLint v){ glUniform1i(i, v); } },
+		insertMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
 		scene { si }
 {
 	/*
@@ -34,7 +36,7 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 	shadowMaps.data.resize(numLights);
 	DepthBias.data.resize(numLights);
 	depthTextureId.resize(numLights);
-	fboId.resize(numLights);	//main.setUniform("LightPosition_worldspace", &Positions);
+	fboId.resize(numLights);
 	generateShadowFBO();
 
 	/* depth shader */
@@ -47,6 +49,12 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 	);
+
+	/*
+	 * insertion shader values
+	 */
+	insert.setUniform("shadowMap", &insertShadow);
+	insert.setUniform("light_transform", &insertMatrix);
 
 	t = 0.0;
 }
@@ -212,11 +220,17 @@ void LightingModel::update( chrono::duration<double> ) {
 	for ( auto &g: scene->content() ) createShadow(g);
 }
 
-void LightingModel::insertLight( Tree &t ) {
+void LightingModel::insertLight( shared_ptr<Tree> t ) {
 	/*insert light values */
 	insert.enable();
-	t.enable(0);
-	glDispatchCompute(512, 512, 1);
+	t->enable(0);
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[2]);
+	insertShadow.setV( 5 );
+	insertMatrix.setV( biasMatrix * lights.data()[2]->getTransform() );
+
+	glDispatchCompute(64, 64, 64);
 }
 
 

@@ -35,6 +35,7 @@ layout(std140) uniform Camera {
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
 out vec3 Position_worldspace;
+out vec3 Normal_worldspace;
 out vec3 VertexNormal_tangentspace;
 
 out vec3 EyeDirection_cameraspace;
@@ -68,6 +69,8 @@ void main(){
 
 	// Position of the vertex, in worldspace : M * position
 	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
+
+	Normal_worldspace = vertexNormal_modelspace;
 
 	// Vector that goes from the vertex to the camera, in camera space.
 	// In camera space, the camera is at the origin (0,0,0).

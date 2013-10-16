@@ -51,6 +51,7 @@ uniform bool useNormTex;
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
+in vec3 Normal_worldspace;
 in vec3 VertexNormal_tangentspace;
 
 in vec3 EyeDirection_cameraspace;
@@ -190,15 +191,31 @@ void main() {
 		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha, MaterialExponent) / (distance*distance);
 	}
 
+
+	/* indirect light */
+	float indirect = 0;
+	for (int i = 4; i < 8; ++i) {
+		vec3 pos = Position_worldspace;
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(i,0,0)) / 512 );
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(-i,0,0)) / 512 );
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,i,0)) / 512 );
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,-i,0)) / 512 );
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,0,i)) / 512 );
+		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,0,-i)) / 512 );
+	}
+	indirect = clamp( indirect, 0, 1 );
+
+
+
 	/*
 	 *	*******************************
 	 *	    set final color value
 	 * 	*******************************
 	 */
 
-	//imageStore(illumination, ivec3(64,64,64)+ivec3((Position_worldspace - 0.5) / 4), vec4(256,0,0,0));
+	//imageStore(illumination, ivec3(64,64,64)+ivec3((Position_worldspace) / 4), vec4(256,0,0,0));
 
-	color = texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + DiffuseTotal + SpecularTotal;
+	color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 	color.w = 1.0;
 

@@ -12,7 +12,7 @@ namespace std {
 
 Pipeline::Pipeline():
 		vb { 15 },
-		tree { new Tree(128) },
+		tree { new Tree(64) },
 		scene { new GRender( vb ) },
 		sky { new Skybox( vb ) },
 		render { new Render( scene, tree ) },
@@ -49,9 +49,8 @@ void Pipeline::update( chrono::duration<double> tick ) {
 	 * fill image with lighting information
 	 */
 	tree->enable( 0 );
-
 	lm->update( tick );
-	voxelize->update( tick );
+	lm->insertLight(tree);
 }
 
 /*

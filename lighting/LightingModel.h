@@ -52,6 +52,12 @@ public:
 	UniformControl<vector<glm::mat4>> DepthBias;
 
 	/*
+	 * light insertion uniforms
+	 */
+	UniformControl<GLint> insertShadow;
+	UniformControl<glm::mat4> insertMatrix;
+
+	/*
 	 * set of lights used
 	 */
 	vector< Light * > lights;
@@ -73,7 +79,7 @@ public:
 	void clearDepthMap();
 	void createShadow( shared_ptr<Geometry> );
 	void setLight(Program &, UniformBlock<LightProperties> &);
-	void insertLight( Tree & );
+	void insertLight( shared_ptr<Tree> );
 	void drawIcons();
 
 	virtual Program &getProgram();

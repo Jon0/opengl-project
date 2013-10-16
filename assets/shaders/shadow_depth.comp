@@ -10,6 +10,11 @@ uniform mat4x4 light_transform;
 
 void main(){
 
-	imageStore(illumination, ivec3(gl_LocalInvocationID), vec4(256,0,0,0));
+	vec4 shadowCoord = light_transform * vec4((gl_GlobalInvocationID - vec3(32,32,32s)) * 8, 1);
+
+	float visibility = 1.0;
+	visibility -= (1.0 - texture( shadowMap, shadowCoord.xyz /shadowCoord.w ));
+
+	imageStore(illumination, ivec3(gl_GlobalInvocationID), vec4(visibility));
 	//imageAtomicAdd(illumination, ivec3(gl_LocalInvocationID), 1);
 }

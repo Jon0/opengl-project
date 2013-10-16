@@ -68,7 +68,6 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 	glUniform1i(useDiffTex, true);
 	diffuse_tex.setV( 1 );
 	specular_tex.setV( 1 );
-
 	weight_tex.setV( 2 );
 
 	for ( auto &g: scene->content() ) {
