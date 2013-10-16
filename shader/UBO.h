@@ -24,11 +24,22 @@ template<class T> class UBO {
 private:
 	GLuint buffer;
 
+
 public:
-	T data;
+	const GLenum type;
 	const GLuint bindingPoint;
+	T data;
 
 	UBO():
+			type(GL_UNIFORM_BUFFER),
+			bindingPoint(ubocount)
+	{
+		glGenBuffers(1, &buffer);
+		ubocount++;
+	}
+
+	UBO(GLenum t):
+			type(t),
 			bindingPoint(ubocount)
 	{
 		glGenBuffers(1, &buffer);
@@ -38,17 +49,17 @@ public:
 	virtual ~UBO() {}
 
 	void update() {
-		glBindBuffer(GL_UNIFORM_BUFFER, buffer);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &data, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer); //bindBufferRange...
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glBindBuffer(type, buffer);
+		glBufferData(type, sizeof(T), &data, GL_DYNAMIC_DRAW);
+		glBindBufferBase(type, bindingPoint, buffer); //bindBufferRange...
+		glBindBuffer(type, 0);
 	}
 
 	GLuint64 make_gpu_Addr() {
 		GLuint64 gpuAddrs;
 		// get the address of this buffer and make it resident.
-		glGetBufferParameterui64vNV(GL_UNIFORM_BUFFER, GL_BUFFER_GPU_ADDRESS_NV, &gpuAddrs);
-		glMakeBufferResidentNV(GL_UNIFORM_BUFFER, GL_READ_ONLY);
+		glGetBufferParameterui64vNV(type, GL_BUFFER_GPU_ADDRESS_NV, &gpuAddrs);
+		glMakeBufferResidentNV(type, GL_READ_ONLY);
 
 		return gpuAddrs;
 	}
