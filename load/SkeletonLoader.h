@@ -8,6 +8,7 @@
 #ifndef SKELETONLOADER_H_
 #define SKELETONLOADER_H_
 
+#include <memory>
 #include <stdio.h>
 #include "../geometry/Skeleton.h"
 
@@ -27,7 +28,7 @@ protected:
 	void readBone(char *, FILE *, int &, bone * );
 	DOF dofFromString(char* s);
 	void decomment(char *);
-	map<string, vector<double> > *readJointWeights(char*);
+	GLuint readJointWeights(char*, shared_ptr<Skeleton>);
 
 private:
 	int buffSize, maxBones;

@@ -70,15 +70,15 @@ typedef color *(Skeleton::*colorfunc)(bone *);
 
 class Skeleton: public Drawable {
 public:
-  Skeleton( int, bone *, map<string, vector<double> >* );
+  Skeleton( int, bone * );
 	~Skeleton();
 
 	virtual void display();
 	virtual int selectMouse(int, int);
 
 	int getNumBones();
-	bone *getBone(char *);
-	bone *getBone(int);
+	bone *getBone(const char *);
+	bone *getBone(const int);
 
 	void setSelection(int);
 	bool hasSelection();
@@ -93,9 +93,9 @@ public:
 	//in goes a vertex, out comes its deformation vertex
 	GVertex* linearBlending(GVertex*, Skeleton *, int);
 
-	
-	
-	
+
+
+
 
 
 protected:
@@ -122,8 +122,6 @@ private:
 	// color functions
 	color *colorAsID(bone *);
 	color *colorStandard(bone *);
-
-	map<string, vector<double> > *weights;
 };
 
 #endif

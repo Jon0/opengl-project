@@ -4,7 +4,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../geometry/.#Skeleton.cpp \
 ../geometry/Cube.cpp \
 ../geometry/DrawList.cpp \
 ../geometry/GMesh.cpp \
@@ -14,7 +13,6 @@ CPP_SRCS += \
 ../geometry/Teapot.cpp 
 
 OBJS += \
-./geometry/.#Skeleton.o \
 ./geometry/Cube.o \
 ./geometry/DrawList.o \
 ./geometry/GMesh.o \
@@ -24,7 +22,6 @@ OBJS += \
 ./geometry/Teapot.o 
 
 CPP_DEPS += \
-./geometry/.#Skeleton.d \
 ./geometry/Cube.d \
 ./geometry/DrawList.d \
 ./geometry/GMesh.d \

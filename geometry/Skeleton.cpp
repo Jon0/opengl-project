@@ -26,7 +26,7 @@
 
 #include "Skeleton.h"
 
-Skeleton::Skeleton( int numOfBones, bone *bones, map<string, vector<double> > *ws ) {
+Skeleton::Skeleton( int numOfBones, bone *bones ) {
 	numBones = numOfBones;
 	root = bones;
 	select = NULL;
@@ -54,12 +54,10 @@ Skeleton::Skeleton( int numOfBones, bone *bones, map<string, vector<double> > *w
 	// default colour function
 	cf = &Skeleton::colorStandard;
 
-	weights = ws;
 }
 
 Skeleton::~Skeleton() {
 	deleteBones(root);
-	delete weights;
 }
 
 void Skeleton::deleteBones(bone* root) {
@@ -78,7 +76,7 @@ int Skeleton::getNumBones() {
 	return numBones;
 }
 
-bone *Skeleton::getBone(char *name) {
+bone *Skeleton::getBone( const char *name ) {
 	for (int i = 0; i < numBones; ++i) {
 		if (strcmp(name, root[i].name) == 0) {
 			return &root[i];
@@ -87,7 +85,7 @@ bone *Skeleton::getBone(char *name) {
 	return NULL;
 }
 
-bone *Skeleton::getBone(int ind) {
+bone *Skeleton::getBone( const int ind ) {
 	return &root[ind];
 }
 
@@ -281,7 +279,7 @@ void copyState( int numBones, pose *other, pose *next ) {
 
 
 glm::quat Skeleton::getAffineTransformationForBone(string name){
-  
+
   //convert string to char* aswell  , implement inverse function, bones rotation needs to be convert to matrix 4?
   glm::quat q;
   return q;
@@ -300,7 +298,7 @@ glm::quat restTransformation(string boneName){
 // glm::quat restTransformationRec(string boneName, bone* root, vec3 translation){
 
 //   // if (root->name == boneName) return translation; //comparing string with char here, fix this
-  
+
 //   // translation.x += root->dirx*root->length; //get right type of vector and right syntax here, fix
 //   // translation.y += root->diry*root->length;
 //   // translation.z += root->dirz*root->length;
@@ -329,8 +327,8 @@ GVertex* Skeleton::linearBlending(GVertex *vertex, Skeleton *skelly, int vertexI
   //     matrixSum += matrix;
   //   }
   // return matrixSum*vertex; //might need to implement this * as matrix multiply a vertex
-  
+
 
   return vertex;
-    
+
 }

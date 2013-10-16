@@ -17,7 +17,8 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 		materialUniform { main.getBlock<MaterialProperties>("MaterialProperties", 1) },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
 		diffuse_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
-		specular_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } }
+		specular_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
+		weight_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } }
 		//node { main.getBlock<OctreeNode>("OctreeNode", 1) }
 {
 	/*
@@ -25,6 +26,7 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 	 */
 	useDiffTex = main.addUniform("useDiffTex");
 	useNormTex = main.addUniform("useNormTex");
+	useWeights = main.addUniform("useWeights");
 
 	main.setUniform("diffuseTexture", &diffuse_tex);
 	main.setUniform("specularTexture", &specular_tex);

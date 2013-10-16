@@ -99,7 +99,7 @@ SkeletonLoader::~SkeletonLoader() {
 	delete root;
 
 	//just hardcoded in the weights path, didn't feel like refactor everything to take two arguments lol.
-	Skeleton *skel = new Skeleton(numBones, bones, readJointWeights("assets/Avatar/weights.csv"));
+	Skeleton *skel = new Skeleton(numBones, bones);
 	printf("Completed reading skeleton file\n");
 	return skel;
 }
@@ -344,52 +344,83 @@ DOF SkeletonLoader::dofFromString(char* s) {
 	return DOF_NONE;
 }
 
-  map<string, vector<double> > *SkeletonLoader::readJointWeights(char* filename){
+GLuint SkeletonLoader::readJointWeights(char* filename, shared_ptr<Skeleton> skel){
     ifstream infile(filename);
-    map<string, vector<double> > *weights = new map<string, vector<double> >;
+    vector< vector<double> > weights;
+
     string s;
     getline(infile, s);
     istringstream ss(s);
-    //parse first line as keys
-    vector<string> bonenames;
-    while (ss)
-      {
-	string bonename;
-	if(!getline(ss, bonename, ',')) break;
-	vector<double> v;
-	(*weights)[bonename] = v;
-	bonenames.push_back(bonename);
-      }
 
-    //parse rest  
+
+    //parse first line as keys
+	vector<int> bonenames;
+	bonenames.resize( skel->getNumBones() );
+	weights.resize( skel->getNumBones() );
+
+
+	for (int i = 0; ss; ++i) {
+		string bonename;
+		if (!getline(ss, bonename, ',')) break;
+		int boneindex = skel->getBone(bonename.c_str())->index;
+		bonenames[i] = boneindex;
+	}
+
+    //parse rest
     while (infile)
       {
-	string s;
-	if(!getline( infile, s)) break;
-	istringstream ss(s);
-	int index = 0;
-	while (ss)
-	  {
-	    string s;
-	    if(!getline(ss, s, ',' )) break;
-	    istringstream fd (s);
-	    double d;
-	    /**
-	       NOTE:: this loses precision, converting string to double int his way. will this be a problem?? 
-	       EG 0.15969951968 -> 0.1597.
-	    **/
-	    fd >> d;
+		string s;
+		if (!getline(infile, s)) break;
+		istringstream ss(s);
+		for (int i = 0; ss; ++i) {
+			string s;
+			if (!getline(ss, s, ',')) break;
+			istringstream fd(s);
+			double d;
+			/**
+			 NOTE:: this loses precision, converting string to double int his way. will this be a problem??
+			 EG 0.15969951968 -> 0.1597.
+			 **/
+			fd >> d;
 
-	    (*weights)[bonenames.at(index)].push_back(d);
-	    index++;
-	  }
-      }
-    if(!infile.eof()){
-      cerr << "ERROR, should be end of file" << endl;
-    }
-    return weights;
+			weights[i].push_back(d);
+		}
+	}
+	if (!infile.eof()) {
+		cerr << "ERROR, should be end of file" << endl;
+	}
 
-	
+
+	// copy data
+	int width = weights.size(), height = weights[0].size();
+	float *weightData = new float [width * height];
+	for(int i = 0; i < width; ++i) {
+		//vector<double> vec = ws
+		//for (int j = 0; j < height; ++j) {
+		//	weightData[i + width * j] = vec.data()[j];
+		//}
+	}
+
+	GLuint addr;
+	glGenTextures(1, &addr);
+	glBindTexture(GL_TEXTURE_2D, addr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R, width, width, 0, GL_R,
+			GL_FLOAT, weightData);
+
+	delete weightData;
+
+	//glTexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, levels, levels, levels);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+	return addr;
   }
 
 /*

@@ -3,6 +3,9 @@
 uniform mat4 DepthBiasMVP [8];
 uniform vec4 LightPosition_worldspace [8];
 uniform bool useNormTex;
+uniform bool useWeights;
+uniform sampler2D weights;
+uniform vec4 bones [64];
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
@@ -48,6 +51,11 @@ out mat3 TBN;
 
 
 void main(){
+	if (useWeights) {
+		// modify position
+
+
+	}
 
 	MVP = P * V * M;
 	MV3x3 = mat3(V * M);

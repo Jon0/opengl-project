@@ -25,13 +25,13 @@ private:
 	Program main;
 	shared_ptr<SceneInterface> scene;
 	shared_ptr<Tree> tree;
-	GLuint useDiffTex, useNormTex;
+	GLuint useDiffTex, useNormTex, useWeights;
 
 public:
 	UniformBlock<CameraProperties> cam;
 	UniformBlock<MaterialProperties> materialUniform;
 	UniformBlock<LightProperties> lightUniform;
-	UniformControl<GLint> diffuse_tex, specular_tex;
+	UniformControl<GLint> diffuse_tex, specular_tex, weight_tex;
 	//UniformBlock<OctreeNode> node;
 
 	Render( shared_ptr<SceneInterface>, shared_ptr<Tree>  );
