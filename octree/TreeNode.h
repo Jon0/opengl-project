@@ -16,7 +16,6 @@ namespace std {
 class TreeNode: public UBO<OctreeNode> {
 public:
 	int level;
-	GLuint bufferAddr;
 	GLuint64 gpuAddr;
 	TreeNode *parent;
 	TreeNode *children[8];
