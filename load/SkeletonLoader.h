@@ -21,6 +21,7 @@ public:
 	SkeletonLoader();
 	virtual ~SkeletonLoader();
 	Skeleton *readASF( const char * );
+	GLuint readJointWeights(char*, shared_ptr<Skeleton>);
 
 protected:
 	void readHeading(char *, FILE *, int &, bone *);
@@ -28,7 +29,7 @@ protected:
 	void readBone(char *, FILE *, int &, bone * );
 	DOF dofFromString(char* s);
 	void decomment(char *);
-	GLuint readJointWeights(char*, shared_ptr<Skeleton>);
+
 
 private:
 	int buffSize, maxBones;

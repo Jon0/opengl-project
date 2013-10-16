@@ -17,9 +17,13 @@ namespace std {
 
 GRender::GRender( VertexBuffer &vb ):
   skel { sload.readASF( "assets/Avatar/priman.asf" ) }
+  
 {
     model = readGeometry("assets/Avatar/andy.obj");
 
+
+    //    GLuint s = sload.readJointWeights("assets/Avatar/weight.csv", skel);
+	
     GMesh *gm = &model->data.data()[6]; //model->getMesh(0);
     gm->texture = new Tex();
     gm->texture->make2DTex("assets/Avatar/boySmiley.jpg");

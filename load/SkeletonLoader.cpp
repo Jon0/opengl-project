@@ -98,7 +98,6 @@ SkeletonLoader::~SkeletonLoader() {
 	}
 	delete root;
 
-	//just hardcoded in the weights path, didn't feel like refactor everything to take two arguments lol.
 	Skeleton *skel = new Skeleton(numBones, bones);
 	printf("Completed reading skeleton file\n");
 	return skel;
@@ -344,7 +343,7 @@ DOF SkeletonLoader::dofFromString(char* s) {
 	return DOF_NONE;
 }
 
-GLuint SkeletonLoader::readJointWeights(char* filename, shared_ptr<Skeleton> skel){
+  GLuint SkeletonLoader::readJointWeights(char* filename, shared_ptr<Skeleton> skel){
     ifstream infile(filename);
     vector< vector<double> > weights;
 
@@ -354,76 +353,77 @@ GLuint SkeletonLoader::readJointWeights(char* filename, shared_ptr<Skeleton> ske
 
 
     //parse first line as keys
-	vector<int> bonenames;
-	bonenames.resize( skel->getNumBones() );
-	weights.resize( skel->getNumBones() );
+    vector<int> bonenames;
+    bonenames.resize( skel->getNumBones() );
+    weights.resize( skel->getNumBones() );
 
+    for (int i = 0; ss; ++i) {
+      string bonename;
+      if (!getline(ss, bonename, ',')) break;
+      int boneindex = skel->getBone(bonename.c_str())->index;
+      bonenames[i] = boneindex;
+    }
 
-	for (int i = 0; ss; ++i) {
-		string bonename;
-		if (!getline(ss, bonename, ',')) break;
-		int boneindex = skel->getBone(bonename.c_str())->index;
-		bonenames[i] = boneindex;
-	}
-
-    //parse rest
+    int linecount = 1;	
     while (infile)
       {
-		string s;
-		if (!getline(infile, s)) break;
-		istringstream ss(s);
-		for (int i = 0; ss; ++i) {
-			string s;
-			if (!getline(ss, s, ',')) break;
-			istringstream fd(s);
-			double d;
-			/**
-			 NOTE:: this loses precision, converting string to double int his way. will this be a problem??
-			 EG 0.15969951968 -> 0.1597.
-			 **/
-			fd >> d;
+	string s;
+	if (!getline(infile, s)) break;
+	istringstream ss(s);
+	for (int i = 0; ss; ++i) {
+	  string s;
+	  if (!getline(ss, s, ',')) break;
+	  istringstream fd(s);
+	  double d;
+	  /**
+	     NOTE:: this loses precision, converting string to double int his way. will this be a problem??
+	     EG 0.15969951968 -> 0.1597.
+	  **/
+	  fd >> d;
 
-			weights[i].push_back(d);
-		}
+	  weights[i].push_back(d);
+	  linecount++;
 	}
-	if (!infile.eof()) {
-		cerr << "ERROR, should be end of file" << endl;
-	}
+      }
+    cerr << "LC" << linecount << endl;
+    if (!infile.eof()) {
+      cerr << "ERROR, should be end of file" << endl;
+    }
 
 
-	// copy data
-	int width = weights.size(), height = weights[0].size();
-	float *weightData = new float [width * height];
-	for(int i = 0; i < width; ++i) {
-		//vector<double> vec = ws
-		//for (int j = 0; j < height; ++j) {
-		//	weightData[i + width * j] = vec.data()[j];
-		//}
-	}
+    // copy data
+    int width = weights.size(), height = weights[0].size();
+    float *weightData = new float [width * height];
+    for(int i = 0; i < width; ++i) {
+      vector<double> vec = weights[i];
+      for (int j = 0; j < height; ++j) {
+	weightData[i + width * j] = vec.data()[j];
+      }
+    }
 
-	GLuint addr;
-	glGenTextures(1, &addr);
-	glBindTexture(GL_TEXTURE_2D, addr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+    GLuint addr;
+    glGenTextures(1, &addr);
+    glBindTexture(GL_TEXTURE_2D, addr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R, width, width, 0, GL_R,
-			GL_FLOAT, weightData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R, width, width, 0, GL_R,
+		 GL_FLOAT, weightData);
 
-	delete weightData;
+    delete weightData;
 
-	//glTexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, levels, levels, levels);
-	glBindTexture(GL_TEXTURE_2D, 0);
+    //glTexStorage3D(GL_TEXTURE_3D, 1, GL_RGBA8, levels, levels, levels);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 
 
-	return addr;
+    return addr;
   }
 
-/*
+  /*
  * Remove leading and trailing whitespace. Increments the
  * pointer until it points to a non whitespace char
  * and then adds nulls to the end until it has no
