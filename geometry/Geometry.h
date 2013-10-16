@@ -10,6 +10,7 @@
 #include "../buffer/VertexBuffer.h"
 #include "../shader/UBO.h"
 #include "../shader/ShaderStructs.h"
+#include "../shader/UniformBlock.h"
 #include "GPolygon.h"
 
 #ifndef GEOMETRY_H_
@@ -21,6 +22,7 @@ class Geometry {
 public:
 	virtual ~Geometry() {}
 	virtual void init(VertexBuffer *) = 0;
+	virtual void update( UniformBlock<BoneProperties> & ) = 0;
 	virtual void draw() = 0;
 	virtual void drawDebug() = 0;
 	virtual vector<GPolygon> &polygon(int) = 0;

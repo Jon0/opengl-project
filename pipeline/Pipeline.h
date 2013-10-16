@@ -16,7 +16,6 @@
 #include "../shader/Program.h"
 #include "../shader/UniformBlock.h"
 #include "Render.h"
-#include "Shadow.h"
 #include "Skybox.h"
 #include "Step.h"
 #include "Voxelize.h"
@@ -39,7 +38,6 @@ public:
 	shared_ptr<GRender> scene;
 	shared_ptr<Skybox> sky;
 	shared_ptr<Render> render;
-	shared_ptr<Shadow> shadow;
 	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;
 

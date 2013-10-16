@@ -10,6 +10,7 @@ CPP_SRCS += \
 ../geometry/GPolygon.cpp \
 ../geometry/GVertex.cpp \
 ../geometry/Skeleton.cpp \
+../geometry/SkeletonMesh.cpp \
 ../geometry/Teapot.cpp 
 
 OBJS += \
@@ -19,6 +20,7 @@ OBJS += \
 ./geometry/GPolygon.o \
 ./geometry/GVertex.o \
 ./geometry/Skeleton.o \
+./geometry/SkeletonMesh.o \
 ./geometry/Teapot.o 
 
 CPP_DEPS += \
@@ -28,6 +30,7 @@ CPP_DEPS += \
 ./geometry/GPolygon.d \
 ./geometry/GVertex.d \
 ./geometry/Skeleton.d \
+./geometry/SkeletonMesh.d \
 ./geometry/Teapot.d 
 
 

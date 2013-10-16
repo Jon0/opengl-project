@@ -11,7 +11,9 @@ namespace std {
 
 TreeNode::TreeNode(int l): TreeNode(l, NULL) {}
 
-TreeNode::TreeNode(int l, TreeNode *p) {
+TreeNode::TreeNode(int l, TreeNode *p):
+		UBO<OctreeNode> { GL_ARRAY_BUFFER }
+{
 	level = l;
 	parent = p;
 

@@ -5,7 +5,10 @@ uniform vec4 LightPosition_worldspace [8];
 uniform bool useNormTex;
 uniform bool useWeights;
 uniform sampler2D weights;
-uniform vec4 bones [64];
+
+layout(std140) uniform BoneProperties {
+	vec4 position;
+} Bones [64];
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;

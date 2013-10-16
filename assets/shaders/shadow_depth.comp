@@ -10,4 +10,6 @@ uniform mat4x4 light_transform;
 
 void main(){
 
+	imageStore(illumination, ivec3(gl_LocalInvocationID), vec4(256,0,0,0));
+	//imageAtomicAdd(illumination, ivec3(gl_LocalInvocationID), 1);
 }

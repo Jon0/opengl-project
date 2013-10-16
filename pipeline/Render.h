@@ -31,6 +31,7 @@ public:
 	UniformBlock<CameraProperties> cam;
 	UniformBlock<MaterialProperties> materialUniform;
 	UniformBlock<LightProperties> lightUniform;
+	UniformBlock<BoneProperties> boneUniform;
 	UniformControl<GLint> diffuse_tex, specular_tex, weight_tex;
 	//UniformBlock<OctreeNode> node;
 

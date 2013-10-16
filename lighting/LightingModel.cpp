@@ -212,6 +212,14 @@ void LightingModel::update( chrono::duration<double> ) {
 	for ( auto &g: scene->content() ) createShadow(g);
 }
 
+void LightingModel::insertLight( Tree &t ) {
+	/*insert light values */
+	insert.enable();
+	t.enable(0);
+	glDispatchCompute(512, 512, 1);
+}
+
+
 void LightingModel::run( shared_ptr<ViewInterface> ) {
 
 }

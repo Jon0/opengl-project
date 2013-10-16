@@ -6,11 +6,11 @@
  */
 
 #include <iostream>
-#include "DrawList.h"
+#include "SkeletonMesh.h"
 
 namespace std {
 
-DrawList::DrawList(vector<GMesh> shape) {
+SkeletonMesh::SkeletonMesh(vector<GMesh> shape) {
 	data = shape;
 	elementbuffer = 0;
 
@@ -28,9 +28,9 @@ DrawList::DrawList(vector<GMesh> shape) {
 	elementbuffer = NULL;
 }
 
-DrawList::~DrawList() {}
+SkeletonMesh::~SkeletonMesh() {}
 
-void DrawList::init(VertexBuffer *vb) {
+void SkeletonMesh::init(VertexBuffer *vb) {
 	/* the order verticies get drawn */
 	std::vector<unsigned int> indices;
 
@@ -69,11 +69,11 @@ void DrawList::init(VertexBuffer *vb) {
 	delete offset;
 }
 
-void DrawList::update( UniformBlock<BoneProperties> &bones ) {
+void SkeletonMesh::update( UniformBlock<BoneProperties> &bones ) {
 	// do nothing
 }
 
-void DrawList::draw() {
+void SkeletonMesh::draw() {
 	for (unsigned int i = 0; i < data.size(); ++i) {
 		// bind texture
 		glActiveTexture(GL_TEXTURE0 + 1);
@@ -87,7 +87,7 @@ void DrawList::draw() {
 	}
 }
 
-void DrawList::drawDebug() {
+void SkeletonMesh::drawDebug() {
 	for (GMesh mesh : data) {
 		for (GPolygon poly : mesh) {
 			for (GVertex vert : poly) {
@@ -114,35 +114,35 @@ void DrawList::drawDebug() {
   // }
 
 
-vector<GPolygon> &DrawList::polygon(int mesh) {
+vector<GPolygon> &SkeletonMesh::polygon(int mesh) {
 	return data.data()[mesh];
 }
 
-int DrawList::selectMouse(int, int) {
+int SkeletonMesh::selectMouse(int, int) {
 	return false;
 }
 
-glm::mat4 DrawList::transform() {
+glm::mat4 SkeletonMesh::transform() {
 	return transform_matrix;
 }
 
-void DrawList::setTransform(glm::mat4 t) {
+void SkeletonMesh::setTransform(glm::mat4 t) {
 	transform_matrix = t;
 }
 
-UBO<MaterialProperties> *DrawList::materialUBO() {
+UBO<MaterialProperties> *SkeletonMesh::materialUBO() {
 	return &materialType;
 }
 
-MaterialProperties &DrawList::material() {
+MaterialProperties &SkeletonMesh::material() {
 	return materialType.data;
 }
 
-void DrawList::updateMaterial() {
+void SkeletonMesh::updateMaterial() {
 	return materialType.update();
 }
 
-GMesh &DrawList::getMesh(int i) {
+GMesh &SkeletonMesh::getMesh(int i) {
 	return data.data()[i];
 }
 

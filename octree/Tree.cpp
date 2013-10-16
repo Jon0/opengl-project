@@ -66,11 +66,11 @@ void Tree::enable( GLuint i ) {
 	glBindImageTexture(i, addr, 0, GL_TRUE, 0, GL_READ_WRITE, GL_RGBA8);
 }
 
-void Tree::enableTex( Program &prg, string s, GLuint i ) {
+void Tree::enableTex( Program &prg, GLuint i ) {
 	glActiveTexture(GL_TEXTURE0 + i);
 	glBindTexture(GL_TEXTURE_3D, addr);
 	location.setV( i );
-	prg.setUniform( s, &location );
+	//prg.setUniform( s, &location );
 }
 
 void Tree::addLight() {
