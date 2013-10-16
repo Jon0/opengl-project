@@ -41,6 +41,10 @@ void Cube::init(VertexBuffer *vb) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 }
 
+void Cube::update( UniformBlock<BoneProperties> & ) {
+
+}
+
 void Cube::draw() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glDrawElements(GL_TRIANGLE_STRIP, 18, GL_UNSIGNED_INT, 0);

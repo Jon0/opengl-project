@@ -5,8 +5,8 @@
  *      Author: remnanjona
  */
 
-#ifndef DRAWLIST_H_
-#define DRAWLIST_H_
+#ifndef SKELETONMESH_H_
+#define SKELETONMESH_H_
 
 #include <GL/glut.h>
 
@@ -16,10 +16,10 @@
 
 namespace std {
 
-class DrawList: public Geometry {
+class SkeletonMesh: public Geometry {
 public:
-	DrawList( vector<GMesh> );
-	virtual ~DrawList();
+	SkeletonMesh( vector<GMesh> );
+	virtual ~SkeletonMesh();
 
 	virtual void init(VertexBuffer *);
 	virtual void update( UniformBlock<BoneProperties> & );
@@ -52,4 +52,4 @@ public:
 };
 
 } /* namespace std */
-#endif /* DRAWLIST_H_ */
+#endif /* SKELETONMESH_H_ */

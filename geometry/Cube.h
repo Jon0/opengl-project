@@ -32,6 +32,7 @@ public:
 	virtual ~Cube();
 
 	void init(VertexBuffer *);
+	virtual void update( UniformBlock<BoneProperties> & );
 	virtual void draw();
 	virtual void drawDebug();
 	virtual vector<GPolygon> &polygon(int);

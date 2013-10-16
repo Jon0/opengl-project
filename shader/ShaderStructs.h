@@ -46,5 +46,9 @@ struct OctreeNode {
 	glm::vec4 emission;
 };
 
+struct BoneProperties {
+	glm::vec4 position [32];
+};
+
 } /* namespace std */
 #endif /* SHADERSTRUCTS_H_ */

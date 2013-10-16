@@ -37,7 +37,7 @@ public:
 
 	glm::vec3 getPoint( glm::vec3 );
 	void enable( GLuint );
-	void enableTex( Program &, string, GLuint );
+	void enableTex( Program &, GLuint );
 	void addLight();
 	void calc(shared_ptr<Geometry>);
 };

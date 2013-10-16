@@ -63,7 +63,8 @@ void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	/*
 	 * bind illumination
 	 */
-	tree->enable( 0 );
+	//tree->enable( 0 );
+	tree->enableTex( render->getProgram(), 2 );
 
 	lm->setLight( render->getProgram(), render->lightUniform );
 

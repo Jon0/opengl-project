@@ -16,6 +16,7 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 		cam { main.getBlock<CameraProperties>( "Camera", 1 ) },
 		materialUniform { main.getBlock<MaterialProperties>("MaterialProperties", 1) },
 		lightUniform { main.getBlock<LightProperties>("LightProperties", 8) },
+		boneUniform { main.getBlock<BoneProperties>("BoneProperties", 64) },
 		diffuse_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
 		specular_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } },
 		weight_tex { [](GLuint i, GLint v){ glUniform1i(i, v); } }
@@ -30,6 +31,7 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 
 	main.setUniform("diffuseTexture", &diffuse_tex);
 	main.setUniform("specularTexture", &specular_tex);
+	main.setUniform("illuminationTexture", &t->location);
 
 	GLuint treeUniform = main.addUniform("tree");
 	glUniformui64NV(treeUniform, tree->root.gpuAddr);
@@ -67,6 +69,8 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 	diffuse_tex.setV( 1 );
 	specular_tex.setV( 1 );
 
+	weight_tex.setV( 2 );
+
 	for ( auto &g: scene->content() ) {
 
 		materialUniform.assign( g->materialUBO() );
@@ -75,6 +79,7 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 		camptr->data.M = g->transform();
 		camptr->update();
 
+		g->update( boneUniform );
 		g->draw();
 	}
 

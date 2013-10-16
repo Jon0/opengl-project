@@ -39,6 +39,7 @@ uniform OctreeNode *tree;
 
 // Values that stay constant for the whole mesh.
 layout(binding = 0, rgba8) coherent uniform image3D illumination;
+uniform sampler3D illuminationTexture;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
@@ -127,6 +128,11 @@ void main() {
 	// Eye vector (towards the camera)
 	vec3 E = normalize(EyeDirection_tangentspace);
 
+
+	//texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 )
+
+
+
 	/*
 	 *	*******************************
 	 *	calculate for each light source
@@ -190,10 +196,12 @@ void main() {
 	 * 	*******************************
 	 */
 
-	//color = texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + ReflectionColor + DiffuseTotal + SpecularTotal;
+	//imageStore(illumination, ivec3(64,64,64)+ivec3((Position_worldspace - 0.5) / 4), vec4(256,0,0,0));
+
+	color = texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 ) + DiffuseTotal + SpecularTotal;
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
-	color = DiffuseTotal + SpecularTotal;
 	color.w = 1.0;
+
 
 
 
