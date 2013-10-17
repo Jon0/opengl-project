@@ -101,7 +101,6 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 			}
 		}
 
-
 		glGenTextures(1, &addrReflect[t]);
 		glBindTexture(GL_TEXTURE_3D, addrReflect[t]);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -113,8 +112,6 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, levels, levels, levels, 0, GL_RGBA,
 		             GL_BYTE, texels);
 	}
-
-
 
 	glBindTexture(GL_TEXTURE_3D, 0);
 	delete texels;
@@ -135,16 +132,13 @@ void Tree::makeNormals(shared_ptr<GRender> scene, glm::vec3 **out) {
 				//glm::vec3 voxel = (glm::vec3(i, j, k) - glm::vec3(64,64,64)) * 4.0f;
 
 				fillNormals(p, out);
-
 			}
 		}
 	}
-
-
-	// iterate points on triangle......
 }
 
 void Tree::fillNormals(GPolygon &p, glm::vec3 **out) {
+	if (p.size() > 3) cerr << "wtf" << endl;
 	// pick random points on triangle surface
 	// use more points on large triangles
 	glm::vec3 p1 = p.data()[0].position;
@@ -154,28 +148,43 @@ void Tree::fillNormals(GPolygon &p, glm::vec3 **out) {
 	glm::vec3 d1 = p2 - p1;
 	glm::vec3 d2 = p3 - p1;
 
-	float ainc = 0.1 / glm::length(d1);
-	float binc = 0.1 / glm::length(d2);
+	float ainc = 5.0 / glm::length(d1);
+	float binc = 5.0 / glm::length(d2);
 
 	glm::vec3 norm = p.normal();
 
-	for (float a = 0; a < 1.0; a += ainc) {
-		for (float b = 0; a + b < 1.0; b += binc) {
-			glm::vec3 center = p1 + a * d1 + b * d2;
+	for (float a = 0.01; a < 0.99; a += ainc) {
+		for (float b = 0.01; a + b < 0.99; b += binc) {
+
+			glm::vec3 center = p1 + (a * d1) + (b * d2);
 			//cout << p1.x << ", " <<  p1.y << ", " <<  p1.z << endl;
 
-			glm::ivec3 voxelPos = glm::ivec3(center / 16.0f + mid);
+
+			glm::ivec3 voxelPos = glm::ivec3(center / 32.0f + mid);
 			int offset = (voxelPos.x + voxelPos.y * levels + voxelPos.z * levels * levels);
 
-			out[0][offset] += norm; // glm::reflect(glm::vec3(1, 0, 0), norm);
-			out[1][offset] += glm::reflect(glm::vec3(0, 1, 0), norm);
-			out[2][offset] += glm::reflect(glm::vec3(0, 0, 1), norm);
-			out[3][offset] += glm::reflect(glm::vec3(-1, 0, 0), norm);
-			out[4][offset] += glm::reflect(glm::vec3(0, -1, 0), norm);
-			out[5][offset] += glm::reflect(glm::vec3(0, 0, -1), norm);
+			if (glm::dot(norm, glm::vec3(1, 0, 0)) < 0.0) {
+				out[0][offset] += glm::normalize(glm::reflect(glm::vec3(1, 0, 0), -norm));
+			}
+			else {
+				out[3][offset] += glm::normalize(glm::reflect(glm::vec3(-1, 0, 0), -norm));
+			}
+
+			if (glm::dot(norm, glm::vec3(0, 1, 0)) < 0.0) {
+				out[1][offset] += glm::normalize(glm::reflect(glm::vec3(0, 1, 0), -norm));
+			}
+			else {
+				out[4][offset] += glm::normalize(glm::reflect(glm::vec3(0, -1, 0), -norm));
+			}
+
+			if (glm::dot(norm, glm::vec3(0, 0, 1)) < 0.0) {
+				out[2][offset] += glm::normalize(glm::reflect(glm::vec3(0, 0, 1), -norm));
+			}
+			else {
+				out[5][offset] += glm::normalize(glm::reflect(glm::vec3(0, 0, -1), -norm));
+			}
 		}
 	}
-
 }
 
 glm::vec3 Tree::getPoint( glm::vec3 in ) {

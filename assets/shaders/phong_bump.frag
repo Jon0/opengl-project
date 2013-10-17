@@ -176,7 +176,6 @@ void main() {
 			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(LightDirection_tangentspace[light]));
 			float spot = clamp((angle - Lights[light].spotlight) / (Lights[light].spotlightInner - Lights[light].spotlight), 0.0, 1.0);
 			visibility = visibility * pow(spot, 2);
-
 		}
 
 		DiffuseTotal += MaterialDiffuseColor * Lights[light].color * Lights[light].intensity * visibility * cosTheta / (distance*distance);
@@ -191,24 +190,32 @@ void main() {
 	 */
 	vec4 indirect = vec4(0);
 	vec3 pos = Position_worldspace;
-	vec3 norm [6];
-	norm[0] = Normal_worldspace * 5 + vec3(3, 0, 0);
-	norm[1] = Normal_worldspace * 5 + vec3(-3, 0, 0);
-	norm[2] = Normal_worldspace * 5 + vec3(0, 3, 0);
-	norm[3] = Normal_worldspace * 5 + vec3(0, -3, 0);
-	norm[4] = Normal_worldspace * 5 + vec3(0, 0, 3);
-	norm[5] = Normal_worldspace * 5 + vec3(0, 0, -3);
+	vec3 norm [12];
+	vec3 nn = Normal_worldspace;
+	norm[0] = Normal_worldspace * 2 + vec3(1, 0, 0);
+	norm[1] = Normal_worldspace * 2 + vec3(-1, 0, 0);
+	norm[2] = Normal_worldspace * 2 + vec3(0, 1, 0);
+	norm[3] = Normal_worldspace * 2 + vec3(0, -1, 0);
+	norm[4] = Normal_worldspace * 2 + vec3(0, 0, 1);
+	norm[5] = Normal_worldspace * 2 + vec3(0, 0, -1);
+	norm[6] = Normal_worldspace * 3 + vec3(2, 0, 0);
+	norm[7] = Normal_worldspace * 3 + vec3(-2, 0, 0);
+	norm[8] = Normal_worldspace * 3 + vec3(0, 2, 0);
+	norm[9] = Normal_worldspace * 3 + vec3(0, -2, 0);
+	norm[10] = Normal_worldspace * 3 + vec3(0, 0, 2);
+	norm[11] = Normal_worldspace * 3 + vec3(0, 0, -2);
 
 	float t = 0;
-	for (int i = 1; i < 6; ++i) {
+	for (int i = 1; i < 8; ++i) {
 		for (int j = 0; j < 6; ++j) {
-			norm[j] += i * norm[j];
-			vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + norm[j]) / 2048;
+			vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + norm[j]) / 4096;
 			vec3 normV = texture( illuminationNormalTexture, iTexCoord ).xyz;
 			//t = dot(normV, norm[j]) < 0.0? pow(6 - i, 2) * 0.01 : 0.0;
 
-			//t =  pow(6 - i, 2) * clamp( -dot(-normV, norm[j]), 0, 1 );
+
+			t =  0.005 * (10 - i) * clamp( abs(dot(normV, norm[j])), 0.0, 1.0 );
 			indirect += t * texture( illuminationTexture, iTexCoord);
+			norm[j] *= 2.5;
 		}
 	}
 	indirect = clamp( indirect, 0, 1 );
@@ -219,10 +226,10 @@ void main() {
 	 * 	*******************************
 	 */
 
-	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + Position_worldspace / 2048;
-	color = texture( illuminationNormalTexture, iTexCoord );
+	//vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + Position_worldspace / 4096;
+	//color = texture( illuminationNormalTexture, iTexCoord );
 
-	//color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
+	color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 	color.w = 1.0;
 

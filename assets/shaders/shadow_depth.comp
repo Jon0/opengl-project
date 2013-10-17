@@ -33,18 +33,30 @@ void main(){
 	float visibility = 1.0;
 	visibility -= (1.0 - texture( shadowMap, shadowCoord.xyz /shadowCoord.w ));
 
-	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + voxelCoord.xyz / 2048;
-	vec4 reflectedLight = texture(xreflect, iTexCoord); //reflect( -vec4(normalize(light.position.xyz), 1), texture(xreflect, iTexCoord) );
+	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + voxelCoord.xyz / 4096;
 
+	vec4 reflectedLight = vec4(0,0,0,0);
+	if (light.position.x > 0) {
+		reflectedLight += light.position.x * texture(xreflect, iTexCoord);
+	}
+	else {
+		reflectedLight += light.position.x * -texture(xnreflect, iTexCoord);
+	}
 
-	//vec4 reflectedLight = vec4(0,0,0,0);
-	//reflectedLight += light.position.x * texture(xreflect, iTexCoord);
-	//reflectedLight += light.position.y * texture(yreflect, iTexCoord);
-	//reflectedLight += light.position.z * texture(zreflect, iTexCoord);
-	//reflectedLight -= light.position.x * texture(xnreflect, iTexCoord);
-	//reflectedLight -= light.position.y * texture(ynreflect, iTexCoord);
-	//reflectedLight -= light.position.z * texture(znreflect, iTexCoord);
-	//reflectedLight = normalize(reflectedLight);
+	if (light.position.y > 0) {
+		reflectedLight += light.position.y * texture(yreflect, iTexCoord);
+	}
+	else {
+		reflectedLight += light.position.y * -texture(ynreflect, iTexCoord);
+	}
+
+	if (light.position.z > 0) {
+		reflectedLight += light.position.z * texture(zreflect, iTexCoord);
+	}
+	else {
+		reflectedLight += light.position.z * -texture(znreflect, iTexCoord);
+	}
+	reflectedLight = normalize(reflectedLight);
 
 	imageStore(illumination, ivec3(gl_GlobalInvocationID), light.intensity * light.color * visibility);
 	imageStore(illuminationNormals, ivec3(gl_GlobalInvocationID), reflectedLight);

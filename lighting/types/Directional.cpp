@@ -33,7 +33,7 @@ unsigned int Directional::cull() {
 }
 
 glm::mat4 Directional::getTransform() {
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-400, 400, -400, 400, -1000, 1000);
+	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-800, 800, -800, 800, -1000, 1000);
 	glm::vec3 p = glm::vec3(data.position);
 	glm::mat4 depthViewMatrix = glm::lookAt(p, glm::vec3(0,0,0), glm::vec3(0,1,0));
 	return depthProjectionMatrix * depthViewMatrix;
