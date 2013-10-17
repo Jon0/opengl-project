@@ -1,41 +1,81 @@
-#version 330 core
+#version 420
+#extension GL_NV_shader_buffer_load : enable
+
+layout(std140) uniform LightProperties {
+	vec4 position;
+	vec4 color;
+	vec4 direction;
+	float intensity;
+	float spotlight;
+	float spotlightInner;
+} Lights[8];
+
+layout(std140) uniform Camera {
+	uniform mat4 P;
+	uniform mat4 V;
+	uniform mat4 M;
+};
+
+layout(std140) uniform MaterialProperties {
+	vec4 DiffuseColor;
+	vec4 AmbientColor;
+	vec4 SpecularColor;
+	float Exponent;
+} Material;
+
+struct OctreeNode {
+	// pointers to gpu memory
+	OctreeNode *parent;
+	OctreeNode *children [8];
+
+	// node attributes
+	vec4 normal;
+	vec4 color;
+	vec4 emission;
+};
+
+uniform OctreeNode *tree;
+
+
+// Values that stay constant for the whole mesh.
+layout(binding = 0, rgba8) coherent uniform image3D illumination;
+uniform sampler3D illuminationTexture;
+uniform sampler3D illuminationNormalTexture;
+uniform samplerCube cubeTexture;
+uniform sampler2D diffuseTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
+uniform sampler2DShadow shadowMap [8];
+uniform bool useDiffTex;
+uniform bool useNormTex;
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
 in vec3 Position_worldspace;
+in vec3 Normal_worldspace;
 in vec3 VertexNormal_tangentspace;
 
 in vec3 EyeDirection_cameraspace;
 in vec3 EyeDirection_tangentspace;
 
+in vec3 LightSpotlight_cameraspace [8];
+in vec3 LightSpotlight_tangentspace [8];
 in vec3 LightDirection_cameraspace [8];
 in vec3 LightDirection_tangentspace [8];
 
 in vec4 ShadowCoord [8];
 
 in mat3 TBN;
+in mat3 MV3x3;
 
 // Ouput data
-out vec3 color;
-
-// Values that stay constant for the whole mesh.
-uniform samplerCube cubeTexture;
-uniform sampler2D diffuseTexture;
-uniform sampler2D normalTexture;
-uniform sampler2D specularTexture;
-uniform sampler2DShadow shadowMap [8];
-uniform mat4 V;
-uniform mat4 M;
-uniform mat3 MV3x3;
-uniform vec4 LightPosition_worldspace [8];
-uniform bool useDiffTex;
-uniform bool useNormTex;
+out vec4 color;
 
 vec2 poissonDisk[16] = vec2[](
-   vec2( -0.94201624, -0.39906216 ),
-   vec2( 0.94558609, -0.76890725 ),
-   vec2( -0.094184101, -0.92938870 ),
-   vec2( 0.34495938, 0.29387760 ),
+   vec2( -0.94201624 / 7000.0, -0.39906216 / 7000.0 ),
+   vec2( 0.94558609 / 7000.0, -0.76890725 / 7000.0 ),
+   vec2( -0.094184101 / 7000.0, -0.92938870 / 7000.0 ),
+   vec2( 0.34495938 / 7000.0, 0.29387760 / 7000.0 ),
    vec2( -0.91588581, 0.45771432 ),
    vec2( -0.81544232, -0.87912464 ),
    vec2( -0.38277543, 0.27676845 ),
@@ -50,26 +90,16 @@ vec2 poissonDisk[16] = vec2[](
    vec2( 0.14383161, -0.14100790 )
 );
 
-void main(){
-
-	// Light emission properties
-	// probably should put them as uniforms
-	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 80.0;
-
+void main() {
 	// Material properties
-	vec3 MaterialDiffuseColor;
-	vec3 MaterialAmbientColor;
-	vec3 MaterialSpecularColor;
+	vec4 MaterialDiffuseColor = Material.DiffuseColor;
+	vec4 MaterialAmbientColor = Material.AmbientColor;
+	vec4 MaterialSpecularColor = Material.SpecularColor;
+	float MaterialExponent = Material.Exponent;
 	if (useDiffTex) {
-		MaterialDiffuseColor = texture2D( diffuseTexture, UV ).rgb;
-		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = texture2D( specularTexture, UV ).rgb * 0.9;
-	}
-	else {
-		MaterialDiffuseColor = vec3(0.1, 0.9, 0.1);
-		MaterialAmbientColor = MaterialDiffuseColor * 0.2;
-		MaterialSpecularColor = vec3(0.8, 0.8, 0.8);
+		MaterialDiffuseColor *= texture2D( diffuseTexture, UV );
+		MaterialAmbientColor *= MaterialDiffuseColor;
+		MaterialSpecularColor *= texture2D( specularTexture, UV );
 	}
 
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
@@ -92,71 +122,155 @@ void main(){
 	// convert from eye to world space
 	reflected =  inverse(TBN) * reflected;
 	reflected = vec3 (inverse (V*M) * vec4 (reflected, 0.0));
-	vec3 ReflectionColor = texture(cubeTexture, reflected).xyz;
-	ReflectionColor = vec3( pow(ReflectionColor.x, 8),
-							pow(ReflectionColor.y, 8),
-							pow(ReflectionColor.z, 8) ) * MaterialSpecularColor;
+	vec4 ReflectionColor = texture(cubeTexture, reflected);
+	ReflectionColor = vec4( pow(ReflectionColor.x, MaterialExponent),
+							pow(ReflectionColor.y, MaterialExponent),
+							pow(ReflectionColor.z, MaterialExponent), 1.0 ) * MaterialSpecularColor;
 
+	// Eye vector (towards the camera)
+	vec3 E = normalize(EyeDirection_tangentspace);
 
 	/*
 	 *	*******************************
 	 *	calculate for each light source
 	 * 	*******************************
 	 */
-	vec3 DiffuseTotal = vec3(0.0);
-	vec3 SpecularTotal = vec3(0.0);
-	for (int light = 0; light < 2; ++light) {
-
-		// Distance to the light
-		float distance = length( LightPosition_worldspace[light].xyz - Position_worldspace );
+	vec4 DiffuseTotal = vec4(0.0);
+	vec4 SpecularTotal = vec4(0.0);
+	for (int light = 0; light < 3; ++light) {
 
 		// Direction of the light (from the fragment to the light)
 		vec3 l = normalize(LightDirection_tangentspace[light]);
 
 		// Cosine of the angle between the normal and the light direction,
-		float cosTheta = clamp( dot( n,l ), 0, 1 );
-
-		// Eye vector (towards the camera)
-		vec3 E = normalize(EyeDirection_tangentspace);
+		float cosTheta = clamp( dot( n, l ), 0, 1 );
 
 		// Direction in which the triangle reflects the light
-		vec3 R = reflect(-l, n);
+		vec3 R = reflect( -l , n);
 
 		// Cosine of the angle between the Eye vector and the Reflect vector,
-		float cosAlpha = clamp( dot( E,R ), 0,1 );
+		float cosAlpha = clamp( dot( E, R ), 0,1 );
+
+		// Distance to the light
+		float distance;
+		if ( Lights[light].position.w > 0.0 ) {
+			distance = length( Lights[light].position.xyz - Position_worldspace );
+		}
+		else {
+			distance = 1.0;
+		}
 
 		/*
-		 *	Shadows
+		 *	Shadows, Direct Visibility from light sources
 		 */
-		//float visibility = texture( shadowMap, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
-		float bias = 0.0005*tan(acos(cosTheta));
-		bias = clamp(bias, 0,0.001);
-
+		float bias = 0.005*tan( acos( cosTheta ) );
+		bias = clamp(bias, 0.0, 0.0005);
 		float visibility = 1.0;
-		for (int i=0;i<16;i++){
-			visibility -= 0.04*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i]/700.0,  (ShadowCoord[light].z-bias)/ShadowCoord[light].w) ));
+		for (int i = 0; i < 4; i++){ //0.0625
+			visibility -= 0.25*(1.0-texture( shadowMap[light], vec3(ShadowCoord[light].xy + poissonDisk[i],  (ShadowCoord[light].z-bias))/ShadowCoord[light].w ));
 		}
 		visibility = clamp( visibility, 0, 1 );
 
-		DiffuseTotal += MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance);
-		SpecularTotal += MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
+		// dampen spotlight by dot product angle
+		if ( Lights[light].spotlight > 0.1 ) {
+			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(LightDirection_tangentspace[light]));
+			float spot = clamp((angle - Lights[light].spotlight) / (Lights[light].spotlightInner - Lights[light].spotlight), 0.0, 1.0);
+			visibility = visibility * pow(spot, 2);
+
+		}
+
+		DiffuseTotal += MaterialDiffuseColor * Lights[light].color * Lights[light].intensity * visibility * cosTheta / (distance*distance);
+		SpecularTotal += MaterialSpecularColor * Lights[light].color * Lights[light].intensity * visibility * pow(cosAlpha, MaterialExponent) / (distance*distance);
 	}
 
+
+	/*
+	 *	**********************
+	 *		indirect light
+	 *	**********************
+	 */
+	vec4 indirect = vec4(0);
+	vec3 pos = Position_worldspace;
+	vec3 norm = Normal_worldspace;
+	for (int i = 1; i < 15; i+=2) {
+
+		float t;
+		vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(i,0,0)) / 512;
+		vec3 texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+		iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(-i,0,0)) / 512;
+		texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+		iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(0,i,0)) / 512;
+		texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+		iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(0,-i,0)) / 512;
+		texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+		iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(0,0,i)) / 512;
+		texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+		iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + (i+12) * norm + vec3(0,0,-i)) / 512;
+		texnorm = texture( illuminationNormalTexture, iTexCoord).xyz;
+		if (length(texnorm) >= 0.99) {
+			t = clamp(-dot(norm, texture( illuminationNormalTexture, iTexCoord).xyz), 0.0, 1.0) * 0.1;
+		}
+		else {
+			t = 0.1;
+		}
+		indirect += t * texture( illuminationTexture, iTexCoord);
+
+	}
+	//indirect = clamp( indirect, 0, 1 );
 
 	/*
 	 *	*******************************
 	 *	    set final color value
 	 * 	*******************************
 	 */
-	//color =
-		// Ambient : simulates indirect lighting
-	//	MaterialAmbientColor +
-	//	ReflectionColor +
-		// Diffuse : "color" of the object
-	//	MaterialDiffuseColor * LightColor * LightPower * visibility * cosTheta / (distance*distance) +
-		// Specular : reflective highlight, like a mirror
-	//	MaterialSpecularColor * LightColor * LightPower * visibility * pow(cosAlpha, 5) / (distance*distance);
 
-	color = ReflectionColor + DiffuseTotal + SpecularTotal;
+	//imageStore(illumination, ivec3(64,64,64)+ivec3((Position_worldspace) / 4), vec4(256,0,0,0));
+
+	color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
+	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
+	color.w = 1.0;
+
+
+
 
 }

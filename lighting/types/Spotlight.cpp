@@ -28,7 +28,7 @@ Spotlight::~Spotlight() {
 }
 
 unsigned int Spotlight::mapSize() {
-	return 1024 * 4;
+	return 512 * 1;
 }
 
 unsigned int Spotlight::cull() {

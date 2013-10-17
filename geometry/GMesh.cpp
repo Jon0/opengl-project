@@ -11,7 +11,6 @@ namespace std {
 
 GMesh::GMesh() {
 	// TODO Auto-generated constructor stub
-
 }
 
 GMesh::~GMesh() {

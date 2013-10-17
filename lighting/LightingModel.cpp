@@ -15,7 +15,7 @@
 
 namespace std {
 
-LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
+LightingModel::LightingModel( shared_ptr<SceneInterface> si, shared_ptr<Tree> tree ):
 		shadow("shadow_depth"),
 		insert("shadow_depth", 1),
 		modelMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
@@ -23,6 +23,7 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 		DepthBias { [](GLuint i, vector<glm::mat4> v){ glUniformMatrix4fv(i, v.size(), GL_FALSE, &v.data()[0][0][0]); } },
 		insertShadow { [](GLuint i, GLint v){ glUniform1i(i, v); } },
 		insertMatrix { [](GLuint i, glm::mat4 v){ glUniformMatrix4fv(i, 1, GL_FALSE, &v[0][0]); } },
+		lightUniform { insert.getBlock<LightProperties>("LightProperties", 1) },
 		scene { si }
 {
 	/*
@@ -55,6 +56,12 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si ):
 	 */
 	insert.setUniform("shadowMap", &insertShadow);
 	insert.setUniform("light_transform", &insertMatrix);
+	insert.setUniform("xreflect", &tree->locationX);
+	insert.setUniform("yreflect", &tree->locationY);
+	insert.setUniform("zreflect", &tree->locationZ);
+	insert.setUniform("xnreflect", &tree->locationXN);
+	insert.setUniform("ynreflect", &tree->locationYN);
+	insert.setUniform("znreflect", &tree->locationZN);
 
 	t = 0.0;
 }
@@ -222,15 +229,20 @@ void LightingModel::update( chrono::duration<double> ) {
 
 void LightingModel::insertLight( shared_ptr<Tree> t ) {
 	/*insert light values */
-	insert.enable();
-	t->enable(0);
+	int light = 2; // just updatge light 2 for now
+	if (lights.data()[light]->needsUpdate) {
+		insert.enable();
+		t->enable(0);
 
-	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[2]);
-	insertShadow.setV( 5 );
-	insertMatrix.setV( biasMatrix * lights.data()[2]->getTransform() );
+		glActiveTexture(GL_TEXTURE5);
+		glBindTexture(GL_TEXTURE_2D, depthTextureId.data()[light]);
+		insertShadow.setV(5);
+		insertMatrix.setV(biasMatrix * lights.data()[light]->getTransform());
+		lightUniform.assign(lights.data()[light]);
 
-	glDispatchCompute(64, 64, 64);
+		glDispatchCompute(16, 16, 16);
+		lights.data()[light]->needsUpdate = false;
+	}
 }
 
 

@@ -32,11 +32,12 @@ public:
 	/*
 	 * Global illumination octree
 	 */
-	shared_ptr<Tree> tree;
+
 
 	vector< shared_ptr<Step> > steps;
 	shared_ptr<GRender> scene;
 	shared_ptr<Skybox> sky;
+	shared_ptr<Tree> tree;
 	shared_ptr<Render> render;
 	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;

@@ -17,9 +17,14 @@ namespace std {
 
 class Light: public UBO<LightProperties> {
 public:
+	bool needsUpdate;
 	virtual ~Light() {}
 	virtual unsigned int mapSize() = 0;
 	virtual unsigned int cull() = 0;
+	virtual void update() {
+		needsUpdate = true;
+		UBO<LightProperties>::update();
+	}
 	virtual glm::mat4 getTransform() = 0;
 };
 

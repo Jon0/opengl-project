@@ -26,7 +26,7 @@ Positional::~Positional() {
 }
 
 unsigned int Positional::mapSize() {
-	return 1024 * 4;
+	return 512 * 1;
 }
 
 unsigned int Positional::cull() {

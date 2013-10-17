@@ -15,11 +15,14 @@
 
 namespace std {
 
+int triBoxOverlap(glm::vec3 boxcenter,glm::vec3 boxhalfsize, glm::vec3 triverts [3]);
+
 class GPolygon: public vector<GVertex> {
 public:
 	GPolygon();
 	virtual ~GPolygon();
 
+	bool intersects(glm::vec3 centre, glm::vec3 size);
 	glm::vec3 center();
 	glm::vec3 normal();
 };

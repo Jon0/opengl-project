@@ -32,6 +32,7 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 	main.setUniform("diffuseTexture", &diffuse_tex);
 	main.setUniform("specularTexture", &specular_tex);
 	main.setUniform("illuminationTexture", &t->location);
+	main.setUniform("illuminationNormalTexture", &t->locationN);
 
 	GLuint treeUniform = main.addUniform("tree");
 	glUniformui64NV(treeUniform, tree->root.gpuAddr);
@@ -50,14 +51,8 @@ void Render::update( chrono::duration<double> ) {
 }
 
 void Render::run( shared_ptr<ViewInterface> c ) {
-	/*
-	 * Draw the scene objects
-	 */
-	//cubeTex->enable(3);
-
 	main.enable();
 
-	//node.assign( &tree->root );
 	cam.assign( c->properties() );
 	UBO<CameraProperties> *camptr = c->properties();
 
@@ -70,11 +65,12 @@ void Render::run( shared_ptr<ViewInterface> c ) {
 	specular_tex.setV( 1 );
 	weight_tex.setV( 2 );
 
+	/*
+	 * Draw the scene objects
+	 */
 	for ( auto &g: scene->content() ) {
-
 		materialUniform.assign( g->materialUBO() );
 
-		//light.setTransform(g->transform());
 		camptr->data.M = g->transform();
 		camptr->update();
 

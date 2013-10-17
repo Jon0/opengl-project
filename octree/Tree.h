@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 
 #include "../geometry/Geometry.h"
+#include "../scene/GRender.h"
 #include "../shader/Program.h"
 #include "../shader/UniformControl.h"
 #include "TreeNode.h"
@@ -21,20 +22,20 @@ namespace std {
 class Tree {
 public:
 	TreeNode root;
-	GLuint addr;
+	GLuint addr, addrN, addrReflect [6];
 	unsigned int levels;
 	unsigned int size;
-	unsigned int *texels;
 	glm::vec3 *normals;
 	glm::vec3 mid;
 
 	shared_ptr<Geometry> geom;
-	UniformControl<GLint> location;
+	UniformControl<GLint> location, locationN, locationX, locationY, locationZ, locationXN, locationYN, locationZN;
 
-	Tree(int);
+	Tree(int, shared_ptr<GRender>);
 	virtual ~Tree();
 
-
+	void makeNormals(shared_ptr<GRender>, glm::vec3 **);
+	void fillNormals(GPolygon &, glm::vec3 **);
 	glm::vec3 getPoint( glm::vec3 );
 	void enable( GLuint );
 	void enableTex( Program &, GLuint );

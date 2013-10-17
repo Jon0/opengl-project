@@ -14,7 +14,6 @@
 #include "../geometry/DrawList.h"
 #include "../geometry/Geometry.h"
 #include "../load/SkeletonLoader.h"
-#include "../lighting/LightingModel.h"
 #include "../pipeline/Step.h"
 #include "../shader/Program.h"
 #include "../view/Camera.h"
@@ -23,6 +22,8 @@
 #include "SceneInterface.h"
 
 namespace std {
+
+class LightingModel;
 
 class GRender:
 		public enable_shared_from_this<GRender>,

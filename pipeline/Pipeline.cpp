@@ -12,12 +12,12 @@ namespace std {
 
 Pipeline::Pipeline():
 		vb { 15 },
-		tree { new Tree(64) },
 		scene { new GRender( vb ) },
 		sky { new Skybox( vb ) },
+		tree { new Tree(128, scene) },
 		render { new Render( scene, tree ) },
 		voxelize { new Voxelize( scene ) },
-		lm { new LightingModel( scene ) }
+		lm { new LightingModel( scene, tree ) }
 {
 	scene->setLightModel( lm.get() );
 

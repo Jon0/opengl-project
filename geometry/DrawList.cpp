@@ -113,6 +113,9 @@ void DrawList::drawDebug() {
   //   **/
   // }
 
+int DrawList::numMesh() {
+	return data.size();
+}
 
 vector<GPolygon> &DrawList::polygon(int mesh) {
 	return data.data()[mesh];

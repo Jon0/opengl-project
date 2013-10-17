@@ -1,20 +1,54 @@
 #version 430
 
-layout( local_size_x = 1, local_size_y = 1, local_size_z = 1 ) in;
+layout( local_size_x = 8, local_size_y = 8, local_size_z = 8 ) in;
 
 layout(binding = 0, rgba8) coherent uniform image3D illumination;
+layout(binding = 1, rgba8) coherent uniform image3D illuminationNormals;
 
 uniform sampler2DShadow shadowMap;
 
 uniform mat4x4 light_transform;
 
+uniform sampler3D xreflect;
+uniform sampler3D yreflect;
+uniform sampler3D zreflect;
+uniform sampler3D xnreflect;
+uniform sampler3D ynreflect;
+uniform sampler3D znreflect;
+
+layout(std140) uniform LightProperties {
+	vec4 position;
+	vec4 color;
+	vec4 direction;
+	float intensity;
+	float spotlight;
+	float spotlightInner;
+} light;
+
 void main(){
 
-	vec4 shadowCoord = light_transform * vec4((gl_GlobalInvocationID - vec3(32,32,32s)) * 8, 1);
+	vec4 voxelCoord = vec4( (gl_GlobalInvocationID - vec3(64,64,64)) * 16, 1);
+	vec4 shadowCoord = light_transform * voxelCoord;
 
 	float visibility = 1.0;
 	visibility -= (1.0 - texture( shadowMap, shadowCoord.xyz /shadowCoord.w ));
 
-	imageStore(illumination, ivec3(gl_GlobalInvocationID), vec4(visibility));
+	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + voxelCoord.xyz / 2048;
+	vec4 reflectedLight = texture(xreflect, iTexCoord); //reflect( -vec4(normalize(light.position.xyz), 1), texture(xreflect, iTexCoord) );
+
+
+	//vec4 reflectedLight = vec4(0,0,0,0);
+	//reflectedLight += light.position.x * texture(xreflect, iTexCoord);
+	//reflectedLight += light.position.y * texture(yreflect, iTexCoord);
+	//reflectedLight += light.position.z * texture(zreflect, iTexCoord);
+	//reflectedLight -= light.position.x * texture(xnreflect, iTexCoord);
+	//reflectedLight -= light.position.y * texture(ynreflect, iTexCoord);
+	//reflectedLight -= light.position.z * texture(znreflect, iTexCoord);
+	//reflectedLight = normalize(reflectedLight);
+
+	imageStore(illumination, ivec3(gl_GlobalInvocationID), light.intensity * light.color * visibility);
+	imageStore(illuminationNormals, ivec3(gl_GlobalInvocationID), reflectedLight);
+
+	//vec3 dirToLight = normalize(light.position.xyz); //normalize( vec3(light.position - voxelCoord) );
 	//imageAtomicAdd(illumination, ivec3(gl_LocalInvocationID), 1);
 }

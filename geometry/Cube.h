@@ -35,6 +35,7 @@ public:
 	virtual void update( UniformBlock<BoneProperties> & );
 	virtual void draw();
 	virtual void drawDebug();
+	virtual int numMesh();
 	virtual vector<GPolygon> &polygon(int);
 	virtual glm::mat4 transform();
 	virtual void setTransform(glm::mat4);

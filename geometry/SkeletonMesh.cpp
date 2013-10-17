@@ -113,6 +113,9 @@ void SkeletonMesh::drawDebug() {
   //   **/
   // }
 
+int SkeletonMesh::numMesh() {
+	return data.size();
+}
 
 vector<GPolygon> &SkeletonMesh::polygon(int mesh) {
 	return data.data()[mesh];

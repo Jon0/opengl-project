@@ -56,6 +56,7 @@ public:
 	 */
 	UniformControl<GLint> insertShadow;
 	UniformControl<glm::mat4> insertMatrix;
+	UniformBlock<LightProperties> lightUniform;
 
 	/*
 	 * set of lights used
@@ -70,7 +71,7 @@ public:
 	/* time */
 	float t;
 
-	LightingModel( shared_ptr<SceneInterface> si );
+	LightingModel( shared_ptr<SceneInterface> si, shared_ptr<Tree> );
 	virtual ~LightingModel();
 
 	LightProperties &getLight(int);

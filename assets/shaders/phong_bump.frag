@@ -40,6 +40,7 @@ uniform OctreeNode *tree;
 // Values that stay constant for the whole mesh.
 layout(binding = 0, rgba8) coherent uniform image3D illumination;
 uniform sampler3D illuminationTexture;
+uniform sampler3D illuminationNormalTexture;
 uniform samplerCube cubeTexture;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
@@ -129,11 +130,6 @@ void main() {
 	// Eye vector (towards the camera)
 	vec3 E = normalize(EyeDirection_tangentspace);
 
-
-	//texture( illumination, vec3(0.5, 0.5, 0.5) + Position_worldspace / 512 )
-
-
-
 	/*
 	 *	*******************************
 	 *	calculate for each light source
@@ -175,10 +171,6 @@ void main() {
 		}
 		visibility = clamp( visibility, 0, 1 );
 
-		/*
-		 * Add indirect visibility
-		 */
-
 		// dampen spotlight by dot product angle
 		if ( Lights[light].spotlight > 0.1 ) {
 			float angle = dot( normalize(LightSpotlight_tangentspace[light]), normalize(LightDirection_tangentspace[light]));
@@ -192,20 +184,34 @@ void main() {
 	}
 
 
-	/* indirect light */
-	float indirect = 0;
-	for (int i = 4; i < 8; ++i) {
-		vec3 pos = Position_worldspace;
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(i,0,0)) / 512 );
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(-i,0,0)) / 512 );
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,i,0)) / 512 );
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,-i,0)) / 512 );
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,0,i)) / 512 );
-		indirect += 0.4 * texture( illuminationTexture, vec3(0.5, 0.5, 0.5) + (pos + vec3(0,0,-i)) / 512 );
+	/*
+	 *	**********************
+	 *		indirect light
+	 *	**********************
+	 */
+	vec4 indirect = vec4(0);
+	vec3 pos = Position_worldspace;
+	vec3 norm [6];
+	norm[0] = Normal_worldspace * 5 + vec3(3, 0, 0);
+	norm[1] = Normal_worldspace * 5 + vec3(-3, 0, 0);
+	norm[2] = Normal_worldspace * 5 + vec3(0, 3, 0);
+	norm[3] = Normal_worldspace * 5 + vec3(0, -3, 0);
+	norm[4] = Normal_worldspace * 5 + vec3(0, 0, 3);
+	norm[5] = Normal_worldspace * 5 + vec3(0, 0, -3);
+
+	float t = 0;
+	for (int i = 1; i < 6; ++i) {
+		for (int j = 0; j < 6; ++j) {
+			norm[j] += i * norm[j];
+			vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + (pos + norm[j]) / 2048;
+			vec3 normV = texture( illuminationNormalTexture, iTexCoord ).xyz;
+			//t = dot(normV, norm[j]) < 0.0? pow(6 - i, 2) * 0.01 : 0.0;
+
+			//t =  pow(6 - i, 2) * clamp( -dot(-normV, norm[j]), 0, 1 );
+			indirect += t * texture( illuminationTexture, iTexCoord);
+		}
 	}
 	indirect = clamp( indirect, 0, 1 );
-
-
 
 	/*
 	 *	*******************************
@@ -213,9 +219,10 @@ void main() {
 	 * 	*******************************
 	 */
 
-	//imageStore(illumination, ivec3(64,64,64)+ivec3((Position_worldspace) / 4), vec4(256,0,0,0));
+	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + Position_worldspace / 2048;
+	color = texture( illuminationNormalTexture, iTexCoord );
 
-	color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
+	//color = indirect * MaterialDiffuseColor + DiffuseTotal + SpecularTotal;
 	//color = 0.05 * MaterialAmbientColor + ReflectionColor + DiffuseTotal + SpecularTotal;
 	color.w = 1.0;
 
