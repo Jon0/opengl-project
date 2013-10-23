@@ -15,7 +15,7 @@ Directional::Directional() {
 	// directional light
 	data.position = glm::vec4(-0.106064, 21.095, 3.11255, 0.0);
 	data.color = glm::vec4(2.08103, 2.15291, 2.1031, 1.0);
-	data.intensity = 0.85;
+	data.intensity = 0.75;
 	data.spotlight = 0.0;
 	update();
 }

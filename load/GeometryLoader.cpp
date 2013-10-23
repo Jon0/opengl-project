@@ -58,7 +58,7 @@ vector<GMesh> readOBJFile(const char* filename) {
 				unsigned int ind = mesh.mFaces[i].mIndices[j];
 				GVertex vrt;
 				copyVec3(vrt.position, mesh.mVertices[ind]);
-				vrt.position *= 10;
+				vrt.position *= 50;
 
 				copyVec3(vrt.normal, mesh.mNormals[ind]);
 

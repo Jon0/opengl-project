@@ -9,12 +9,12 @@ uniform sampler2DShadow shadowMap;
 
 uniform mat4x4 light_transform;
 
-uniform sampler3D xreflect;
-uniform sampler3D yreflect;
-uniform sampler3D zreflect;
-uniform sampler3D xnreflect;
-uniform sampler3D ynreflect;
-uniform sampler3D znreflect;
+uniform usampler3D xreflect;
+uniform usampler3D yreflect;
+uniform usampler3D zreflect;
+uniform usampler3D xnreflect;
+uniform usampler3D ynreflect;
+uniform usampler3D znreflect;
 
 layout(std140) uniform LightProperties {
 	vec4 position;
@@ -27,40 +27,51 @@ layout(std140) uniform LightProperties {
 
 void main(){
 
+
 	vec4 voxelCoord = vec4( (gl_GlobalInvocationID - vec3(64,64,64)) * 16, 1);
+	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + voxelCoord.xyz / 2048;
 	vec4 shadowCoord = light_transform * voxelCoord;
 
 	float visibility = 1.0;
 	visibility -= (1.0 - texture( shadowMap, shadowCoord.xyz /shadowCoord.w ));
 
-	vec3 iTexCoord = vec3(0.5, 0.5, 0.5) + voxelCoord.xyz / 4096;
-
 	vec4 reflectedLight = vec4(0,0,0,0);
+
+	/* if an object is in the space */
+	if ( texture(xreflect, iTexCoord).w > 0 ) {
+
 	if (light.position.x > 0) {
-		reflectedLight += light.position.x * texture(xreflect, iTexCoord);
+		reflectedLight += light.position.x * light.position.x * (texture(xreflect, iTexCoord)-128) / 128.0;
 	}
 	else {
-		reflectedLight += light.position.x * -texture(xnreflect, iTexCoord);
+		reflectedLight += light.position.x * light.position.x * (texture(xnreflect, iTexCoord)-128) / 128.0;
 	}
 
 	if (light.position.y > 0) {
-		reflectedLight += light.position.y * texture(yreflect, iTexCoord);
+		reflectedLight += light.position.y * light.position.y * (texture(yreflect, iTexCoord)-128) / 128.0;
 	}
 	else {
-		reflectedLight += light.position.y * -texture(ynreflect, iTexCoord);
+		reflectedLight += light.position.y * light.position.y * (texture(ynreflect, iTexCoord)-128) / 128.0;
 	}
 
 	if (light.position.z > 0) {
-		reflectedLight += light.position.z * texture(zreflect, iTexCoord);
+		reflectedLight += light.position.z * light.position.z * (texture(zreflect, iTexCoord)-128) / 128.0;
 	}
 	else {
-		reflectedLight += light.position.z * -texture(znreflect, iTexCoord);
+		reflectedLight += light.position.z * light.position.z * (texture(znreflect, iTexCoord)-128) / 128.0;
 	}
 	reflectedLight = normalize(reflectedLight);
+	}
+
+	/* no object is in the space */
+	//else {
+		//reflectedLight = normalize(-light.position);
+	//}
 
 	imageStore(illumination, ivec3(gl_GlobalInvocationID), light.intensity * light.color * visibility);
 	imageStore(illuminationNormals, ivec3(gl_GlobalInvocationID), reflectedLight);
 
 	//vec3 dirToLight = normalize(light.position.xyz); //normalize( vec3(light.position - voxelCoord) );
 	//imageAtomicAdd(illumination, ivec3(gl_LocalInvocationID), 1);
+	//}
 }

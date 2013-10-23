@@ -25,7 +25,7 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 {
 	levels = l;
 	size = levels * levels * levels;
-	unsigned int *texels = new unsigned int [size];
+	unsigned int *texels = new unsigned int [size * 4];
 	normals = new glm::vec3 [size];
 	int h = levels / 2;
 	mid = glm::vec3(h, h, h);
@@ -52,7 +52,9 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, levels, levels, levels, 0, GL_RGBA,
-	             GL_UNSIGNED_BYTE, texels);
+	             GL_FLOAT, texels);
+
+	//glGenerateMipmap(GL_TEXTURE_3D);
 
 	glGenTextures(1, &addrN);
 	glBindTexture(GL_TEXTURE_3D, addrN);
@@ -63,20 +65,22 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, levels, levels, levels, 0, GL_RGBA,
-	             GL_UNSIGNED_BYTE, texels);
+				GL_FLOAT, texels);
+
+	//glGenerateMipmap(GL_TEXTURE_3D);
 
 
 	// for each direction (from 6)
 	// calc outgoing vec of light coming in that dir
 	// in shader multiply each component of incoming light by the pre calc for that part
 
-	glm::vec3 **d = new glm::vec3 *[6];
-	d[0] = new glm::vec3 [size];
-	d[1] = new glm::vec3 [size];
-	d[2] = new glm::vec3 [size];
-	d[3] = new glm::vec3 [size];
-	d[4] = new glm::vec3 [size];
-	d[5] = new glm::vec3 [size];
+	glm::vec4 **d = new glm::vec4 *[6];
+	d[0] = new glm::vec4 [size];
+	d[1] = new glm::vec4 [size];
+	d[2] = new glm::vec4 [size];
+	d[3] = new glm::vec4 [size];
+	d[4] = new glm::vec4 [size];
+	d[5] = new glm::vec4 [size];
 	makeNormals(scene, d);
 
 	/*
@@ -87,16 +91,18 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 			for (unsigned int j = 0; j < levels; ++j) {
 				for (unsigned int k = 0; k < levels; ++k) {
 					int offset = (i + j * levels + k * levels * levels);
-					glm::vec3 total = glm::vec3(0,0,0);
+					glm::vec4 total = glm::vec4(0,0,0,0);
 					if ( glm::length( d[t][offset] ) > 0 ) {
 						total = glm::normalize( d[t][offset] );
+						total.w = 1.0;
 					}
 					//cout << total.x << ", " << total.y << ", " << total.z << endl;
 
-					char x = total.x * 128;
-					char y = total.y * 128;
-					char z = total.z * 128;
-					texels[offset] = (255 << 24) + (z << 16) + (y << 8) + x;
+					unsigned char w = 128 + total.w * 128;
+					unsigned char x = 128 + total.x * 128;
+					unsigned char y = 128 + total.y * 128;
+					unsigned char z = 128 + total.z * 128;
+					texels[offset] = (w << 24) + (z << 16) + (y << 8) + x;
 				}
 			}
 		}
@@ -109,8 +115,10 @@ Tree::Tree(int l, shared_ptr<GRender> scene):
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, levels, levels, levels, 0, GL_RGBA,
-		             GL_BYTE, texels);
+		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, levels, levels, levels, 0, GL_RGBA,
+		             GL_UNSIGNED_BYTE, texels);
+
+		//glGenerateMipmap(GL_TEXTURE_3D);
 	}
 
 	glBindTexture(GL_TEXTURE_3D, 0);
@@ -121,7 +129,7 @@ Tree::~Tree() {
 	// TODO Auto-generated destructor stub
 }
 
-void Tree::makeNormals(shared_ptr<GRender> scene, glm::vec3 **out) {
+void Tree::makeNormals(shared_ptr<GRender> scene, glm::vec4 **out) {
 
 	// check each poly
 	for (shared_ptr<Geometry> &g : scene->content()) {
@@ -137,8 +145,7 @@ void Tree::makeNormals(shared_ptr<GRender> scene, glm::vec3 **out) {
 	}
 }
 
-void Tree::fillNormals(GPolygon &p, glm::vec3 **out) {
-	if (p.size() > 3) cerr << "wtf" << endl;
+void Tree::fillNormals(GPolygon &p, glm::vec4 **out) {
 	// pick random points on triangle surface
 	// use more points on large triangles
 	glm::vec3 p1 = p.data()[0].position;
@@ -151,7 +158,7 @@ void Tree::fillNormals(GPolygon &p, glm::vec3 **out) {
 	float ainc = 5.0 / glm::length(d1);
 	float binc = 5.0 / glm::length(d2);
 
-	glm::vec3 norm = p.normal();
+	glm::vec4 norm = glm::vec4(p.normal(), 0.0);
 
 	for (float a = 0.01; a < 0.99; a += ainc) {
 		for (float b = 0.01; a + b < 0.99; b += binc) {
@@ -160,28 +167,28 @@ void Tree::fillNormals(GPolygon &p, glm::vec3 **out) {
 			//cout << p1.x << ", " <<  p1.y << ", " <<  p1.z << endl;
 
 
-			glm::ivec3 voxelPos = glm::ivec3(center / 32.0f + mid);
+			glm::ivec3 voxelPos = glm::ivec3(center / 16.0f + mid);
 			int offset = (voxelPos.x + voxelPos.y * levels + voxelPos.z * levels * levels);
 
-			if (glm::dot(norm, glm::vec3(1, 0, 0)) < 0.0) {
-				out[0][offset] += glm::normalize(glm::reflect(glm::vec3(1, 0, 0), -norm));
+			if (glm::dot(norm, glm::vec4(1, 0, 0, 0)) < 0.0) {
+				out[0][offset] += glm::normalize(glm::reflect(glm::vec4(1, 0, 0, 0), norm));
 			}
 			else {
-				out[3][offset] += glm::normalize(glm::reflect(glm::vec3(-1, 0, 0), -norm));
+				out[3][offset] += glm::normalize(glm::reflect(glm::vec4(-1, 0, 0, 0), norm));
 			}
 
-			if (glm::dot(norm, glm::vec3(0, 1, 0)) < 0.0) {
-				out[1][offset] += glm::normalize(glm::reflect(glm::vec3(0, 1, 0), -norm));
+			if (glm::dot(norm, glm::vec4(0, 1, 0, 0)) < 0.0) {
+				out[1][offset] += glm::normalize(glm::reflect(glm::vec4(0, 1, 0, 0), norm));
 			}
 			else {
-				out[4][offset] += glm::normalize(glm::reflect(glm::vec3(0, -1, 0), -norm));
+				out[4][offset] += glm::normalize(glm::reflect(glm::vec4(0, -1, 0, 0), norm));
 			}
 
-			if (glm::dot(norm, glm::vec3(0, 0, 1)) < 0.0) {
-				out[2][offset] += glm::normalize(glm::reflect(glm::vec3(0, 0, 1), -norm));
+			if (glm::dot(norm, glm::vec4(0, 0, 1, 0)) < 0.0) {
+				out[2][offset] += glm::normalize(glm::reflect(glm::vec4(0, 0, 1, 0), norm));
 			}
 			else {
-				out[5][offset] += glm::normalize(glm::reflect(glm::vec3(0, 0, -1), -norm));
+				out[5][offset] += glm::normalize(glm::reflect(glm::vec4(0, 0, -1, 0), norm));
 			}
 		}
 	}

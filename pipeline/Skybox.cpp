@@ -13,7 +13,7 @@ namespace std {
 Skybox::Skybox( VertexBuffer &vb ):
 	skybox("skybox"),
 	camsky { skybox.getBlock<CameraProperties>( "Camera", 1 )},
-	sky { new Cube(500) }
+	sky { new Cube(2000) }
 {
 	/* sky */
 	cubeTex = new Tex();

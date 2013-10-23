@@ -40,7 +40,7 @@ public:
 	/*
 	 * select and control
 	 */
-	bool drag, showIcons;
+	bool drag, showIcons, useGI;
 	int selectedLight;
 	glm::quat click_old, click_new;
 	float *selFloat;

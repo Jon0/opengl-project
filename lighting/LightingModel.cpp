@@ -64,6 +64,8 @@ LightingModel::LightingModel( shared_ptr<SceneInterface> si, shared_ptr<Tree> tr
 	insert.setUniform("znreflect", &tree->locationZN);
 
 	t = 0.0;
+
+	lights.data()[2]->update();
 }
 
 LightingModel::~LightingModel() {

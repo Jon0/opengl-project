@@ -18,13 +18,13 @@ namespace std {
 Camera::Camera( shared_ptr<Pipeline> p ):
 		pipeline { p },
 		focus {0, 30, 0},
-		cam_angle {0.999891, 0.00239877, 0.0153423, -0.00016302},
+		cam_angle {0.644164, 0.194619, 0.718575, 0.175646},
 		cam_angle_d {1, 0, 0, 0},
 		click_old {1, 0, 0, 0},
 		click_new {1, 0, 0, 0}
 {
 	cam_aspect = 1.0;
-	viewzoom = 67.0476;
+	viewzoom = 697.38;
 
 	// mouse action settings
 	arcball_x = arcball_y = 0.0;

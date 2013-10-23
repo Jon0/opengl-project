@@ -34,8 +34,8 @@ public:
 	Tree(int, shared_ptr<GRender>);
 	virtual ~Tree();
 
-	void makeNormals(shared_ptr<GRender>, glm::vec3 **);
-	void fillNormals(GPolygon &, glm::vec3 **);
+	void makeNormals(shared_ptr<GRender>, glm::vec4 **);
+	void fillNormals(GPolygon &, glm::vec4 **);
 	glm::vec3 getPoint( glm::vec3 );
 	void enable( GLuint );
 	void enableTex( Program &, GLuint );

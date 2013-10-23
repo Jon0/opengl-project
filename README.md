@@ -1,7 +1,7 @@
 Rendering
 =========
 
-* REQUIRES OPEN GL 4.0 OR HIGHER
+* REQUIRES OPEN GL 4.3 OR HIGHER
 
 * Compile with Debug/makefile from inside directory
 
@@ -28,6 +28,8 @@ Mouse Control
 
 Keyboard Control
 ===============
+
+* I => toggle of GI approximation effect.
 
 * A => mouse will alter light position
 

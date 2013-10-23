@@ -1,4 +1,9 @@
 eclipse.preferences.version=1
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291.15920251/LD_LIBRARY_PATH/delimiter=\:
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291.15920251/LD_LIBRARY_PATH/operation=replace
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291.15920251/LD_LIBRARY_PATH/value=/usr/pkg/java/sun-6/jre/lib/amd64/server\:/usr/pkg/java/sun-6/jre/lib/amd64\:/usr/pkg/java/sun-6/jre/../lib/amd64\:/usr/lib\:/usr/pkg/lib\:/u/students/remnanjona/lib/lib
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291.15920251/append=true
+environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291.15920251/appendContributed=true
 environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291/LD_LIBRARY_PATH/delimiter=\:
 environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291/LD_LIBRARY_PATH/operation=replace
 environment/project/cdt.managedbuild.config.gnu.cross.exe.debug.428309291/LD_LIBRARY_PATH/value=/usr/pkg/java/sun-6/jre/lib/amd64/server\:/usr/pkg/java/sun-6/jre/lib/amd64\:/usr/pkg/java/sun-6/jre/../lib/amd64\:/usr/lib\:/usr/pkg/lib\:/u/students/remnanjona/lib/lib

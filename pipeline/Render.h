@@ -25,7 +25,7 @@ private:
 	Program main;
 	shared_ptr<SceneInterface> scene;
 	shared_ptr<Tree> tree;
-	GLuint useDiffTex, useNormTex, useWeights;
+	GLuint useDiffTex, useNormTex, useWeights, useGI;
 
 public:
 	UniformBlock<CameraProperties> cam;
@@ -33,6 +33,7 @@ public:
 	UniformBlock<LightProperties> lightUniform;
 	UniformBlock<BoneProperties> boneUniform;
 	UniformControl<GLint> diffuse_tex, specular_tex, weight_tex;
+	bool GI;
 	//UniformBlock<OctreeNode> node;
 
 	Render( shared_ptr<SceneInterface>, shared_ptr<Tree>  );

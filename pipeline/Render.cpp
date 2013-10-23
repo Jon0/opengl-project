@@ -28,6 +28,7 @@ Render::Render( shared_ptr<SceneInterface> s, shared_ptr<Tree> t ):
 	useDiffTex = main.addUniform("useDiffTex");
 	useNormTex = main.addUniform("useNormTex");
 	useWeights = main.addUniform("useWeights");
+	useGI = main.addUniform("useGI");
 
 	main.setUniform("diffuseTexture", &diffuse_tex);
 	main.setUniform("specularTexture", &specular_tex);
@@ -52,6 +53,7 @@ void Render::update( chrono::duration<double> ) {
 
 void Render::run( shared_ptr<ViewInterface> c ) {
 	main.enable();
+	glUniform1i(useGI, GI);
 
 	cam.assign( c->properties() );
 	UBO<CameraProperties> *camptr = c->properties();

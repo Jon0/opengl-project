@@ -6,3 +6,4 @@
 .nfs*
 #*#
 Debug/animation
+Release/animation

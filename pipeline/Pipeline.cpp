@@ -48,7 +48,6 @@ void Pipeline::update( chrono::duration<double> tick ) {
 	/*
 	 * fill image with lighting information
 	 */
-	tree->enable( 0 );
 	lm->update( tick );
 	lm->insertLight(tree);
 }
@@ -64,8 +63,10 @@ void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	 */
 	//tree->enable( 0 );
 	tree->enableTex( render->getProgram(), 2 );
+	render->GI = scene->useGI;
 
 	lm->setLight( render->getProgram(), render->lightUniform );
+
 
 	sky->run( v );
 	render->run( v );

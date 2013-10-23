@@ -49,7 +49,7 @@ GRender::GRender( VertexBuffer &vb ):
 	}
 
 	//	model->setTransform(glm::translate(glm::mat4(1.0),glm::vec3(0.0,0.0,0.0)));
-	model->setTransform(glm::translate(glm::mat4(1.0), glm::vec3(0.0,15.0,0.0))*glm::scale(glm::mat4(1.0), glm::vec3(.015)));
+	model->setTransform(glm::translate(glm::mat4(1.0), glm::vec3(0.0,75.0,0.0))*glm::scale(glm::mat4(1.0), glm::vec3(.015)));
 
 	/*
 	 * selection
@@ -61,7 +61,8 @@ GRender::GRender( VertexBuffer &vb ):
 	drag = false;
 
 	message = "Light "+to_string(selectedLight) +" : Position";
-	showIcons = true;
+	showIcons = false;
+	useGI = false;
 }
 
 GRender::~GRender() {
@@ -205,6 +206,9 @@ void GRender::keyPressed(unsigned char c) {
 		break;
 	case '.':
 		showIcons = !showIcons;
+		break;
+	case 'i':
+		useGI = !useGI;
 		break;
 	case ',':
 		for (int i = 0; i < 3; ++i) {
