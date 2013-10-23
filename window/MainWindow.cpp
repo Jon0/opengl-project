@@ -27,7 +27,6 @@ MainWindow::MainWindow(int width, int height, string title) {
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(mouseCallbackMotionFunc);
 	glutIdleFunc(updateWindows);
-	update = NULL;
 }
 
 MainWindow::~MainWindow() {}
@@ -45,15 +44,15 @@ void MainWindow::addView(shared_ptr<ViewInterface> vi) {
 	g_view.push_back(vi);
 }
 
-void MainWindow::setUpdateFunc( void (*u)(chrono::duration<double>) ) {
-	update = u;
+void MainWindow::setUpdateFunc( shared_ptr<Pipeline> pipeline ) {
+	pl = pipeline;
 }
 
 void MainWindow::display() {
 	chrono::time_point<chrono::high_resolution_clock> newTime = chrono::system_clock::now();
 	chrono::duration<double> windowTick = newTime - lastTime;
 	lastTime = newTime;
-	update( windowTick );
+	pl->update( windowTick );
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, wnd_width, wnd_height);

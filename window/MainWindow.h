@@ -17,6 +17,7 @@
 
 #include "../input/KeyListener.h"
 #include "../input/MouseListener.h"
+#include "../pipeline/Pipeline.h"
 #include "../view/ViewInterface.h"
 
 namespace std {
@@ -30,26 +31,28 @@ public:
 
 	virtual void start();
 	void addView( shared_ptr<ViewInterface> );
-	void setUpdateFunc( void (*)(chrono::duration<double>) );
+	void setUpdateFunc( shared_ptr<Pipeline> );
 
-protected:
+private:
 	int wnd_width, wnd_height;
 	vector<shared_ptr<ViewInterface>> g_view;
+	shared_ptr<Pipeline> pl;
+
 	void display();
 	void reshape(int, int);
 	void keyboard(unsigned char, int, int);
 	void mouseClick(int, int, int, int);
 	void mouseDrag(int, int);
 
-private:
-	void (*update)(chrono::duration<double>);
+	/*
+	 * static functions for glut
+	 */
 	static void displayCallback();
 	static void reshapeCallback(int, int);
 	static void keyboardCallback(unsigned char, int, int);
 	static void mouseCallback(int button, int state, int x, int y);
 	static void mouseCallbackMotionFunc(int x, int y);
 	static void updateWindows();
-
 };
 
 extern map<int, shared_ptr<MainWindow>> instances;

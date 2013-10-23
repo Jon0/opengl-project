@@ -20,13 +20,6 @@ shared_ptr<Pipeline> pipeline;
 /** camara to draw scene onto the window */
 shared_ptr<Camera> camera;
 
-/*
- * TODO just pass update directly
- */
-void updateFunc( chrono::duration<double> tick ) {
-	pipeline->update( tick );
-}
-
 int main(int argc, char *argv[]) {
 	srand( time( NULL ) );
 	glutInit(&argc, argv);
@@ -45,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	mWnd->start();
 	mWnd->addView( camera );
-	mWnd->setUpdateFunc(updateFunc);
+	mWnd->setUpdateFunc( pipeline );
 
 	/* start running */
 	glutMainLoop();

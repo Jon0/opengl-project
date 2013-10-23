@@ -27,6 +27,7 @@ Pipeline::Pipeline():
 
 	/* finalise vb */
 	vb.store();
+	throw exception();
 }
 
 Pipeline::~Pipeline() {
@@ -61,7 +62,6 @@ void Pipeline::output( shared_ptr<ViewInterface> v ) {
 	/*
 	 * bind illumination
 	 */
-	//tree->enable( 0 );
 	tree->enableTex( render->getProgram(), 2 );
 	render->GI = scene->useGI;
 

@@ -19,7 +19,6 @@
 #include "../shader/ShaderStructs.h"
 #include "../shader/UBO.h"
 #include "../shader/UniformControl.h"
-#include "../window/MainWindow.h"
 #include "ViewInterface.h"
 
 namespace std {
@@ -31,7 +30,6 @@ void getUnitCircle(int, int, int, int, glm::quat &);
 
 class Camera: public ViewInterface {
 private:
-	//shared_ptr<MainWindow> wnd;
 	shared_ptr<Pipeline> pipeline;
 	glm::vec3 focus;
 	glm::quat cam_angle, cam_angle_d, click_old, click_new;

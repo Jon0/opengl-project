@@ -18,7 +18,6 @@
 #include "../shader/Program.h"
 #include "../view/Camera.h"
 #include "../view/Ortho.h"
-#include "../window/MainWindow.h"
 #include "SceneInterface.h"
 
 namespace std {
