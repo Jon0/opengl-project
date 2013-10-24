@@ -32,8 +32,6 @@ public:
 	/*
 	 * Global illumination octree
 	 */
-
-
 	vector< shared_ptr<Step> > steps;
 	shared_ptr<GRender> scene;
 	shared_ptr<Skybox> sky;
@@ -41,8 +39,6 @@ public:
 	shared_ptr<Render> render;
 	shared_ptr<Voxelize> voxelize;
 	shared_ptr<LightingModel> lm;
-
-
 
 	Pipeline();
 	virtual ~Pipeline();

@@ -135,7 +135,6 @@ void Tree::makeNormals(shared_ptr<GRender> scene, glm::vec4 **out) {
 	for (shared_ptr<Geometry> &g : scene->content()) {
 		int nm = g->numMesh();
 		for (int m = 0; m < nm; ++m) {
-			cout << "mesh " << m << endl;
 			for (GPolygon &p : g->polygon(m)) {
 				//glm::vec3 voxel = (glm::vec3(i, j, k) - glm::vec3(64,64,64)) * 4.0f;
 

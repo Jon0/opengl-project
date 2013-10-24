@@ -27,7 +27,6 @@ Pipeline::Pipeline():
 
 	/* finalise vb */
 	vb.store();
-	throw exception();
 }
 
 Pipeline::~Pipeline() {
